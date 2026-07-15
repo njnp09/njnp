@@ -1,0 +1,12 @@
+CLICKSET BETA 0.19.2
+
+CANVIS
+- Accent activable o desactivable directament al mode normal i al Mode Concert.
+- En activar l’accent mentre sona, el clic immediat passa a ser el primer temps del compàs.
+- Selector ràpid dels 6 sons al mode normal i al Mode Concert.
+- El so canvia sense aturar ni reiniciar el tempo.
+- En clicar una cançó del setlist del Mode Concert, hi va directament sense confirmació.
+- La resta de funcions i repertoris es mantenen igual.
+
+PUJADA
+Puja aquest ZIP directament a Netlify > Deploys.

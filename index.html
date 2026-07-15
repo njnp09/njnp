@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0d1318">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="cover.png">
+<title>ClickSet Beta 0.19.2</title>
+<link rel="stylesheet" href="styles.css?v=0192">
+</head>
+<body>
+<button id="editModeBadge" class="editModeBadge locked" type="button" aria-label="Estat del mode edició">🔒 Mode lectura</button>
+<div id="splash" class="splash"><img src="cover.png" alt="ClickSet"></div>
+<div id="groupIntro" class="groupIntro hidden"><img id="groupIntroLogo" alt=""><div id="groupIntroName"></div></div>
+<div id="chooser" class="chooser hidden"><div class="chooserCard"><div class="chooserTop"><div><div id="homeBrand" class="homeBrand"><img src="logo-clickset.png" alt="Bateria ClickSet"><div><h1>CLICKSET</h1><div class="byNwi">by nwi</div></div></div><h1 id="chooserTitle" class="hidden">Grup musical</h1><p id="chooserSubtitle">Selecciona un grup</p></div><div class="chooserTools"><button id="importSetlistBtn" class="smallBtn hidden">📥 IMPORTAR REPERTORI</button><button id="newGroupBtn" class="smallBtn">+ GRUP</button></div></div><button id="chooserBack" class="back hidden">← Enrere</button><div id="chooserGrid" class="grid"></div></div></div>
+<div id="app" class="app hidden"><aside class="sidebar"><div class="sideHead"><h2>Setlist</h2><span id="songCount"></span></div><div id="setlist" class="setlist"></div></aside><main class="main"><div class="top"><div id="position"></div><div class="topBtns"><button id="concertModeBtn" class="smallBtn">🎤 MODE CONCERT</button><button id="homeBtn" class="smallBtn">GRUPS</button><button id="editBtn" class="smallBtn">EDITAR</button></div></div><section class="stage"><div id="parentLabel" class="parentLabel"></div><div id="song" class="song"></div><div id="bpm" class="bpm"></div><div class="label">BPM</div><div id="pulse" class="pulse"></div><div id="nextup" class="nextup"></div><div class="liveMeta"><button id="normalAccent" class="liveMetaBtn" type="button">Accent: OFF</button><button id="normalSound" class="liveMetaBtn" type="button">❤️ ClickSet Original</button></div></section><section class="controls"><button id="prev" class="big">◀ ANTERIOR</button><button id="play" class="big play">▶ PLAY</button><button id="next" class="big">SEGÜENT ▶</button></section></main></div>
+<section id="concertMode" class="concertMode hidden" aria-label="Mode concert">
+  <aside class="concertSidebar">
+    <div class="concertSetlistHead"><div><strong id="concertSetlistName">SETLIST</strong><small id="concertGroupName"></small></div><span id="concertPosition"></span></div>
+    <div id="concertSetlist" class="concertSetlist"></div>
+  </aside>
+  <main class="concertMain">
+    <div class="concertTop"><div class="concertTopTitle">MODE CONCERT</div><button id="closeConcertMode" class="smallBtn">✕ SORTIR</button></div>
+    <div class="concertStage">
+      <div id="concertParent" class="concertParent"></div>
+      <div id="concertSong" class="concertSong"></div>
+      <div id="concertBpm" class="concertBpm"></div>
+      <div class="concertBpmLabel">BPM</div>
+      <div class="concertMeta">
+        <span id="concertMeter">4/4</span>
+        <button id="concertAccent" class="concertMetaBtn" type="button">Accent: OFF</button>
+        <button id="concertSound" class="concertMetaBtn" type="button">❤️ ClickSet Original</button>
+      </div>
+      <div id="concertPulse" class="concertPulse"></div>
+      <div id="concertNext" class="concertNext"></div>
+    </div>
+    <div class="concertControls">
+      <button id="concertPrev" class="concertBtn">◀ ANTERIOR</button>
+      <button id="concertPlay" class="concertBtn concertPlay">▶ PLAY</button>
+      <button id="concertNextBtn" class="concertBtn concertDirectNext">✓ FETA I SEGÜENT ▶</button>
+    </div>
+  </main>
+</section>
+<section id="editor" class="panel"><div class="panelHead"><div><h2 style="margin:0">Editar repertori</h2><small id="editorSubtitle" class="note"></small></div><button id="closeEditor" class="close">GUARDAR</button></div><p class="note">El so de cada cançó té prioritat sobre el so general del repertori.</p><div class="editorGroup"><div class="editorGroupTitle"><strong>Volum de ClickSet</strong><span id="volumeValue" class="volumeValue">90%</span></div><div class="volumeRow"><input id="appVolume" type="range" min="0" max="100" step="1" value="90"><span>🔊</span></div><div class="previewHint">Aquest volum és independent del volum general de l’ordinador, tauleta o mòbil.</div></div><div class="editorGroup"><div class="editorGroupTitle"><strong>So del repertori</strong></div><div id="repertoireSoundPicker"></div><div class="previewHint">En tocar un so, sentiràs una mostra de mig segon.</div><label class="repeatPreview"><input id="repeatPreview" type="checkbox" checked> Repetir la mostra automàticament cada 3 segons</label></div><div id="editorContent"></div></section>
+<div id="bpmModal" class="modal"><div class="modalCard"><h2 id="bpmModalTitle">Editar BPM</h2><div id="keyDisplay" class="keyDisplay">120</div><div class="stepGrid"><button data-step="-10">−10</button><button data-step="-5">−5</button><button data-step="-1">−1</button><button data-step="1">+1</button><button data-step="5">+5</button><button data-step="10">+10</button></div><div class="keypad"><button data-num="1">1</button><button data-num="2">2</button><button data-num="3">3</button><button data-num="4">4</button><button data-num="5">5</button><button data-num="6">6</button><button data-num="7">7</button><button data-num="8">8</button><button data-num="9">9</button><button data-num="clear">C</button><button data-num="0">0</button><button data-num="back">⌫</button></div><button id="tapTempo" class="tap">TAP TEMPO</button><div class="modalActions"><button id="cancelBpm" class="secondary">CANCEL·LAR</button><button id="saveBpm" class="primary">APLICAR</button></div></div></div>
+<div id="setlistModal" class="modal"><div class="modalCard"><h2>Editar nom del repertori</h2><div class="formRow"><label>Nom</label><input id="setlistName" maxlength="60" autocomplete="off"></div><div class="modalActions"><button id="cancelSetlistName" class="secondary">CANCEL·LAR</button><button id="saveSetlistName" class="primary">GUARDAR</button></div></div></div>
+<div id="groupModal" class="modal"><div class="modalCard"><h2 id="groupModalTitle">Editar grup</h2><div class="formRow"><label>Nom</label><input id="groupName" maxlength="40"></div><div class="formRow"><label>Color</label><input id="groupColor" type="color"></div><div class="formRow"><label>Logo</label><div><img id="logoPreview" class="logoPreview" alt="Logo"><input id="groupLogo" type="file" accept="image/*" style="margin-top:8px"></div></div><div class="modalActions"><button id="deleteGroup" class="secondary danger">ELIMINAR</button><button id="cancelGroup" class="secondary">CANCEL·LAR</button><button id="saveGroup" class="primary">GUARDAR</button></div></div></div>
+
+
+<div id="importModal" class="modal"><div class="modalCard importCard"><h2>📥 Importar repertori</h2><p class="note">Fes una foto, tria una imatge, un PDF o un fitxer de text. ClickSet intentarà detectar el nom de les cançons i els BPM.</p><div class="importButtons"><label class="importOption">📷 FER FOTO<input id="cameraInput" type="file" accept="image/*" capture="environment" hidden></label><label class="importOption">🖼️ GALERIA<input id="imageInput" type="file" accept="image/*" hidden></label><label class="importOption">📄 PDF / FITXER<input id="fileInput" type="file" accept=".pdf,.txt,.csv,.json,text/plain,text/csv,application/pdf,application/json" hidden></label></div><div id="importStatus" class="importStatus">Cap fitxer seleccionat.</div><div class="formRow"><label>Nom repertori</label><input id="importSetlistName" value="Nou repertori" maxlength="60"></div><label class="importTextLabel">Text detectat (pots corregir-lo abans de crear-lo)</label><textarea id="importText" class="importText" placeholder="Exemple:
+1. Carolina - 134 BPM
+2. Déjame 111
+3. Bienvenidos"></textarea><div class="importPreviewHead"><strong>Vista prèvia</strong><span id="importCount">0 cançons</span></div><div id="importPreview" class="importPreview"></div><div class="modalActions"><button id="cancelImport" class="secondary">CANCEL·LAR</button><button id="createImportedSetlist" class="primary">CREAR REPERTORI</button></div><p class="previewHint">La lectura d’imatges i PDF necessita connexió a internet la primera vegada perquè carrega el lector OCR.</p></div></div>
+
+<div id="quickSoundMenu" class="quickSoundMenu hidden" role="dialog" aria-label="Canviar so del metrònom">
+  <div class="quickSoundCard">
+    <div class="quickSoundHead"><strong>Canviar so</strong><button id="closeQuickSound" type="button" aria-label="Tancar">✕</button></div>
+    <div id="quickSoundGrid" class="quickSoundGrid"></div>
+    <div class="quickSoundHint">El canvi s’aplica al moment sense aturar el tempo.</div>
+  </div>
+</div>
+<div id="passwordModal" class="modal"><div class="modalCard passwordCard"><h2>🔒 Mode edició</h2><p class="note">Introdueix la contrasenya per modificar ClickSet.</p><input id="editPassword" type="password" inputmode="numeric" autocomplete="off" placeholder="Contrasenya"><div id="passwordError" class="passwordError hidden">Contrasenya incorrecta</div><div class="modalActions"><button id="cancelPassword" class="secondary">CANCEL·LAR</button><button id="submitPassword" class="primary">ENTRAR</button></div></div></div>
+<script src="app.js?v=0192" defer></script>
+</body></html>

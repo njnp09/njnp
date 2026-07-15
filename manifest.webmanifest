@@ -1,0 +1,18 @@
+{
+  "name": "ClickSet Beta 0.17",
+  "short_name": "ClickSet",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0d1318",
+  "theme_color": "#0d1318",
+  "orientation": "landscape",
+  "icons": [
+    {
+      "src": "cover.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
