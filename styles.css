@@ -92,8 +92,3 @@ body.light-theme .chooserCard>p,body.light-theme #chooserSubtitle{color:#5c6b75}
 .routingTests button{flex:1}
 .trackOriginalBpm{max-width:110px}
 .stretchHint{grid-column:1/-1;color:var(--muted)}
-
-.routingGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
-.routingGrid label{display:flex;flex-direction:column;gap:6px;font-weight:850}
-.routingPresets{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}
-@media(max-width:700px){.routingGrid{grid-template-columns:1fr}.routingPresets{grid-template-columns:1fr}}

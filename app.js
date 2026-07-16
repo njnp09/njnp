@@ -1,5 +1,5 @@
 "use strict";
-const VERSION="0.20.2", STORAGE_KEY="clickset_017_groups";
+const VERSION="0.20.1", STORAGE_KEY="clickset_017_groups";
 const EDIT_PASSWORD="45";
 let editUnlocked=false,pendingEditAction=null;
 const SOUNDS=[
@@ -68,9 +68,8 @@ let groups=normalize(stored||defaults),groupIndex=null,setlistIndex=null,current
 let audioCtx=null,classicBuffer=null,schedulerTimer=null,nextBeatTime=0,runId=0,activeNodes=new Set(),beatInBar=0,clickOutputNode=null,trackOutputNode=null;
 let bpmTarget=null,bpmDraft="120",tapTimes=[],groupEditIndex=null,groupLogoDraft="",setlistEditIndex=null;
 let appVolume=Math.max(0,Math.min(1,Number(localStorage.getItem("clickset_app_volume")||0.9))),previewInterval=null,previewType=null,previewButton=null,previewRepeat=true;
-const CLICK_ROUTE_KEY="clickset_click_route", TRACK_ROUTE_KEY="clickset_track_route";
-let clickRoute=localStorage.getItem(CLICK_ROUTE_KEY)||"L";
-let trackRoute=localStorage.getItem(TRACK_ROUTE_KEY)||"R";
+const CHANNEL_KEY="clickset_channel_invert";
+let channelsInverted=localStorage.getItem(CHANNEL_KEY)==="1";
 (function apply017Defaults(){
  const gaviotasItems=clone(defaults.find(g=>g.name==="100 Gaviotas").setlists[0].items);
  for(const g of groups){
@@ -162,37 +161,24 @@ function closeQuickSoundMenu(){$("quickSoundMenu").classList.add("hidden")}
 async function jump(i){current=i;render();if(playing)await restart()}
 async function change(d){if(!flat.length)return;current=(current+d+flat.length)%flat.length;render();if(playing)await restart()}
 
-function routeToPan(route,node){
- if(route==="L"){const p=audioCtx.createStereoPanner();p.pan.value=-1;node.connect(p).connect(audioCtx.destination);return}
- if(route==="R"){const p=audioCtx.createStereoPanner();p.pan.value=1;node.connect(p).connect(audioCtx.destination);return}
- node.connect(audioCtx.destination)
-}
 function configureStereoRouting(){
  if(!audioCtx)return;
  try{clickOutputNode?.disconnect()}catch(e){}
  try{trackOutputNode?.disconnect()}catch(e){}
- clickOutputNode=audioCtx.createGain();
- trackOutputNode=audioCtx.createGain();
- routeToPan(clickRoute,clickOutputNode);
- routeToPan(trackRoute,trackOutputNode);
+ clickOutputNode=audioCtx.createStereoPanner();
+ trackOutputNode=audioCtx.createStereoPanner();
+ clickOutputNode.pan.value=channelsInverted?1:-1;
+ trackOutputNode.pan.value=channelsInverted?-1:1;
+ clickOutputNode.connect(audioCtx.destination);
+ trackOutputNode.connect(audioCtx.destination);
  updateRoutingUi()
 }
 function clickDestination(){return clickOutputNode||audioCtx?.destination}
 function trackDestination(){return trackOutputNode||audioCtx?.destination}
 function updateRoutingUi(){
- const clickSel=$("clickRoute"),trackSel=$("trackRoute"),label=$("routingLabel");
- if(clickSel)clickSel.value=clickRoute;
- if(trackSel)trackSel.value=trackRoute;
- if(label){
-   const nice=r=>r==="LR"?"L + R":`només ${r}`;
-   label.textContent=`Metrònom: ${nice(clickRoute)} · Pista: ${nice(trackRoute)}`
- }
-}
-function setRoutes(c,t){
- clickRoute=c;trackRoute=t;
- localStorage.setItem(CLICK_ROUTE_KEY,clickRoute);
- localStorage.setItem(TRACK_ROUTE_KEY,trackRoute);
- if(audioCtx)configureStereoRouting(); else updateRoutingUi()
+ const label=$("routingLabel"),box=$("invertChannels");
+ if(label)label.textContent=channelsInverted?"L: pista · R: metrònom":"L: metrònom · R: pista";
+ if(box)box.checked=channelsInverted
 }
 async function testPhysicalChannel(side){
  await ensureAudio();
@@ -350,11 +336,7 @@ function renderEditorItems(sl){
 function renderEditor(){editingGroups=clone(groups);const sl=editingGroups[groupIndex].setlists[setlistIndex];$('editorSubtitle').textContent=`${editingGroups[groupIndex].name} · ${sl.name}`;
  $('repeatPreview').checked=previewRepeat;$('repeatPreview').onchange=e=>{previewRepeat=e.target.checked;if(previewType){if(previewRepeat)startRepeatingPreview(previewType);else{clearInterval(previewInterval);previewInterval=null}}};
  updateRoutingUi();
- if($('clickRoute'))$('clickRoute').onchange=e=>setRoutes(e.target.value,trackRoute);
- if($('trackRoute'))$('trackRoute').onchange=e=>setRoutes(clickRoute,e.target.value);
- if($('presetSplit'))$('presetSplit').onclick=()=>setRoutes('L','R');
- if($('presetBoth'))$('presetBoth').onclick=()=>setRoutes('LR','LR');
- if($('presetSwap'))$('presetSwap').onclick=()=>setRoutes(clickRoute==='L'?'R':clickRoute==='R'?'L':'LR',trackRoute==='L'?'R':trackRoute==='R'?'L':'LR');
+ if($('invertChannels'))$('invertChannels').onchange=e=>{channelsInverted=e.target.checked;localStorage.setItem(CHANNEL_KEY,channelsInverted?'1':'0');if(audioCtx)configureStereoRouting()};
  if($('testLeftChannel'))$('testLeftChannel').onclick=()=>testPhysicalChannel('L');
  if($('testRightChannel'))$('testRightChannel').onclick=()=>testPhysicalChannel('R');
  $('appVolume').value=Math.round(appVolume*100);$('volumeValue').textContent=`${Math.round(appVolume*100)}%`;$('appVolume').oninput=e=>{appVolume=Number(e.target.value)/100;$('volumeValue').textContent=`${e.target.value}%`;localStorage.setItem('clickset_app_volume',String(appVolume));if(previewType)playPreviewSample(previewType)};

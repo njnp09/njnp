@@ -1,14 +1,9 @@
-CLICKSET BETA 0.20.2
+CLICKSET BETA 0.20.1
 
-RUTEIG FLEXIBLE
-- Metrònom: L, R o L+R.
-- Pista: L, R o L+R.
-- Preset per defecte: click L / pista R.
-- Preset TOT L/R.
-- Botó INTERCANVIAR.
-- Proves independents L i R.
-- La configuració queda guardada al dispositiu.
-
-CONSELL
-- Sense pista: posa el metrònom a L+R si el vols sentir pels dos costats.
-- Amb pista per directe: click L / pista R.
+- Metrònom pel canal L i pista pel canal R.
+- Opció d'invertir canals.
+- PROVAR L / PROVAR R.
+- Time-stretch opcional, amb BPM original de la pista.
+- El time-stretch d'aquesta primera versió adapta velocitat però pot alterar lleugerament el to.
+- Necessita sortida estèreo real i cable TRS a dos mono.
+- Bluetooth o sortides mono poden mesclar els canals.

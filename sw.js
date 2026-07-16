@@ -1,5 +1,5 @@
 const CACHE="clickset-v0200";
-const APP_SHELL=["./","./index.html","./styles.css?v=0202","./app.js?v=0202","./manifest.webmanifest","./cover.png","./click.wav?v=0200","./logo-4l.jpg","./logo-h80.jpeg","./logo-tocipam.jpg","./logo-pgs.png","./logo-clickset.png"];
+const APP_SHELL=["./","./index.html","./styles.css?v=0201","./app.js?v=0201","./manifest.webmanifest","./cover.png","./click.wav?v=0200","./logo-4l.jpg","./logo-h80.jpeg","./logo-tocipam.jpg","./logo-pgs.png","./logo-clickset.png"];
 self.addEventListener("install",event=>{self.skipWaiting();event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(APP_SHELL)))});
 self.addEventListener("activate",event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim()))});
 self.addEventListener("fetch",event=>{

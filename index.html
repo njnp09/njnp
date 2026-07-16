@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0d1318">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="cover.png">
-<title>ClickSet Beta 0.20.2</title>
-<link rel="stylesheet" href="styles.css?v=0202">
+<title>ClickSet Beta 0.20.1</title>
+<link rel="stylesheet" href="styles.css?v=0201">
 </head>
 <body>
 <button id="themeToggle" class="themeToggle" type="button" aria-label="Activar mode clar" title="Activar mode clar">☀️</button>
@@ -46,31 +46,11 @@
   </main>
 </section>
 <section id="editor" class="panel"><div class="panelHead"><div><h2 style="margin:0">Editar repertori</h2><small id="editorSubtitle" class="note"></small></div><button id="closeEditor" class="close">GUARDAR</button></div><p class="note">El so de cada cançó té prioritat sobre el so general del repertori.</p><div class="editorGroup audioRoutingGroup">
-<div class="editorGroupTitle"><strong>Sortida d’àudio</strong></div>
-<div class="routingGrid">
-<label>Metrònom
-<select id="clickRoute">
-<option value="L">Només L</option>
-<option value="R">Només R</option>
-<option value="LR">L + R</option>
-</select>
-</label>
-<label>Pista
-<select id="trackRoute">
-<option value="R">Només R</option>
-<option value="L">Només L</option>
-<option value="LR">L + R</option>
-</select>
-</label>
-</div>
-<div class="routingPresets">
-<button id="presetSplit" type="button" class="secondary">CLICK L · PISTA R</button>
-<button id="presetBoth" type="button" class="secondary">TOT L/R</button>
-<button id="presetSwap" type="button" class="secondary">INTERCANVIAR</button>
-</div>
-<div class="routingSummary"><span id="routingLabel"></span></div>
+<div class="editorGroupTitle"><strong>Sortida estèreo de directe</strong></div>
+<div class="routingSummary"><span id="routingLabel">L: metrònom · R: pista</span></div>
+<label class="routingToggle"><input id="invertChannels" type="checkbox"> Invertir canals (L: pista · R: metrònom)</label>
 <div class="routingTests"><button id="testLeftChannel" type="button" class="secondary">PROVAR L</button><button id="testRightChannel" type="button" class="secondary">PROVAR R</button></div>
-<p class="previewHint">Configuració per defecte: metrònom a L i pista a R. Si una cançó no té pista, pots posar el metrònom a L + R.</p>
+<p class="previewHint">Necessites una sortida estèreo real i un cable divisor TRS a dos canals mono. Bluetooth o adaptadors mono poden mesclar els canals.</p>
 </div><div class="editorGroup"><div class="editorGroupTitle"><strong>Volum de ClickSet</strong><span id="volumeValue" class="volumeValue">90%</span></div><div class="volumeRow"><input id="appVolume" type="range" min="0" max="100" step="1" value="90"><span>🔊</span></div><div class="previewHint">Aquest volum és independent del volum general de l’ordinador, tauleta o mòbil.</div></div><div class="editorGroup"><div class="editorGroupTitle"><strong>So del repertori</strong></div><div id="repertoireSoundPicker"></div><div class="previewHint">En tocar un so, sentiràs una mostra de mig segon.</div><label class="repeatPreview"><input id="repeatPreview" type="checkbox" checked> Repetir la mostra automàticament cada 3 segons</label></div><div id="editorContent"></div></section>
 <div id="bpmModal" class="modal"><div class="modalCard"><h2 id="bpmModalTitle">Editar BPM</h2><div id="keyDisplay" class="keyDisplay">120</div><div class="stepGrid"><button data-step="-10">−10</button><button data-step="-5">−5</button><button data-step="-1">−1</button><button data-step="1">+1</button><button data-step="5">+5</button><button data-step="10">+10</button></div><div class="keypad"><button data-num="1">1</button><button data-num="2">2</button><button data-num="3">3</button><button data-num="4">4</button><button data-num="5">5</button><button data-num="6">6</button><button data-num="7">7</button><button data-num="8">8</button><button data-num="9">9</button><button data-num="clear">C</button><button data-num="0">0</button><button data-num="back">⌫</button></div><button id="tapTempo" class="tap">TAP TEMPO</button><div class="modalActions"><button id="cancelBpm" class="secondary">CANCEL·LAR</button><button id="saveBpm" class="primary">APLICAR</button></div></div></div>
 <div id="setlistModal" class="modal"><div class="modalCard"><h2>Editar nom del repertori</h2><div class="formRow"><label>Nom</label><input id="setlistName" maxlength="60" autocomplete="off"></div><div class="modalActions"><button id="cancelSetlistName" class="secondary">CANCEL·LAR</button><button id="saveSetlistName" class="primary">GUARDAR</button></div></div></div>
@@ -90,5 +70,5 @@
   </div>
 </div>
 <div id="passwordModal" class="modal"><div class="modalCard passwordCard"><h2>🔒 Mode edició</h2><p class="note">Introdueix la contrasenya per modificar ClickSet.</p><input id="editPassword" type="password" inputmode="numeric" autocomplete="off" placeholder="Contrasenya"><div id="passwordError" class="passwordError hidden">Contrasenya incorrecta</div><div class="modalActions"><button id="cancelPassword" class="secondary">CANCEL·LAR</button><button id="submitPassword" class="primary">ENTRAR</button></div></div></div>
-<script src="app.js?v=0202" defer></script>
+<script src="app.js?v=0201" defer></script>
 </body></html>
