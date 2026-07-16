@@ -1,12 +1,11 @@
-CLICKSET BETA 0.19.2
+CLICKSET BETA 0.19.3 — ÀUDIO MÒBIL CORREGIT
 
 CANVIS
-- Accent activable o desactivable directament al mode normal i al Mode Concert.
-- En activar l’accent mentre sona, el clic immediat passa a ser el primer temps del compàs.
-- Selector ràpid dels 6 sons al mode normal i al Mode Concert.
-- El so canvia sense aturar ni reiniciar el tempo.
-- En clicar una cançó del setlist del Mode Concert, hi va directament sense confirmació.
-- La resta de funcions i repertoris es mantenen igual.
+- Desbloqueig d'àudio compatible amb Safari, iPhone i iPad.
+- El metrònom comença dins el mateix toc de l'usuari, sense esperar la càrrega del WAV.
+- Constructor AudioContext compatible amb versions antigues de Safari.
+- Si ClickSet Original encara es carrega, usa temporalment Studio Click.
+- Memòria cau actualitzada.
 
 PUJADA
-Puja aquest ZIP directament a Netlify > Deploys.
+Substitueix tots els fitxers del repositori de GitHub pels d'aquest ZIP i fes Commit. Cloudflare ho publicarà automàticament.

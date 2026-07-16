@@ -108,7 +108,42 @@ function openQuickSoundMenu(){
 function closeQuickSoundMenu(){$("quickSoundMenu").classList.add("hidden")}
 async function jump(i){current=i;render();if(playing)await restart()}
 async function change(d){if(!flat.length)return;current=(current+d+flat.length)%flat.length;render();if(playing)await restart()}
-async function ensureAudio(){if(!audioCtx)audioCtx=new (window.AudioContext||window.webkitAudioContext)({latencyHint:"interactive"});if(audioCtx.state!=="running")await audioCtx.resume();if(!classicBuffer){try{const r=await fetch("./click.wav",{cache:"force-cache"});classicBuffer=await audioCtx.decodeAudioData(await r.arrayBuffer())}catch(e){classicBuffer=null}}}
+function createAudioContext(){
+ if(audioCtx)return audioCtx;
+ const AudioContextClass=window.AudioContext||window.webkitAudioContext;
+ if(!AudioContextClass)throw new Error("Aquest navegador no admet Web Audio");
+ // Safari/iOS antics poden fallar si es passen opcions al constructor.
+ try{audioCtx=new AudioContextClass({latencyHint:"interactive"})}catch(e){audioCtx=new AudioContextClass()}
+ return audioCtx
+}
+function unlockAudioNow(){
+ try{
+  const ctx=createAudioContext();
+  if(ctx.state!=="running")ctx.resume().catch(()=>{});
+  // So silenciós immediat dins el gest de l'usuari: desbloqueja Safari/iPhone/iPad.
+  const buffer=ctx.createBuffer(1,1,22050),source=ctx.createBufferSource(),gain=ctx.createGain();
+  gain.gain.value=0;source.buffer=buffer;source.connect(gain).connect(ctx.destination);source.start(0)
+ }catch(e){console.warn("No s'ha pogut desbloquejar l'àudio",e)}
+}
+function loadClassicBuffer(){
+ if(classicBuffer||classicLoading||!audioCtx)return classicLoading;
+ classicLoading=fetch("./click.wav?v=0193",{cache:"no-store"})
+  .then(r=>{if(!r.ok)throw new Error(`click.wav: ${r.status}`);return r.arrayBuffer()})
+  .then(data=>audioCtx.decodeAudioData(data))
+  .then(buffer=>{classicBuffer=buffer;return buffer})
+  .catch(e=>{console.warn("No s'ha carregat ClickSet Original; s'usarà Studio Click",e);classicBuffer=null;return null})
+  .finally(()=>{classicLoading=null});
+ return classicLoading
+}
+async function ensureAudio(){
+ const ctx=createAudioContext();
+ if(ctx.state!=="running"){
+  try{await ctx.resume()}catch(e){console.warn("AudioContext resume",e)}
+ }
+ // No esperam el WAV: el metrònom ha de començar dins el mateix toc de l'usuari.
+ loadClassicBuffer();
+ return ctx
+}
 function track(node){activeNodes.add(node);node.onended=()=>activeNodes.delete(node);return node}
 function noiseBuffer(duration=.04){const len=Math.max(1,Math.floor(audioCtx.sampleRate*duration)),b=audioCtx.createBuffer(1,len,audioCtx.sampleRate),d=b.getChannelData(0);for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*(1-i/len);return b}
 function tone(freq,type,time,duration,level,destination=audioCtx.destination){
@@ -117,6 +152,8 @@ function tone(freq,type,time,duration,level,destination=audioCtx.destination){
 function scheduleSound(type,time,volume=1){
  const level=Math.max(0,Math.min(1,volume*appVolume));
  if(type==="classic"&&classicBuffer){const src=track(audioCtx.createBufferSource()),gain=audioCtx.createGain();src.buffer=classicBuffer;gain.gain.setValueAtTime(level,time);src.connect(gain).connect(audioCtx.destination);src.start(time);return}
+ // Mentre el WAV original encara es carrega, usa un clic sintètic audible.
+ if(type==="classic")type="studio";
  if(type==="wood"){
   const src=track(audioCtx.createBufferSource()),filter=audioCtx.createBiquadFilter(),gain=audioCtx.createGain();src.buffer=noiseBuffer(.028);filter.type="bandpass";filter.frequency.value=1120;filter.Q.value=5.5;gain.gain.setValueAtTime(level,time);gain.gain.exponentialRampToValueAtTime(.001,time+.055);src.connect(filter).connect(gain).connect(audioCtx.destination);src.start(time);return
  }
@@ -229,6 +266,8 @@ $("normalSound").onclick=openQuickSoundMenu;
 $("concertSound").onclick=openQuickSoundMenu;
 $("closeQuickSound").onclick=closeQuickSoundMenu;
 $("quickSoundMenu").onclick=e=>{if(e.target===$("quickSoundMenu"))closeQuickSoundMenu()};
+// Safari mòbil exigeix inicialitzar l'àudio exactament durant un gest físic.
+["pointerdown","touchstart","mousedown"].forEach(eventName=>document.addEventListener(eventName,unlockAudioNow,{capture:true,passive:true,once:false}));
 document.addEventListener("keydown",e=>{const appVisible=!$("app").classList.contains("hidden");const modalOpen=$("bpmModal").classList.contains("open")||$("groupModal").classList.contains("open")||$("setlistModal").classList.contains("open")||$("passwordModal").classList.contains("open")||$("importModal").classList.contains("open")||$("editor").classList.contains("open");const target=e.target instanceof Element?e.target:null;if(!appVisible||modalOpen||(target&&target.matches("input,select,textarea,[contenteditable='true']")))return;if((e.code==="Space"||e.key===" "||e.key.toLowerCase()==="r")&&e.repeat)return;if(e.key==="ArrowLeft"){e.preventDefault();change(-1)}else if(e.key==="ArrowRight"){e.preventDefault();change(1)}else if(e.code==="Space"||e.key===" "){e.preventDefault();playing?stop():start()}else if(e.key.toLowerCase()==="r"){e.preventDefault();restart()}},true);
 document.addEventListener("visibilitychange",()=>{if(document.hidden&&playing)stop()});
 if("serviceWorker" in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}));
