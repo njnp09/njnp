@@ -1,9 +1,13 @@
-CLICKSET BETA 0.20.1
+CLICKSET 1.0 OFFICIAL — CORREGIT
 
-- Metrònom pel canal L i pista pel canal R.
-- Opció d'invertir canals.
-- PROVAR L / PROVAR R.
-- Time-stretch opcional, amb BPM original de la pista.
-- El time-stretch d'aquesta primera versió adapta velocitat però pot alterar lleugerament el to.
-- Necessita sortida estèreo real i cable TRS a dos mono.
-- Bluetooth o sortides mono poden mesclar els canals.
+S'ha corregit l'error que deixava la portada bloquejada.
+També s'han canviat físicament els noms del JavaScript i del CSS perquè la memòria cau antiga no els pugui confondre.
+
+PER PUJAR-HO A GITHUB
+1. Descomprimeix el ZIP.
+2. Puja tots els fitxers de dins al repositori njnp.
+3. Substitueix els fitxers antics.
+4. Fes Commit changes.
+5. Espera el desplegament de Cloudflare.
+
+index.html ha de quedar directament a l'arrel del repositori.
