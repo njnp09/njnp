@@ -1,11 +1,9 @@
-CLICKSET BETA 0.19.3 — ÀUDIO MÒBIL CORREGIT
+CLICKSET BETA 0.19.4
 
-CANVIS
-- Desbloqueig d'àudio compatible amb Safari, iPhone i iPad.
-- El metrònom comença dins el mateix toc de l'usuari, sense esperar la càrrega del WAV.
-- Constructor AudioContext compatible amb versions antigues de Safari.
-- Si ClickSet Original encara es carrega, usa temporalment Studio Click.
-- Memòria cau actualitzada.
+NOVETAT
+- Botó ☀️ / 🌙 per alternar entre mode clar i mode fosc.
+- La preferència queda guardada al dispositiu.
+- Es mantenen totes les funcions de la versió anterior.
 
-PUJADA
-Substitueix tots els fitxers del repositori de GitHub pels d'aquest ZIP i fes Commit. Cloudflare ho publicarà automàticament.
+PUBLICACIÓ
+Puja tots els fitxers d’aquesta carpeta al repositori de GitHub. Cloudflare publicarà la nova versió automàticament.

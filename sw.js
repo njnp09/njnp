@@ -1,4 +1,4 @@
-const CACHE="clickset-v0193";
+const CACHE="clickset-v0194";
 const FILES=["./","./index.html","./styles.css","./app.js","./manifest.webmanifest","./cover.png","./click.wav","./logo-4l.jpg","./logo-h80.jpeg","./logo-tocipam.jpg","./logo-pgs.png","./logo-clickset.png"];
 self.addEventListener("install",event=>{self.skipWaiting();event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(FILES)))});
 self.addEventListener("activate",event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim()))});

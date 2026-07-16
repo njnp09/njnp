@@ -40,3 +40,26 @@
 /* Live accent and instant sound controls */
 .liveMeta{display:flex;justify-content:center;gap:9px;flex-wrap:wrap;margin:10px 0 4px}.liveMetaBtn,.concertMetaBtn{background:#0d1318;border:1px solid var(--border);border-radius:999px;padding:9px 14px;color:#dce3e7;font-weight:900;cursor:pointer}.liveMetaBtn.active,.concertMetaBtn.active{border-color:var(--accent);color:var(--accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 18%,transparent)}.liveMetaBtn:active,.concertMetaBtn:active{transform:scale(.97)}
 .concertMeta button{font:inherit}.quickSoundMenu{position:fixed;inset:0;z-index:130;background:rgba(0,0,0,.72);display:flex;align-items:center;justify-content:center;padding:16px}.quickSoundCard{width:min(610px,100%);background:var(--panel);border:1px solid var(--border);border-radius:22px;padding:16px;box-shadow:0 22px 70px rgba(0,0,0,.5)}.quickSoundHead{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;font-size:21px}.quickSoundHead button{width:40px;height:40px;border-radius:11px;border:1px solid var(--border);background:var(--panel2);color:#fff;font-weight:900}.quickSoundGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}.quickSoundOption{min-height:88px;border:2px solid var(--border);border-radius:14px;background:var(--panel2);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;font-weight:900;cursor:pointer}.quickSoundOption .emoji{font-size:29px}.quickSoundOption .name{font-size:13px;text-align:center}.quickSoundOption.selected{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 18%,var(--panel2));color:var(--accent)}.quickSoundHint{text-align:center;color:var(--muted);font-size:12px;margin-top:11px}@media(max-width:560px){.quickSoundGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.quickSoundOption{min-height:76px}.liveMetaBtn{font-size:12px;padding:7px 10px}}
+
+
+/* Tema clar / fosc */
+.themeToggle{position:fixed;right:14px;top:14px;z-index:140;width:46px;height:46px;border:1px solid var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--panel2);color:var(--text);font-size:23px;cursor:pointer;box-shadow:0 6px 22px rgba(0,0,0,.22)}
+.themeToggle:active{transform:scale(.95)}
+body.light-theme{color-scheme:light;--bg:#f4f6f8;--panel:#ffffff;--panel2:#e9eef2;--border:#c4ced6;--text:#172028;--muted:#63727d;--yellow:#d89d00;--green:#16864c;--orange:#d96c00;--red:#c83232}
+body.light-theme .splash,body.light-theme .chooser,body.light-theme .groupIntro{background:#f4f6f8}
+body.light-theme .homeBrand img,body.light-theme .logoPreview{background:#fff;border-color:var(--border)}
+body.light-theme .byNwi{color:var(--text)}
+body.light-theme input,body.light-theme select,body.light-theme textarea,body.light-theme .bpmEditBtn,body.light-theme .keyDisplay,body.light-theme .importStatus,body.light-theme .importText,body.light-theme .importPreview,body.light-theme .liveMetaBtn,body.light-theme .concertMetaBtn{background:#fff;color:var(--text)}
+body.light-theme .songItem.active{background:#dfe8ee;color:var(--text)}
+body.light-theme .songItem.parent{background:#edf2f5;color:var(--text)}
+body.light-theme .pulse{background:#c3cdd4}
+body.light-theme .modal{background:rgba(30,42,50,.35)}
+body.light-theme .quickSoundMenu{background:rgba(30,42,50,.35)}
+body.light-theme .editModeBadge,body.light-theme .themeToggle{box-shadow:0 6px 18px rgba(35,50,60,.16)}
+body.light-theme .concertMode{background:var(--bg);color:var(--text)}
+body.light-theme .concertSidebar,body.light-theme .concertMain,body.light-theme .quickSoundCard{background:var(--panel)}
+body.light-theme .concertSetItem.active{background:#dfe8ee;color:var(--text)}
+body.light-theme .concertSetItem.passed{color:var(--muted)}
+body.light-theme .quickSoundHead button{background:var(--panel2);color:var(--text)}
+body.light-theme .quickSoundOption{background:var(--panel2);color:var(--text)}
+@media(max-width:600px){.themeToggle{right:10px;top:10px;width:42px;height:42px;font-size:21px}}
