@@ -1,5 +1,5 @@
 "use strict";
-const VERSION="0.19.5", STORAGE_KEY="clickset_017_groups";
+const VERSION="0.20.2", STORAGE_KEY="clickset_017_groups";
 const EDIT_PASSWORD="45";
 let editUnlocked=false,pendingEditAction=null;
 const SOUNDS=[
@@ -65,9 +65,12 @@ applyTheme(localStorage.getItem(THEME_KEY)||"dark");
 function normalize(data){return data.map(g=>({name:g.name||"Grup",color:g.color||"#ffd34d",logo:g.logo||"",setlists:(g.setlists||[]).map(s=>({name:s.name||"Repertori",sound:({digital:"studio",beep:"studio"}[s.sound]||s.sound||"classic"),items:(s.items||[]).map(i=>i.children?{...i,children:i.children.map(c=>({...c,sound:({digital:"studio",beep:"studio"}[c.sound]||c.sound||"")}))}:{...i,sound:({digital:"studio",beep:"studio"}[i.sound]||i.sound||"")})}))}))}
 let stored=null;try{stored=JSON.parse(localStorage.getItem(STORAGE_KEY)||localStorage.getItem("clickset_014_groups")||localStorage.getItem("clickset_010_groups")||"null")}catch(e){}
 let groups=normalize(stored||defaults),groupIndex=null,setlistIndex=null,current=0,flat=[],openMixes={},playing=false,editingGroups=null;
-let audioCtx=null,classicBuffer=null,schedulerTimer=null,nextBeatTime=0,runId=0,activeNodes=new Set(),beatInBar=0;
+let audioCtx=null,classicBuffer=null,schedulerTimer=null,nextBeatTime=0,runId=0,activeNodes=new Set(),beatInBar=0,clickOutputNode=null,trackOutputNode=null;
 let bpmTarget=null,bpmDraft="120",tapTimes=[],groupEditIndex=null,groupLogoDraft="",setlistEditIndex=null;
 let appVolume=Math.max(0,Math.min(1,Number(localStorage.getItem("clickset_app_volume")||0.9))),previewInterval=null,previewType=null,previewButton=null,previewRepeat=true;
+const CLICK_ROUTE_KEY="clickset_click_route", TRACK_ROUTE_KEY="clickset_track_route";
+let clickRoute=localStorage.getItem(CLICK_ROUTE_KEY)||"L";
+let trackRoute=localStorage.getItem(TRACK_ROUTE_KEY)||"R";
 (function apply017Defaults(){
  const gaviotasItems=clone(defaults.find(g=>g.name==="100 Gaviotas").setlists[0].items);
  for(const g of groups){
@@ -133,7 +136,7 @@ function renderConcertSetlist(){
  });
  requestAnimationFrame(()=>{const active=box.querySelector('.active');if(active)active.scrollIntoView({block:'center',behavior:'smooth'})})
 }
-function render(){flatten();if(!flat.length)return;const x=flat[current],n=flat[(current+1)%flat.length],accentOn=Boolean(x.song.accentFirst),activeSound=x.song.sound||currentSetlist().sound||"classic";$("parentLabel").textContent=x.parent;$("song").textContent=x.song.name;$("bpm").textContent=x.song.bpm;$("bpm").className="bpm "+bpmClass(x.song.bpm);$("position").textContent=`${current+1} / ${flat.length}`;$("nextup").textContent=`Després: ${n.song.name} · ${n.song.bpm} BPM`;if($("normalAccent")){$("normalAccent").textContent=`Accent: ${accentOn?"ON":"OFF"}`;$("normalAccent").classList.toggle("active",accentOn)}if($("normalSound"))$("normalSound").textContent=soundName(activeSound);if($("concertParent")){$("concertParent").textContent=x.parent;$("concertSong").textContent=x.song.name;$("concertBpm").textContent=x.song.bpm;$("concertBpm").className="concertBpm "+bpmClass(x.song.bpm);$("concertPosition").textContent=`${current+1} / ${flat.length}`;$("concertNext").textContent=`Després: ${n.song.name} · ${n.song.bpm} BPM`;$("concertMeter").textContent=x.song.meter||"4/4";$("concertAccent").textContent=`Accent: ${accentOn?"ON":"OFF"}`;$("concertAccent").classList.toggle("active",accentOn);$("concertSound").textContent=soundName(activeSound);renderConcertSetlist()}renderSetlist()}
+function render(){flatten();if(!flat.length)return;const x=flat[current],n=flat[(current+1)%flat.length],accentOn=Boolean(x.song.accentFirst),activeSound=x.song.sound||currentSetlist().sound||"classic";$("parentLabel").textContent=x.parent;$("song").textContent=x.song.name;$("bpm").textContent=x.song.bpm;$("bpm").className="bpm "+bpmClass(x.song.bpm);$("position").textContent=`${current+1} / ${flat.length}`;$("nextup").textContent=`Després: ${n.song.name} · ${n.song.bpm} BPM`;if($("normalAccent")){$("normalAccent").textContent=`Accent: ${accentOn?"ON":"OFF"}`;$("normalAccent").classList.toggle("active",accentOn)}if($("normalSound"))$("normalSound").textContent=soundName(activeSound);const trackLabel=x.song.trackName?`🎵 ${x.song.trackName}`:"🎵 Sense pista";if($("normalTrack"))$("normalTrack").textContent=trackLabel;if($("concertTrack"))$("concertTrack").textContent=trackLabel;if($("concertParent")){$("concertParent").textContent=x.parent;$("concertSong").textContent=x.song.name;$("concertBpm").textContent=x.song.bpm;$("concertBpm").className="concertBpm "+bpmClass(x.song.bpm);$("concertPosition").textContent=`${current+1} / ${flat.length}`;$("concertNext").textContent=`Després: ${n.song.name} · ${n.song.bpm} BPM`;$("concertMeter").textContent=x.song.meter||"4/4";$("concertAccent").textContent=`Accent: ${accentOn?"ON":"OFF"}`;$("concertAccent").classList.toggle("active",accentOn);$("concertSound").textContent=soundName(activeSound);renderConcertSetlist()}renderSetlist()}
 function toggleCurrentAccent(){
  if(!flat.length)return;
  const song=flat[current].song;
@@ -158,12 +161,56 @@ function openQuickSoundMenu(){
 function closeQuickSoundMenu(){$("quickSoundMenu").classList.add("hidden")}
 async function jump(i){current=i;render();if(playing)await restart()}
 async function change(d){if(!flat.length)return;current=(current+d+flat.length)%flat.length;render();if(playing)await restart()}
+
+function routeToPan(route,node){
+ if(route==="L"){const p=audioCtx.createStereoPanner();p.pan.value=-1;node.connect(p).connect(audioCtx.destination);return}
+ if(route==="R"){const p=audioCtx.createStereoPanner();p.pan.value=1;node.connect(p).connect(audioCtx.destination);return}
+ node.connect(audioCtx.destination)
+}
+function configureStereoRouting(){
+ if(!audioCtx)return;
+ try{clickOutputNode?.disconnect()}catch(e){}
+ try{trackOutputNode?.disconnect()}catch(e){}
+ clickOutputNode=audioCtx.createGain();
+ trackOutputNode=audioCtx.createGain();
+ routeToPan(clickRoute,clickOutputNode);
+ routeToPan(trackRoute,trackOutputNode);
+ updateRoutingUi()
+}
+function clickDestination(){return clickOutputNode||audioCtx?.destination}
+function trackDestination(){return trackOutputNode||audioCtx?.destination}
+function updateRoutingUi(){
+ const clickSel=$("clickRoute"),trackSel=$("trackRoute"),label=$("routingLabel");
+ if(clickSel)clickSel.value=clickRoute;
+ if(trackSel)trackSel.value=trackRoute;
+ if(label){
+   const nice=r=>r==="LR"?"L + R":`només ${r}`;
+   label.textContent=`Metrònom: ${nice(clickRoute)} · Pista: ${nice(trackRoute)}`
+ }
+}
+function setRoutes(c,t){
+ clickRoute=c;trackRoute=t;
+ localStorage.setItem(CLICK_ROUTE_KEY,clickRoute);
+ localStorage.setItem(TRACK_ROUTE_KEY,trackRoute);
+ if(audioCtx)configureStereoRouting(); else updateRoutingUi()
+}
+async function testPhysicalChannel(side){
+ await ensureAudio();
+ const pan=audioCtx.createStereoPanner(),gain=audioCtx.createGain(),osc=audioCtx.createOscillator();
+ pan.pan.value=side==="L"?-1:1;
+ gain.gain.setValueAtTime(.32,audioCtx.currentTime);
+ gain.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+.22);
+ osc.type="sine";osc.frequency.value=side==="L"?660:880;
+ osc.connect(gain).connect(pan).connect(audioCtx.destination);
+ osc.start();osc.stop(audioCtx.currentTime+.23)
+}
 function createAudioContext(){
  if(audioCtx)return audioCtx;
  const AudioContextClass=window.AudioContext||window.webkitAudioContext;
  if(!AudioContextClass)throw new Error("Aquest navegador no admet Web Audio");
  // Safari/iOS antics poden fallar si es passen opcions al constructor.
  try{audioCtx=new AudioContextClass({latencyHint:"interactive"})}catch(e){audioCtx=new AudioContextClass()}
+ configureStereoRouting();
  return audioCtx
 }
 function unlockAudioNow(){
@@ -196,25 +243,25 @@ async function ensureAudio(){
 }
 function track(node){activeNodes.add(node);node.onended=()=>activeNodes.delete(node);return node}
 function noiseBuffer(duration=.04){const len=Math.max(1,Math.floor(audioCtx.sampleRate*duration)),b=audioCtx.createBuffer(1,len,audioCtx.sampleRate),d=b.getChannelData(0);for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*(1-i/len);return b}
-function tone(freq,type,time,duration,level,destination=audioCtx.destination){
+function tone(freq,type,time,duration,level,destination=clickDestination()){
  const osc=track(audioCtx.createOscillator()),gain=audioCtx.createGain();osc.type=type;osc.frequency.setValueAtTime(freq,time);gain.gain.setValueAtTime(Math.max(.0001,level),time);gain.gain.exponentialRampToValueAtTime(.001,time+duration);osc.connect(gain).connect(destination);osc.start(time);osc.stop(time+duration);return {osc,gain}
 }
 function scheduleSound(type,time,volume=1){
  const level=Math.max(0,Math.min(1,volume*appVolume));
- if(type==="classic"&&classicBuffer){const src=track(audioCtx.createBufferSource()),gain=audioCtx.createGain();src.buffer=classicBuffer;gain.gain.setValueAtTime(level,time);src.connect(gain).connect(audioCtx.destination);src.start(time);return}
+ if(type==="classic"&&classicBuffer){const src=track(audioCtx.createBufferSource()),gain=audioCtx.createGain();src.buffer=classicBuffer;gain.gain.setValueAtTime(level,time);src.connect(gain).connect(clickDestination());src.start(time);return}
  // Mentre el WAV original encara es carrega, usa un clic sintètic audible.
  if(type==="classic")type="studio";
  if(type==="wood"){
-  const src=track(audioCtx.createBufferSource()),filter=audioCtx.createBiquadFilter(),gain=audioCtx.createGain();src.buffer=noiseBuffer(.028);filter.type="bandpass";filter.frequency.value=1120;filter.Q.value=5.5;gain.gain.setValueAtTime(level,time);gain.gain.exponentialRampToValueAtTime(.001,time+.055);src.connect(filter).connect(gain).connect(audioCtx.destination);src.start(time);return
+  const src=track(audioCtx.createBufferSource()),filter=audioCtx.createBiquadFilter(),gain=audioCtx.createGain();src.buffer=noiseBuffer(.028);filter.type="bandpass";filter.frequency.value=1120;filter.Q.value=5.5;gain.gain.setValueAtTime(level,time);gain.gain.exponentialRampToValueAtTime(.001,time+.055);src.connect(filter).connect(gain).connect(clickDestination());src.start(time);return
  }
  if(type==="clave"){
   tone(2350,"sine",time,.035,level*.9);tone(3100,"sine",time,.024,level*.35);return
  }
  if(type==="rim"){
-  const src=track(audioCtx.createBufferSource()),hp=audioCtx.createBiquadFilter(),gain=audioCtx.createGain();src.buffer=noiseBuffer(.014);hp.type="highpass";hp.frequency.value=2500;gain.gain.setValueAtTime(level,time);gain.gain.exponentialRampToValueAtTime(.001,time+.035);src.connect(hp).connect(gain).connect(audioCtx.destination);src.start(time);tone(1850,"triangle",time,.04,level*.45);return
+  const src=track(audioCtx.createBufferSource()),hp=audioCtx.createBiquadFilter(),gain=audioCtx.createGain();src.buffer=noiseBuffer(.014);hp.type="highpass";hp.frequency.value=2500;gain.gain.setValueAtTime(level,time);gain.gain.exponentialRampToValueAtTime(.001,time+.035);src.connect(hp).connect(gain).connect(clickDestination());src.start(time);tone(1850,"triangle",time,.04,level*.45);return
  }
  if(type==="cowbell"){
-  const master=audioCtx.createGain();master.gain.setValueAtTime(level*.65,time);master.gain.exponentialRampToValueAtTime(.001,time+.12);master.connect(audioCtx.destination);tone(540,"square",time,.12,1,master);tone(805,"square",time,.105,.7,master);return
+  const master=audioCtx.createGain();master.gain.setValueAtTime(level*.65,time);master.gain.exponentialRampToValueAtTime(.001,time+.12);master.connect(clickDestination());tone(540,"square",time,.12,1,master);tone(805,"square",time,.105,.7,master);return
  }
  // Studio Click: very short, bright but less piercing than the old beep.
  tone(1650,"triangle",time,.045,level*.9);tone(950,"sine",time,.055,level*.35)
@@ -222,8 +269,11 @@ function scheduleSound(type,time,volume=1){
 function effectiveSound(){const s=flat[current]?.song;return s?.sound||currentSetlist()?.sound||"classic"}
 function pulseAt(time,myRun){const delay=Math.max(0,(time-audioCtx.currentTime)*1000);setTimeout(()=>{if(!playing||myRun!==runId)return;$("pulse").classList.add("on");if($("concertPulse"))$("concertPulse").classList.add("on");setTimeout(()=>{$("pulse").classList.remove("on");if($("concertPulse"))$("concertPulse").classList.remove("on")},55)},delay)}
 function scheduler(myRun){if(!playing||myRun!==runId)return;const song=flat[current].song,sec=60/Math.max(20,Math.min(400,Number(song.bpm)||120));while(nextBeatTime<audioCtx.currentTime+.12){const accented=Boolean(song.accentFirst)&&beatInBar===0;scheduleSound(effectiveSound(),nextBeatTime,accented?1.35:1);pulseAt(nextBeatTime,myRun);beatInBar=(beatInBar+1)%4;nextBeatTime+=sec}schedulerTimer=setTimeout(()=>scheduler(myRun),20)}
-async function start(){if(playing||!flat.length)return;await ensureAudio();playing=true;runId++;beatInBar=0;nextBeatTime=audioCtx.currentTime+.045;$("play").textContent="■ STOP";$("play").classList.add("stop");if($("concertPlay")){$("concertPlay").textContent="■ STOP";$("concertPlay").classList.add("stop")}scheduler(runId)}
-function stop(){playing=false;runId++;beatInBar=0;clearTimeout(schedulerTimer);for(const n of activeNodes){try{n.stop()}catch(e){}}activeNodes.clear();$("play").textContent="▶ PLAY";$("play").classList.remove("stop");if($("concertPlay")){$("concertPlay").textContent="▶ PLAY";$("concertPlay").classList.remove("stop");$("concertPulse").classList.remove("on")}$("pulse").classList.remove("on")}
+async function start(){if(playing||!flat.length)return;await ensureAudio();const song=flat[current].song;trackBuffer=null;if(song.trackId){try{await loadCurrentTrackBuffer()}catch(e){console.warn("No s’ha pogut carregar la pista",e)}}playing=true;runId++;beatInBar=0;const sec=60/Math.max(20,Math.min(400,Number(song.bpm)||120));const beatsPerBar=Math.max(1,parseInt(String(song.meter||"4/4").split("/")[0],10)||4);const countInBars=Math.max(0,Math.min(2,Number(song.countInBars??1)));nextBeatTime=audioCtx.currentTime+.07;$("play").textContent="■ STOP";$("play").classList.add("stop");if($("concertPlay")){$("concertPlay").textContent="■ STOP";$("concertPlay").classList.add("stop")}if(trackBuffer){trackSource=track(audioCtx.createBufferSource());trackGainNode=audioCtx.createGain();trackSource.buffer=trackBuffer;trackGainNode.gain.setValueAtTime(Math.max(0,Math.min(1,Number(song.trackVolume??0.85))),audioCtx.currentTime);const originalBpm=Math.max(20,Math.min(400,Number(song.trackOriginalBpm||song.bpm)||song.bpm));
+const stretchRate=song.timeStretch?Math.max(.5,Math.min(2,Number(song.bpm)/originalBpm)):1;
+trackSource.playbackRate.setValueAtTime(stretchRate,audioCtx.currentTime);
+trackSource.connect(trackGainNode).connect(trackDestination());const trackStart=nextBeatTime+(countInBars*beatsPerBar*sec);trackSource.start(trackStart);trackSource.onended=()=>{activeNodes.delete(trackSource);trackSource=null}}scheduler(runId)}
+function stop(){playing=false;runId++;beatInBar=0;trackLoadToken++;clearTimeout(schedulerTimer);for(const n of activeNodes){try{n.stop()}catch(e){}}activeNodes.clear();trackSource=null;trackBuffer=null;trackGainNode=null;$("play").textContent="▶ PLAY";$("play").classList.remove("stop");if($("concertPlay")){$("concertPlay").textContent="▶ PLAY";$("concertPlay").classList.remove("stop");$("concertPulse").classList.remove("on")}$("pulse").classList.remove("on")}
 async function restart(){stop();await start()}
 async function playPreviewSample(type){
  await ensureAudio();const t=audioCtx.currentTime+.02;scheduleSound(type,t);scheduleSound(type,t+.22);scheduleSound(type,t+.44);
@@ -264,8 +314,16 @@ function renderEditorItems(sl){
    const list=g.children||sl.items;
    const listIndex=g.children?si:gi;
    const row=document.createElement('div');row.className='editorRow';row.draggable=true;
-   row.innerHTML=`<span class="dragHandle" title="Arrossega per reordenar">☰</span><input class="songName" value="${esc(song.name)}"><button class="bpmEditBtn">${song.bpm}</button><button type="button" class="soundBtn">${soundName(song.sound||'')}</button><label class="accentToggle"><input class="accentFirst" type="checkbox" ${song.accentFirst?'checked':''}> Accentuar 1r temps</label><div class="songActions"><button type="button" class="moveBtn moveUp" title="Pujar cançó" aria-label="Pujar cançó">▲</button><button type="button" class="moveBtn moveDown" title="Baixar cançó" aria-label="Baixar cançó">▼</button><button type="button" class="deleteSongBtn" title="Eliminar cançó" aria-label="Eliminar cançó">🗑️</button></div><div class="songSoundPicker hidden"></div>`;
+   row.innerHTML=`<span class="dragHandle" title="Arrossega per reordenar">☰</span><input class="songName" value="${esc(song.name)}"><button class="bpmEditBtn">${song.bpm}</button><button type="button" class="soundBtn">${soundName(song.sound||'')}</button><label class="accentToggle"><input class="accentFirst" type="checkbox" ${song.accentFirst?'checked':''}> Accentuar 1r temps</label><div class="trackEditor"><label class="trackFileLabel">🎵 ${song.trackName?esc(song.trackName):'Afegir MP3/WAV'}<input class="trackFile" type="file" accept="audio/mpeg,audio/wav,audio/x-wav,audio/mp4,audio/aac"></label><label>Volum pista <input class="trackVolume" type="range" min="0" max="100" value="${Math.round((song.trackVolume??0.85)*100)}"></label><label>Compte enrere <select class="countInBars"><option value="0" ${Number(song.countInBars??1)===0?'selected':''}>0 compassos</option><option value="1" ${Number(song.countInBars??1)===1?'selected':''}>1 compàs</option><option value="2" ${Number(song.countInBars??1)===2?'selected':''}>2 compassos</option></select></label><label>BPM original pista <input class="trackOriginalBpm" type="number" min="20" max="400" inputmode="numeric" value="${Number(song.trackOriginalBpm||song.bpm||120)}"></label><label class="timeStretchToggle"><input class="timeStretch" type="checkbox" ${song.timeStretch?'checked':''}> Time-stretch</label><small class="stretchHint">${song.timeStretch?'Adapta la pista al BPM actual. Pot variar lleugerament el to.':'Pista a velocitat original.'}</small><button type="button" class="removeTrackBtn ${song.trackId?'':'hidden'}">Eliminar pista</button><small class="trackHint">${song.trackId?'La pista començarà sincronitzada després del compte enrere.':'Sense pista associada.'}</small></div><div class="songActions"><button type="button" class="moveBtn moveUp" title="Pujar cançó" aria-label="Pujar cançó">▲</button><button type="button" class="moveBtn moveDown" title="Baixar cançó" aria-label="Baixar cançó">▼</button><button type="button" class="deleteSongBtn" title="Eliminar cançó" aria-label="Eliminar cançó">🗑️</button></div><div class="songSoundPicker hidden"></div>`;
    row.querySelector('.songName').oninput=e=>song.name=e.target.value;row.querySelector('.accentFirst').onchange=e=>song.accentFirst=e.target.checked;
+   const trackInput=row.querySelector('.trackFile'),trackLabel=row.querySelector('.trackFileLabel'),removeTrackBtn=row.querySelector('.removeTrackBtn'),trackHint=row.querySelector('.trackHint');
+   row.querySelector('.trackVolume').oninput=e=>song.trackVolume=Number(e.target.value)/100;
+   row.querySelector('.countInBars').onchange=e=>song.countInBars=Number(e.target.value);
+   const originalBpmInput=row.querySelector('.trackOriginalBpm'),stretchToggle=row.querySelector('.timeStretch'),stretchHint=row.querySelector('.stretchHint');
+   originalBpmInput.oninput=e=>song.trackOriginalBpm=Math.max(20,Math.min(400,Number(e.target.value)||Number(song.bpm)||120));
+   stretchToggle.onchange=e=>{song.timeStretch=e.target.checked;stretchHint.textContent=song.timeStretch?'Adapta la pista al BPM actual. Pot variar lleugerament el to.':'Pista a velocitat original.'};
+   trackInput.onchange=async e=>{const file=e.target.files[0];if(!file)return;if(file.size>150*1024*1024){alert('La pista és massa gran. Màxim recomanat: 150 MB.');trackInput.value='';return}try{if(song.trackId)await deleteTrack(song.trackId);const id=makeTrackId();await putTrack(id,file);song.trackId=id;song.trackName=file.name;song.trackVolume=song.trackVolume??0.85;song.countInBars=song.countInBars??1;song.trackOriginalBpm=song.trackOriginalBpm||song.bpm;song.timeStretch=Boolean(song.timeStretch);trackLabel.childNodes[0].nodeValue=`🎵 ${file.name}`;removeTrackBtn.classList.remove('hidden');trackHint.textContent='Pista guardada al dispositiu i disponible offline.'}catch(err){console.error(err);alert('No s’ha pogut guardar la pista en aquest dispositiu.')}};
+   removeTrackBtn.onclick=async()=>{if(!song.trackId)return;if(!confirm(`Eliminar la pista “${song.trackName||''}” d’aquesta cançó?`))return;await deleteTrack(song.trackId);delete song.trackId;delete song.trackName;removeTrackBtn.classList.add('hidden');trackLabel.childNodes[0].nodeValue='🎵 Afegir MP3/WAV';trackHint.textContent='Sense pista associada.'};
    row.querySelector('.bpmEditBtn').onclick=()=>openBpmEditor(song,row.querySelector('.bpmEditBtn'));
    const soundButton=row.querySelector('.soundBtn'),pickerBox=row.querySelector('.songSoundPicker');
    soundButton.onclick=()=>{pickerBox.classList.toggle('hidden');if(!pickerBox.childNodes.length)pickerBox.appendChild(soundPicker(song.sound||'',id=>{song.sound=id;soundButton.textContent=soundName(id)},true))};
@@ -291,6 +349,14 @@ function renderEditorItems(sl){
 }
 function renderEditor(){editingGroups=clone(groups);const sl=editingGroups[groupIndex].setlists[setlistIndex];$('editorSubtitle').textContent=`${editingGroups[groupIndex].name} · ${sl.name}`;
  $('repeatPreview').checked=previewRepeat;$('repeatPreview').onchange=e=>{previewRepeat=e.target.checked;if(previewType){if(previewRepeat)startRepeatingPreview(previewType);else{clearInterval(previewInterval);previewInterval=null}}};
+ updateRoutingUi();
+ if($('clickRoute'))$('clickRoute').onchange=e=>setRoutes(e.target.value,trackRoute);
+ if($('trackRoute'))$('trackRoute').onchange=e=>setRoutes(clickRoute,e.target.value);
+ if($('presetSplit'))$('presetSplit').onclick=()=>setRoutes('L','R');
+ if($('presetBoth'))$('presetBoth').onclick=()=>setRoutes('LR','LR');
+ if($('presetSwap'))$('presetSwap').onclick=()=>setRoutes(clickRoute==='L'?'R':clickRoute==='R'?'L':'LR',trackRoute==='L'?'R':trackRoute==='R'?'L':'LR');
+ if($('testLeftChannel'))$('testLeftChannel').onclick=()=>testPhysicalChannel('L');
+ if($('testRightChannel'))$('testRightChannel').onclick=()=>testPhysicalChannel('R');
  $('appVolume').value=Math.round(appVolume*100);$('volumeValue').textContent=`${Math.round(appVolume*100)}%`;$('appVolume').oninput=e=>{appVolume=Number(e.target.value)/100;$('volumeValue').textContent=`${e.target.value}%`;localStorage.setItem('clickset_app_volume',String(appVolume));if(previewType)playPreviewSample(previewType)};
  const rep=$('repertoireSoundPicker');rep.innerHTML='';rep.appendChild(soundPicker(sl.sound||'wood',id=>sl.sound=id));
  renderEditorItems(sl)

@@ -1,11 +1,14 @@
-CLICKSET BETA 0.19.5
+CLICKSET BETA 0.20.2
 
-CANVIS
-- Funcionament offline reforçat per a tots els fitxers principals de l’app.
-- Mode clar amb targetes, logos i apartats en gris suau per millorar el contrast.
-- Apartat “Últims repertoris” a la pantalla inicial.
-- Mostra fins als 5 darrers repertoris oberts i permet entrar-hi amb un sol toc.
+RUTEIG FLEXIBLE
+- Metrònom: L, R o L+R.
+- Pista: L, R o L+R.
+- Preset per defecte: click L / pista R.
+- Preset TOT L/R.
+- Botó INTERCANVIAR.
+- Proves independents L i R.
+- La configuració queda guardada al dispositiu.
 
-NOTA
-- El metrònom, repertoris, sons, logos, editor i mode concert funcionen offline després d’obrir l’app una vegada amb connexió.
-- L’OCR de fotografies/PDF encara pot necessitar internet la primera vegada que es carrega el lector extern.
+CONSELL
+- Sense pista: posa el metrònom a L+R si el vols sentir pels dos costats.
+- Amb pista per directe: click L / pista R.
