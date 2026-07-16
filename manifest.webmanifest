@@ -1,7 +1,7 @@
 {
   "name": "ClickSet",
   "short_name": "ClickSet",
-  "start_url": "./index.html",
+  "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "background_color": "#0d1318",

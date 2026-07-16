@@ -1,9 +1,11 @@
-CLICKSET BETA 0.19.4
+CLICKSET BETA 0.19.5
 
-NOVETAT
-- Botó ☀️ / 🌙 per alternar entre mode clar i mode fosc.
-- La preferència queda guardada al dispositiu.
-- Es mantenen totes les funcions de la versió anterior.
+CANVIS
+- Funcionament offline reforçat per a tots els fitxers principals de l’app.
+- Mode clar amb targetes, logos i apartats en gris suau per millorar el contrast.
+- Apartat “Últims repertoris” a la pantalla inicial.
+- Mostra fins als 5 darrers repertoris oberts i permet entrar-hi amb un sol toc.
 
-PUBLICACIÓ
-Puja tots els fitxers d’aquesta carpeta al repositori de GitHub. Cloudflare publicarà la nova versió automàticament.
+NOTA
+- El metrònom, repertoris, sons, logos, editor i mode concert funcionen offline després d’obrir l’app una vegada amb connexió.
+- L’OCR de fotografies/PDF encara pot necessitar internet la primera vegada que es carrega el lector extern.
