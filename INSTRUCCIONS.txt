@@ -1,13 +1,16 @@
-CLICKSET 1.0.1 — EMERGÈNCIA METRÒNOM
+CLICKSET 1.0.2 — AFEGIR CANÇÓ
 
-CORRECCIÓ
-- S'ha corregit la variable classicLoading que impedia iniciar el metrònom.
-- JavaScript i CSS tenen noms nous perquè el navegador no carregui la versió defectuosa.
-- La resta de funcions queda igual.
+ÚNIC CANVI:
+- Dins EDITAR REPERTORI hi ha el botó ➕ AFEGIR CANÇÓ.
+- Demana nom i BPM.
+- La cançó s'afegeix al final.
+- Després pots editar-la, moure-la o eliminar-la com les altres.
 
-PER PUBLICAR
-1. Descomprimeix aquest ZIP.
-2. A GitHub, substitueix tots els fitxers antics pels de dins.
+El metrònom i la resta de funcions no s'han modificat.
+
+PUBLICACIÓ:
+1. Descomprimeix el ZIP.
+2. Substitueix tots els fitxers del repositori pels de dins.
 3. Fes Commit changes.
-4. Espera que Cloudflare acabi.
-5. Obre la web amb ?v=101 al final la primera vegada.
+4. Espera Cloudflare.
+5. Obre la web una vegada amb ?v=102 al final.

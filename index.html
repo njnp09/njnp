@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0d1318">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="cover.png">
-<title>ClickSet 1.0.1</title>
-<link rel="stylesheet" href="clickset-1.0.1.css">
+<title>ClickSet 1.0.2</title>
+<link rel="stylesheet" href="clickset-1.0.2.css">
 </head>
 <body>
 <button id="themeToggle" class="themeToggle" type="button" aria-label="Activar mode clar" title="Activar mode clar">☀️</button>
@@ -71,7 +71,7 @@
 <div class="routingSummary"><span id="routingLabel"></span></div>
 <div class="routingTests"><button id="testLeftChannel" type="button" class="secondary">PROVAR L</button><button id="testRightChannel" type="button" class="secondary">PROVAR R</button></div>
 <p class="previewHint">Configuració per defecte: metrònom a L i pista a R. Si una cançó no té pista, pots posar el metrònom a L + R.</p>
-</div><div class="editorGroup"><div class="editorGroupTitle"><strong>Volum de ClickSet</strong><span id="volumeValue" class="volumeValue">90%</span></div><div class="volumeRow"><input id="appVolume" type="range" min="0" max="100" step="1" value="90"><span>🔊</span></div><div class="previewHint">Aquest volum és independent del volum general de l’ordinador, tauleta o mòbil.</div></div><div class="editorGroup"><div class="editorGroupTitle"><strong>So del repertori</strong></div><div id="repertoireSoundPicker"></div><div class="previewHint">En tocar un so, sentiràs una mostra de mig segon.</div><label class="repeatPreview"><input id="repeatPreview" type="checkbox" checked> Repetir la mostra automàticament cada 3 segons</label></div><div id="editorContent"></div></section>
+</div><div class="editorGroup"><div class="editorGroupTitle"><strong>Volum de ClickSet</strong><span id="volumeValue" class="volumeValue">90%</span></div><div class="volumeRow"><input id="appVolume" type="range" min="0" max="100" step="1" value="90"><span>🔊</span></div><div class="previewHint">Aquest volum és independent del volum general de l’ordinador, tauleta o mòbil.</div></div><div class="editorGroup"><div class="editorGroupTitle"><strong>So del repertori</strong></div><div id="repertoireSoundPicker"></div><div class="previewHint">En tocar un so, sentiràs una mostra de mig segon.</div><label class="repeatPreview"><input id="repeatPreview" type="checkbox" checked> Repetir la mostra automàticament cada 3 segons</label></div><div class="addSongBar"><button id="addSongBtn" type="button" class="primary addSongBtn">➕ AFEGIR CANÇÓ</button><small>S’afegirà al final del repertori.</small></div><div id="editorContent"></div></section>
 <div id="bpmModal" class="modal"><div class="modalCard"><h2 id="bpmModalTitle">Editar BPM</h2><div id="keyDisplay" class="keyDisplay">120</div><div class="stepGrid"><button data-step="-10">−10</button><button data-step="-5">−5</button><button data-step="-1">−1</button><button data-step="1">+1</button><button data-step="5">+5</button><button data-step="10">+10</button></div><div class="keypad"><button data-num="1">1</button><button data-num="2">2</button><button data-num="3">3</button><button data-num="4">4</button><button data-num="5">5</button><button data-num="6">6</button><button data-num="7">7</button><button data-num="8">8</button><button data-num="9">9</button><button data-num="clear">C</button><button data-num="0">0</button><button data-num="back">⌫</button></div><button id="tapTempo" class="tap">TAP TEMPO</button><div class="modalActions"><button id="cancelBpm" class="secondary">CANCEL·LAR</button><button id="saveBpm" class="primary">APLICAR</button></div></div></div>
 <div id="setlistModal" class="modal"><div class="modalCard"><h2>Editar nom del repertori</h2><div class="formRow"><label>Nom</label><input id="setlistName" maxlength="60" autocomplete="off"></div><div class="modalActions"><button id="cancelSetlistName" class="secondary">CANCEL·LAR</button><button id="saveSetlistName" class="primary">GUARDAR</button></div></div></div>
 <div id="groupModal" class="modal"><div class="modalCard"><h2 id="groupModalTitle">Editar grup</h2><div class="formRow"><label>Nom</label><input id="groupName" maxlength="40"></div><div class="formRow"><label>Color</label><input id="groupColor" type="color"></div><div class="formRow"><label>Logo</label><div><img id="logoPreview" class="logoPreview" alt="Logo"><input id="groupLogo" type="file" accept="image/*" style="margin-top:8px"></div></div><div class="modalActions"><button id="deleteGroup" class="secondary danger">ELIMINAR</button><button id="cancelGroup" class="secondary">CANCEL·LAR</button><button id="saveGroup" class="primary">GUARDAR</button></div></div></div>
@@ -94,5 +94,5 @@
 window.addEventListener("error",function(){setTimeout(function(){document.getElementById("splash")?.classList.add("hidden")},50)});
 setTimeout(function(){document.getElementById("splash")?.classList.add("hidden")},2500);
 </script>
-<script src="clickset-1.0.1.js" defer></script>
+<script src="clickset-1.0.2.js" defer></script>
 </body></html>
