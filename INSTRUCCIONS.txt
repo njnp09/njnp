@@ -1,13 +1,13 @@
-CLICKSET 1.0 OFFICIAL — CORREGIT
+CLICKSET 1.0.1 — EMERGÈNCIA METRÒNOM
 
-S'ha corregit l'error que deixava la portada bloquejada.
-També s'han canviat físicament els noms del JavaScript i del CSS perquè la memòria cau antiga no els pugui confondre.
+CORRECCIÓ
+- S'ha corregit la variable classicLoading que impedia iniciar el metrònom.
+- JavaScript i CSS tenen noms nous perquè el navegador no carregui la versió defectuosa.
+- La resta de funcions queda igual.
 
-PER PUJAR-HO A GITHUB
-1. Descomprimeix el ZIP.
-2. Puja tots els fitxers de dins al repositori njnp.
-3. Substitueix els fitxers antics.
-4. Fes Commit changes.
-5. Espera el desplegament de Cloudflare.
-
-index.html ha de quedar directament a l'arrel del repositori.
+PER PUBLICAR
+1. Descomprimeix aquest ZIP.
+2. A GitHub, substitueix tots els fitxers antics pels de dins.
+3. Fes Commit changes.
+4. Espera que Cloudflare acabi.
+5. Obre la web amb ?v=101 al final la primera vegada.
