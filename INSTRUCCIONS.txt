@@ -1,10 +1,15 @@
-CLICKSET 1.0.2 — AFEGIR CANÇÓ
+CLICKSET 1.0.3 — REPERTORI 4L
 
-ÚNIC CANVI:
-- Dins EDITAR REPERTORI hi ha el botó ➕ AFEGIR CANÇÓ.
-- Demana nom i BPM.
-- La cançó s'afegeix al final.
-- Després pots editar-la, moure-la o eliminar-la com les altres.
+ÚNICS CANVIS:
+- Tempos del repertori 4L corregits segons les fotografies.
+- CHICA YEYÉ passa a dins MIX MECANO.
+- MIX MECANO:
+  Chica Yeyé — 165
+  Me colé en una fiesta — 155
+  Maquillaje — 128
+  Bailando — 135
+- EL SOL NO REGRESA — 138
+- BOIG PER TU — 98
 
 El metrònom i la resta de funcions no s'han modificat.
 
@@ -13,4 +18,4 @@ PUBLICACIÓ:
 2. Substitueix tots els fitxers del repositori pels de dins.
 3. Fes Commit changes.
 4. Espera Cloudflare.
-5. Obre la web una vegada amb ?v=102 al final.
+5. Obre una vegada amb ?v=103 al final.
