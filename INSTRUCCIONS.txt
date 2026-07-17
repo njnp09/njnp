@@ -1,21 +1,17 @@
-CLICKSET 1.0.3 — REPERTORI 4L
+CLICKSET 1.0.4 — PRECISIÓ I CONTROL BPM
 
-ÚNICS CANVIS:
-- Tempos del repertori 4L corregits segons les fotografies.
-- CHICA YEYÉ passa a dins MIX MECANO.
-- MIX MECANO:
-  Chica Yeyé — 165
-  Me colé en una fiesta — 155
-  Maquillaje — 128
-  Bailando — 135
-- EL SOL NO REGRESA — 138
-- BOIG PER TU — 98
-
-El metrònom i la resta de funcions no s'han modificat.
+CANVIS:
+- El primer clic sona pràcticament en el mateix instant de prémer PLAY o la barra d’espai.
+- En passar de cançó mentre el metrònom està en marxa, el primer clic de la nova cançó queda lligat al toc de la fletxa.
+- Informació del metrònom fixada a dalt; només es desplaça el repertori lateral.
+- Controls directes −10 −5 −1 / +1 +5 +10 en pantalla normal i mode concert.
+- Els canvis de BPM directes es guarden automàticament.
+- Teclat numèric de l’editor corregit: el primer número substitueix el BPM anterior.
+- També es pot escriure el BPM amb el teclat físic i confirmar amb Enter.
 
 PUBLICACIÓ:
 1. Descomprimeix el ZIP.
 2. Substitueix tots els fitxers del repositori pels de dins.
 3. Fes Commit changes.
-4. Espera Cloudflare.
-5. Obre una vegada amb ?v=103 al final.
+4. Espera el desplegament de Cloudflare.
+5. Obre una vegada amb ?v=104 al final de l’adreça.
