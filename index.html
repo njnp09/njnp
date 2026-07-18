@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0d1318">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="cover.png">
-<title>ClickSet 1.2</title>
-<link rel="stylesheet" href="clickset-1.2.css">
+<title>ClickSet 2.0</title>
+<link rel="stylesheet" href="clickset-2.0.css">
 </head>
 <body>
 <button id="themeToggle" class="themeToggle" type="button" aria-label="Activar mode clar" title="Activar mode clar">☀️</button>
@@ -17,7 +17,7 @@
 <div id="splash" class="splash"><img src="cover.png" alt="ClickSet"></div>
 <div id="groupIntro" class="groupIntro hidden"><img id="groupIntroLogo" alt=""><div id="groupIntroName"></div></div>
 <div id="chooser" class="chooser hidden"><div class="chooserCard"><div class="chooserTop"><div><div id="homeBrand" class="homeBrand"><img src="logo-clickset.png" alt="Bateria ClickSet"><div><h1>CLICKSET</h1><div class="byNwi">by nwi</div></div></div><h1 id="chooserTitle" class="hidden">Grup musical</h1><p id="chooserSubtitle">Selecciona un grup</p></div><div class="chooserTools"><button id="importClicksetBtn" class="smallBtn">📦 IMPORTAR .CLICKSET</button><button id="importSetlistBtn" class="smallBtn hidden">📥 IMPORTAR LLISTA</button><button id="newGroupBtn" class="smallBtn">+ GRUP</button></div></div><button id="chooserBack" class="back hidden">← Enrere</button><div id="chooserGrid" class="grid"></div><section id="recentSection" class="recentSection"><div class="recentHead"><h2>Últims repertoris</h2><small>Accés ràpid</small></div><div id="recentSetlists" class="recentSetlists"></div></section></div></div>
-<div id="app" class="app hidden"><aside class="sidebar"><div class="sideHead"><h2>Setlist</h2><span id="songCount"></span></div><div id="setlist" class="setlist"></div></aside><main class="main"><div class="top"><div id="position"></div><div class="topBtns"><button id="concertModeBtn" class="smallBtn">🎤 MODE CONCERT</button><button id="homeBtn" class="smallBtn">GRUPS</button><button id="editBtn" class="smallBtn">EDITAR</button></div></div><section class="stage"><div id="parentLabel" class="parentLabel"></div><div id="song" class="song"></div><div id="bpm" class="bpm"></div><div class="label">BPM</div>
+<div id="app" class="app hidden"><aside class="sidebar"><div class="sideHead"><h2>Setlist</h2><span id="songCount"></span></div><div id="setlist" class="setlist"></div></aside><main class="main"><div class="top"><div class="topIdentity"><span id="liveState" class="liveState ready">● PREPARAT</span><div id="position"></div></div><div class="topBtns"><button id="concertModeBtn" class="smallBtn">🎤 MODE CONCERT</button><button id="homeBtn" class="smallBtn">GRUPS</button><button id="editBtn" class="smallBtn">EDITAR</button></div></div><section class="stage"><div id="parentLabel" class="parentLabel"></div><div id="song" class="song"></div><div id="bpm" class="bpm"></div><div class="label">BPM</div>
 <div class="liveBpmAdjust" aria-label="Ajust ràpid de BPM">
   <div class="bpmMinus"><button type="button" data-live-bpm="-10">−10</button><button type="button" data-live-bpm="-5">−5</button><button type="button" data-live-bpm="-1">−1</button></div>
   <div class="bpmPlus"><button type="button" data-live-bpm="1">+1</button><button type="button" data-live-bpm="5">+5</button><button type="button" data-live-bpm="10">+10</button></div>
@@ -29,7 +29,7 @@
     <div id="concertSetlist" class="concertSetlist"></div>
   </aside>
   <main class="concertMain">
-    <div class="concertTop"><div class="concertTopTitle">MODE CONCERT</div><button id="closeConcertMode" class="smallBtn">✕ SORTIR</button></div>
+    <div class="concertTop"><div class="concertTopTitle"><span id="concertLiveState" class="liveState ready">● PREPARAT</span><span>MODE CONCERT</span></div><button id="closeConcertMode" class="smallBtn">✕ SORTIR</button></div>
     <div class="concertStage">
       <div id="concertParent" class="concertParent"></div>
       <div id="concertSong" class="concertSong"></div>
@@ -101,10 +101,19 @@
     <div class="quickSoundHint">El canvi s’aplica al moment sense aturar el tempo.</div>
   </div>
 </div>
+
+<div id="audioGate" class="audioGate hidden" role="dialog" aria-modal="true" aria-label="Activar àudio">
+  <button id="activateAudioBtn" class="audioGateCard" type="button">
+    <span class="audioGateIcon">🔊</span>
+    <strong>ACTIVAR SO</strong>
+    <small>Safari necessita un toc per activar l’àudio de ClickSet</small>
+  </button>
+</div>
+<div id="audioToast" class="audioToast hidden" role="status"></div>
 <div id="passwordModal" class="modal"><div class="modalCard passwordCard"><h2>🔒 Mode edició</h2><p class="note">Introdueix la contrasenya per modificar ClickSet.</p><input id="editPassword" type="password" inputmode="numeric" autocomplete="off" placeholder="Contrasenya"><div id="passwordError" class="passwordError hidden">Contrasenya incorrecta</div><div class="modalActions"><button id="cancelPassword" class="secondary">CANCEL·LAR</button><button id="submitPassword" class="primary">ENTRAR</button></div></div></div>
 <script>
 window.addEventListener("error",function(){setTimeout(function(){document.getElementById("splash")?.classList.add("hidden")},50)});
 setTimeout(function(){document.getElementById("splash")?.classList.add("hidden")},2500);
 </script>
-<script src="clickset-1.2.js" defer></script>
+<script src="clickset-2.0.js" defer></script>
 </body></html>

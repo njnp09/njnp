@@ -1,12 +1,9 @@
-CLICKSET 1.2 · VERSIÓ DE PROVA
+CLICKSET 2.0 — REDISSENY + ÀUDIO IPHONE
 
-Inclou:
-- interfície modernitzada
-- indicador visual del compàs
-- compte enrere opcional 3 · 2 · 1 · GO
-- exportació de cada repertori en format .clickset
-- importació de fitxers .clickset amb pistes d’àudio incloses
-- pantalla inicial preparada per començar des de zero
+1. Substitueix tots els fitxers del repositori per aquests.
+2. Fes Commit changes.
+3. Espera que Cloudflare/Netlify acabi.
+4. Obre l’adreça amb ?v=20.
+5. A iPhone/iPad, toca “ACTIVAR SO” quan aparegui.
 
-Per actualitzar: substitueix tots els fitxers del repositori i obre una vegada amb ?v=12.
-Conserva les dades existents del navegador.
+Millores: nou disseny, estat PREPARAT/EN DIRECTE, desbloqueig explícit de Safari, compatibilitat amb navegadors sense StereoPanner i precàrrega de samples.
