@@ -1,8 +1,12 @@
-CLICKSET 1.1 — SONS REALS
+CLICKSET 1.2 · VERSIÓ DE PROVA
 
-1. Substitueix tots els fitxers del repositori per aquests.
-2. Fes Commit changes.
-3. Obre una vegada l’app amb ?v=11 per forçar l’actualització.
+Inclou:
+- interfície modernitzada
+- indicador visual del compàs
+- compte enrere opcional 3 · 2 · 1 · GO
+- exportació de cada repertori en format .clickset
+- importació de fitxers .clickset amb pistes d’àudio incloses
+- pantalla inicial preparada per començar des de zero
 
-Inclou Cowbell, Claves, Rimshot i Clap reals, cadascun amb mostra normal i accentuada.
-A Editar repertori pots triar el so general i també un so diferent per al primer temps.
+Per actualitzar: substitueix tots els fitxers del repositori i obre una vegada amb ?v=12.
+Conserva les dades existents del navegador.
