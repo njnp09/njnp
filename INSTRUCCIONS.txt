@@ -1,9 +1,10 @@
-CLICKSET 2.0.1 — REDISSENY + ÀUDIO IPHONE
+CLICKSET 2.0.2 · PREMIUM + IPHONE
 
-1. Substitueix tots els fitxers del repositori per aquests.
-2. Fes Commit changes.
-3. Espera que Cloudflare/Netlify acabi.
-4. Obre l’adreça amb ?v=20.
-5. A iPhone/iPad, toca “ACTIVAR SO” quan aparegui.
+1. Substitueix tots els fitxers del repositori.
+2. Fes Commit/Deploy.
+3. A iPhone, tanca la pestanya antiga i obre l’adreça amb ?v=202.
+4. Toca ACTIVAR I PROVAR SO una vegada.
+5. Per provar amb l’altaveu del telèfon, deixa Metrònom i Pista a L + R.
+6. Comprova que el volum multimèdia és alt i prova també amb el mode silenci desactivat.
 
-Millores: nou disseny, estat PREPARAT/EN DIRECTE, desbloqueig explícit de Safari, compatibilitat amb navegadors sense StereoPanner i precàrrega de samples.
+La divisió Click L / Pista R continua disponible per a interfícies i taules de mescles.

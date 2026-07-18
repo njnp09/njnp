@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#0d1318">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="cover.png">
-<title>ClickSet 2.0</title>
-<link rel="stylesheet" href="clickset-2.0.css">
+<title>ClickSet 2.0.2</title>
+<link rel="stylesheet" href="clickset-2.0.2.css?v=202">
 </head>
 <body>
 <button id="themeToggle" class="themeToggle" type="button" aria-label="Activar mode clar" title="Activar mode clar">☀️</button>
@@ -106,14 +106,15 @@
   <button id="activateAudioBtn" class="audioGateCard" type="button">
     <span class="audioGateIcon">🔊</span>
     <strong>ACTIVAR SO</strong>
-    <small>Safari necessita un toc per activar l’àudio de ClickSet</small>
+    <small>Toca aquí una vegada. A iPhone, comprova també el volum i el mode silenci.</small><span class="audioGateTest">ACTIVAR I PROVAR SO</span>
   </button>
 </div>
+<audio id="iosAudioBridge" src="click.wav?v=202" preload="auto" playsinline webkit-playsinline></audio>
 <div id="audioToast" class="audioToast hidden" role="status"></div>
 <div id="passwordModal" class="modal"><div class="modalCard passwordCard"><h2>🔒 Mode edició</h2><p class="note">Introdueix la contrasenya per modificar ClickSet.</p><input id="editPassword" type="password" inputmode="numeric" autocomplete="off" placeholder="Contrasenya"><div id="passwordError" class="passwordError hidden">Contrasenya incorrecta</div><div class="modalActions"><button id="cancelPassword" class="secondary">CANCEL·LAR</button><button id="submitPassword" class="primary">ENTRAR</button></div></div></div>
 <script>
 window.addEventListener("error",function(){setTimeout(function(){document.getElementById("splash")?.classList.add("hidden")},50)});
 setTimeout(function(){document.getElementById("splash")?.classList.add("hidden")},2500);
 </script>
-<script src="clickset-2.0.js" defer></script>
+<script src="clickset-2.0.2.js?v=202" defer></script>
 </body></html>
