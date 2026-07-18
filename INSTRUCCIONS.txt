@@ -1,4 +1,4 @@
-CLICKSET 2.0 — REDISSENY + ÀUDIO IPHONE
+CLICKSET 2.0.1 — REDISSENY + ÀUDIO IPHONE
 
 1. Substitueix tots els fitxers del repositori per aquests.
 2. Fes Commit changes.

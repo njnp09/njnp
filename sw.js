@@ -1,4 +1,4 @@
-const CACHE_NAME="clickset-2.0-redisseny-iphone";
+const CACHE_NAME="clickset-2.0.1-layout-fix";
 const APP_SHELL=["./", "./index.html", "./clickset-2.0.css", "./clickset-2.0.js", "./manifest.webmanifest", "./cover.png", "./click.wav", "./logo-4l.jpg", "./logo-h80.jpeg", "./logo-tocipam.jpg", "./logo-pgs.png", "./logo-clickset.png", "./cowbell-normal.wav", "./cowbell-accent.wav", "./claves-normal.wav", "./claves-accent.wav", "./rimshot-normal.wav", "./rimshot-accent.wav", "./clap-normal.wav", "./clap-accent.wav"];
 self.addEventListener("install",event=>{self.skipWaiting();event.waitUntil(caches.open(CACHE_NAME).then(cache=>cache.addAll(APP_SHELL)))});
 self.addEventListener("activate",event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key!==CACHE_NAME).map(key=>caches.delete(key)))).then(()=>self.clients.claim()))});
