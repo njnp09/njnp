@@ -1,10 +1,10 @@
-CLICKSET 2.0.2 · PREMIUM + IPHONE
+CLICKSET 2.1.3 — PUBLICACIÓ
 
-1. Substitueix tots els fitxers del repositori.
-2. Fes Commit/Deploy.
-3. A iPhone, tanca la pestanya antiga i obre l’adreça amb ?v=202.
-4. Toca ACTIVAR I PROVAR SO una vegada.
-5. Per provar amb l’altaveu del telèfon, deixa Metrònom i Pista a L + R.
-6. Comprova que el volum multimèdia és alt i prova també amb el mode silenci desactivat.
+1. A GitHub, entra al repositori njnp09/njnp.
+2. Esborra els fitxers antics de l’arrel.
+3. Puja TOTS els fitxers d’aquesta carpeta directament a l’arrel (no la carpeta).
+4. Fes Commit changes.
+5. Entra a Cloudflare > Workers & Pages > njnp i comprova que hi hagi un desplegament nou.
+6. Obre https://njnp.njnp09.workers.dev/?v=213
 
-La divisió Click L / Pista R continua disponible per a interfícies i taules de mescles.
+COMPROVACIÓ: ha d’aparèixer una etiqueta petita “2.1.3” a baix a l’esquerra. Dins EDITAR apareixen SORTIDA D’ÀUDIO i MODIFICAR SETLIST.

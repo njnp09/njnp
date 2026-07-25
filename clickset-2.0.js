@@ -684,11 +684,89 @@ function renderEditorItems(sl){
   box.appendChild(grp)
  })
 }
+
+
+// ClickSet 2.1.3 — sortida d'àudio compacta i reordenació ràpida
+let reorderSnapshot=null;
+function updateCompactRoutingLabel(){
+ const el=$("compactRoutingLabel");
+ if(el)el.textContent=`Click ${clickRoute} · Pista ${trackRoute}`;
+}
+function openAudioSettingsModal(){
+ document.body.classList.add("audioSettingsOpen");
+ $("audioRoutingGroup")?.classList.add("audioOpen");
+ updateCompactRoutingLabel();
+}
+function closeAudioSettingsModal(){
+ document.body.classList.remove("audioSettingsOpen");
+ $("audioRoutingGroup")?.classList.remove("audioOpen");
+ updateCompactRoutingLabel();
+}
+function quickReorderSections(sl){
+ const sections=[];
+ (sl.items||[]).forEach((item,index)=>{
+  if(item.children&&Array.isArray(item.children)) sections.push({title:item.name||`Bloc ${index+1}`,list:item.children});
+  else sections.push({title:"Cançons",list:sl.items,topLevel:true});
+ });
+ // Evita repetir la llista principal una vegada per cada cançó simple.
+ const seen=new Set();
+ return sections.filter(s=>{if(seen.has(s.list))return false;seen.add(s.list);return true});
+}
+function moveQuickItem(list,from,to){
+ if(from===to||from<0||to<0||from>=list.length||to>=list.length)return;
+ const [item]=list.splice(from,1);list.splice(to,0,item);
+}
+function renderQuickReorder(){
+ const sl=editingGroups?.[groupIndex]?.setlists?.[setlistIndex],box=$("setlistReorderContent");
+ if(!sl||!box)return;
+ box.innerHTML="";
+ let globalNumber=0;
+ quickReorderSections(sl).forEach(section=>{
+  const wrap=document.createElement("div");wrap.className="reorderSection";
+  if(section.title!=="Cançons"||quickReorderSections(sl).length>1){const title=document.createElement("div");title.className="reorderSectionTitle";title.textContent=section.title;wrap.appendChild(title)}
+  let dragIndex=null;
+  section.list.forEach((song,index)=>{
+   globalNumber++;
+   const row=document.createElement("div");row.className="reorderRow";row.draggable=true;
+   row.innerHTML=`<span class="reorderHandle">☰</span><span class="reorderNumber">${globalNumber}</span><span class="reorderName">${esc(song.name||"Sense nom")}</span><span class="reorderActions"><button type="button" class="quickUp" aria-label="Pujar">▲</button><button type="button" class="quickDown" aria-label="Baixar">▼</button></span>`;
+   row.querySelector(".quickUp").disabled=index===0;row.querySelector(".quickDown").disabled=index===section.list.length-1;
+   row.querySelector(".quickUp").onclick=()=>{moveQuickItem(section.list,index,index-1);renderQuickReorder()};
+   row.querySelector(".quickDown").onclick=()=>{moveQuickItem(section.list,index,index+1);renderQuickReorder()};
+   row.addEventListener("dragstart",e=>{dragIndex=index;row.classList.add("dragging");e.dataTransfer.effectAllowed="move"});
+   row.addEventListener("dragend",()=>{dragIndex=null;row.classList.remove("dragging")});
+   row.addEventListener("dragover",e=>{if(dragIndex===null)return;e.preventDefault();row.classList.add("dragOver")});
+   row.addEventListener("dragleave",()=>row.classList.remove("dragOver"));
+   row.addEventListener("drop",e=>{e.preventDefault();row.classList.remove("dragOver");if(dragIndex===null)return;moveQuickItem(section.list,dragIndex,index);dragIndex=null;renderQuickReorder()});
+   wrap.appendChild(row);
+  });
+  box.appendChild(wrap);
+ });
+}
+function openQuickReorder(){
+ const sl=editingGroups?.[groupIndex]?.setlists?.[setlistIndex];if(!sl)return;
+ reorderSnapshot=clone(sl.items||[]);
+ $("reorderSubtitle").textContent=`${editingGroups[groupIndex].name} · ${sl.name}`;
+ renderQuickReorder();$("setlistReorderPanel").classList.add("open");
+}
+function cancelQuickReorder(){
+ const sl=editingGroups?.[groupIndex]?.setlists?.[setlistIndex];if(sl&&reorderSnapshot)sl.items=reorderSnapshot;
+ reorderSnapshot=null;$("setlistReorderPanel").classList.remove("open");renderEditorItems(sl);
+}
+function saveQuickReorder(){
+ const sl=editingGroups?.[groupIndex]?.setlists?.[setlistIndex];reorderSnapshot=null;
+ $("setlistReorderPanel").classList.remove("open");renderEditorItems(sl);
+}
+
 function renderEditor(){editingGroups=clone(groups);const sl=editingGroups[groupIndex].setlists[setlistIndex];$('editorSubtitle').textContent=`${editingGroups[groupIndex].name} · ${sl.name}`;
  $('repeatPreview').checked=previewRepeat;$('repeatPreview').onchange=e=>{previewRepeat=e.target.checked;if(previewType){if(previewRepeat)startRepeatingPreview(previewType);else{clearInterval(previewInterval);previewInterval=null}}};
- updateRoutingUi();
- if($('clickRoute'))$('clickRoute').onchange=e=>setRoutes(e.target.value,trackRoute);
- if($('trackRoute'))$('trackRoute').onchange=e=>setRoutes(clickRoute,e.target.value);
+ updateRoutingUi();updateCompactRoutingLabel();
+ if($("openAudioSettings"))$("openAudioSettings").onclick=openAudioSettingsModal;
+ if($("closeAudioSettings"))$("closeAudioSettings").onclick=closeAudioSettingsModal;
+ if($("openSetlistReorder"))$("openSetlistReorder").onclick=openQuickReorder;
+ if($("cancelSetlistReorder"))$("cancelSetlistReorder").onclick=cancelQuickReorder;
+ if($("saveSetlistReorder"))$("saveSetlistReorder").onclick=saveQuickReorder;
+ if($('clickRoute'))$('clickRoute').onchange=e=>{setRoutes(e.target.value,trackRoute);updateCompactRoutingLabel()};
+ if($('trackRoute'))$('trackRoute').onchange=e=>{setRoutes(clickRoute,e.target.value);updateCompactRoutingLabel()};
  if($('presetSplit'))$('presetSplit').onclick=()=>setRoutes('L','R');
  if($('presetBoth'))$('presetBoth').onclick=()=>setRoutes('LR','LR');
  if($('presetSwap'))$('presetSwap').onclick=()=>setRoutes(clickRoute==='L'?'R':clickRoute==='R'?'L':'LR',trackRoute==='L'?'R':trackRoute==='R'?'L':'LR');
