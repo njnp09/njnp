@@ -280,3 +280,130 @@ body.audioSettingsOpen:after{content:"";position:fixed;inset:0;z-index:170;backg
 .reorderHandle{font-size:24px;text-align:center;cursor:grab;color:var(--muted)}.reorderNumber{font-weight:950;color:var(--accent);text-align:center}.reorderName{font-weight:900;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.reorderActions{display:flex;gap:6px}.reorderActions button{width:43px;height:43px;padding:0;border-radius:10px;border:1px solid var(--border);background:var(--panel);color:var(--text);font-weight:950}
 .reorderHeadActions{display:flex;gap:8px}
 @media(max-width:650px){.editorQuickTools{grid-template-columns:1fr}.quickToolBtn{min-height:58px}.reorderRow{grid-template-columns:30px 32px minmax(0,1fr);padding:9px 7px}.reorderActions{grid-column:2/4;justify-content:flex-end}.reorderActions button{width:48px}.reorderHeadActions{width:100%}.reorderHeadActions button{flex:1}.reorderPanel .panelHead{flex-wrap:wrap}}
+
+
+/* =========================================================
+   CLICKSET 2.1.4 · PALETA VISUAL SUAU
+   Només canvia colors, contrast i ombres. Cap funció.
+   ========================================================= */
+:root{
+  --bg:#0b1117;
+  --panel:#151e27;
+  --panel2:#202c36;
+  --border:rgba(214,225,232,.14);
+  --text:#f2f5f6;
+  --muted:#a6b1b9;
+  --yellow:#e8bd62;
+  --accent:#e8bd62;
+  --green:#70c9a1;
+  --orange:#dc9a62;
+  --red:#dc7378;
+  --surface:rgba(21,30,39,.92);
+  --surface-2:rgba(32,44,54,.94);
+  --line:rgba(225,233,238,.10);
+  --shadow:0 16px 48px rgba(0,0,0,.25);
+  --shadow-strong:0 22px 68px rgba(0,0,0,.34);
+}
+body{
+  background:
+    radial-gradient(circle at 18% -10%,rgba(232,189,98,.09),transparent 34%),
+    radial-gradient(circle at 100% 65%,rgba(112,201,161,.055),transparent 32%),
+    linear-gradient(150deg,#091016,#101922 55%,#0a1118);
+}
+.sidebar,.main,.concertSidebar,.concertMain{
+  background:linear-gradient(165deg,rgba(24,34,44,.97),rgba(13,20,27,.97));
+  border-color:rgba(222,230,235,.10);
+}
+.stage{
+  background:
+    radial-gradient(circle at 50% 43%,rgba(232,189,98,.055),transparent 45%),
+    linear-gradient(160deg,rgba(255,255,255,.043),rgba(255,255,255,.014));
+}
+.song,.concertSong,.nextup,.concertNext,
+.homeBrand h1,.recentArrow{
+  color:var(--accent);
+}
+.bpm.yellow,.concertBpm.yellow{color:#e8bd62}
+.bpm.green,.concertBpm.green{color:#70c9a1}
+.bpm.orange,.concertBpm.orange{color:#dc9a62}
+.bpm.red,.concertBpm.red{color:#dc7378}
+.play,.concertPlay,.primary,.close{
+  background:linear-gradient(150deg,#efd086,#dfad4f);
+  color:#17140e;
+  border-color:#e8bd62;
+}
+.play.stop,.concertPlay.stop{
+  background:linear-gradient(150deg,#e8898e,#c95f66);
+  color:#fff;
+}
+.liveState.live{
+  background:#70c9a1;
+  border-color:#70c9a1;
+  color:#07120d;
+  box-shadow:0 0 22px rgba(112,201,161,.24);
+}
+.songItem.active,.concertSetItem.active{
+  background:linear-gradient(90deg,rgba(232,189,98,.15),rgba(232,189,98,.045));
+  border-color:rgba(232,189,98,.27);
+  box-shadow:inset 3px 0 #e8bd62;
+}
+.card:before{
+  box-shadow:0 0 12px color-mix(in srgb,var(--card-color) 55%,transparent);
+}
+.big,.concertBtn,.smallBtn,.secondary,.soundBtn,.moveBtn,
+.liveBpmAdjust button,.concertBpmAdjust button{
+  background:linear-gradient(160deg,#24313c,#1a242d);
+  border-color:rgba(225,233,238,.13);
+}
+.liveMetaBtn,.concertMetaBtn,.trackStatus{
+  background:rgba(255,255,255,.045)!important;
+  border-color:rgba(225,233,238,.11)!important;
+}
+.pulse.on,.concertPulse.on{
+  background:#e8bd62;
+  box-shadow:0 0 24px rgba(232,189,98,.42);
+}
+.beatDot.active.accented,.beatDot.downbeat.active{
+  background:#e8bd62;
+  box-shadow:0 0 18px rgba(232,189,98,.58);
+}
+.audioRoutingGroup{border-color:rgba(232,189,98,.52)}
+.buildBadge{
+  background:#e8bd62!important;
+  color:#17140e!important;
+  box-shadow:0 6px 18px rgba(0,0,0,.28)!important;
+}
+
+/* Mode clar també més càlid i menys blanc pur */
+body.light-theme{
+  --bg:#eef1f2;
+  --panel:#f7f8f7;
+  --panel2:#e2e7e8;
+  --border:#c2cbcf;
+  --text:#263139;
+  --muted:#66757e;
+  --yellow:#a87319;
+  --accent:#a87319;
+  --green:#2e8d68;
+  --orange:#ae6328;
+  --red:#b64f58;
+  background:
+    radial-gradient(circle at 15% 0%,rgba(168,115,25,.08),transparent 30%),
+    linear-gradient(145deg,#f3f4f2,#e8edef);
+}
+body.light-theme .card,
+body.light-theme .recentCard,
+body.light-theme .editorGroup,
+body.light-theme .sidebar,
+body.light-theme .main,
+body.light-theme .concertSidebar,
+body.light-theme .concertMain{
+  background:#e5eaeb;
+}
+body.light-theme .play,
+body.light-theme .concertPlay,
+body.light-theme .primary,
+body.light-theme .close{
+  background:linear-gradient(150deg,#ddb968,#c89537);
+  color:#211a0c;
+}
