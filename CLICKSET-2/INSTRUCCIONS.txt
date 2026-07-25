@@ -1,0 +1,16 @@
+CLICKSET 2.1.1 — PAQUET CORREGIT
+
+IMPORTANT: puja els FITXERS que hi ha dins aquest ZIP directament a l'arrel del repositori.
+No pugis una carpeta que els contingui.
+
+1. A GitHub, elimina/substitueix els fitxers antics de l'arrel.
+2. Puja tot el contingut d'aquest ZIP.
+3. Fes Commit changes.
+4. Espera que Cloudflare acabi el desplegament.
+5. Obre: https://njnp.njnp09.workers.dev/?v=211
+6. Si encara surt l'antiga: Safari > Configuració d'aquest lloc web > Esborra dades, o obre una finestra privada.
+
+Comprova dins EDITAR:
+- Botó “MODIFICAR SETLIST” a la part superior.
+- Botó compacte “SORTIDA D’ÀUDIO”.
+- Botons “EXPORTAR BACKUP” i “RESTAURAR BACKUP”.
