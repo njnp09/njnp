@@ -1,0 +1,18 @@
+CLICKSET 2.1 — MODIFICAR SETLIST + ÀUDIO COMPACTE + BACKUP
+
+1. Descomprimeix aquest ZIP.
+2. Puja TOTS els fitxers al repositori de GitHub, substituint els anteriors.
+3. Fes Commit changes.
+4. Espera que Cloudflare acabi de publicar.
+5. Obre la web afegint ?v=21 al final de l’adreça.
+
+NOVETATS
+- Botó «MODIFICAR SETLIST»: pantalla neta només per ordenar.
+- Arrossegar amb ordinador; al mòbil també tens ▲/▼ i pots tocar el número per enviar una cançó directament a una posició.
+- Configuració L/R dins una finestra compacta.
+- «EXPORTAR BACKUP» guarda grups, repertoris, tempos, ordre i configuració.
+- «RESTAURAR BACKUP» recupera aquesta còpia.
+
+IMPORTANT
+Abans de pujar aquesta versió, no esborres les dades del navegador. Quan l’obris, entra a EDITAR i prem «EXPORTAR BACKUP» per tenir una còpia immediata.
+Les pistes MP3/WAV guardades al dispositiu no s’inclouen en el backup complet; els noms i la configuració de les cançons sí.
