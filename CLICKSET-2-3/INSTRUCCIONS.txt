@@ -1,0 +1,10 @@
+CLICKSET 2.1.3 — PUBLICACIÓ
+
+1. A GitHub, entra al repositori njnp09/njnp.
+2. Esborra els fitxers antics de l’arrel.
+3. Puja TOTS els fitxers d’aquesta carpeta directament a l’arrel (no la carpeta).
+4. Fes Commit changes.
+5. Entra a Cloudflare > Workers & Pages > njnp i comprova que hi hagi un desplegament nou.
+6. Obre https://njnp.njnp09.workers.dev/?v=213
+
+COMPROVACIÓ: ha d’aparèixer una etiqueta petita “2.1.3” a baix a l’esquerra. Dins EDITAR apareixen SORTIDA D’ÀUDIO i MODIFICAR SETLIST.
