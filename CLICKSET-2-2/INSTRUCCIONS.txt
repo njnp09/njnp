@@ -1,0 +1,10 @@
+CLICKSET 2.1.2 — VERSIÓ SENSE MEMÒRIA CAU
+
+1. Esborra del repositori els fitxers antics clickset-2.0.js i clickset-2.0.css.
+2. Puja TOTS els fitxers d'aquest ZIP directament a l'arrel del repositori.
+3. Confirma que a GitHub hi apareixen clickset-2.1.2.js i clickset-2.1.2.css.
+4. Espera que Cloudflare acabi el desplegament.
+5. Obre https://njnp.njnp09.workers.dev/?build=212 en una pestanya privada.
+
+Comprovació: a baix a l'esquerra ha d'aparèixer una etiqueta groga «CLICKSET 2.1.2».
+A EDITAR han d'aparèixer els botons «MODIFICAR SETLIST» i «ÀUDIO: CLICK L · PISTA R».
