@@ -1,20 +1,34 @@
-CLICKSET 2.2.5 — CORRECCIÓ ACTIVAR SO
+CLICKSET 2.3.0 — MILLORA VISUAL I D'ÚS
 
-CANVIS:
-- Analitzar el BPM ja no activa ni necessita el motor del metrònom.
-- Carregar una pista no obre la pantalla ACTIVAR SO.
-- ACTIVAR SO només apareix quan prems PLAY i Safari necessita desbloquejar l'àudio.
-- Nou botó ARA NO per poder tancar sempre la pantalla.
-- Tornar enrere o reobrir la pestanya no torna a mostrar automàticament el bloqueig.
-- Es manté l'algoritme reforçat de BPM de la 2.2.4.
-- Es manté Mode lectura a la barra superior.
+Base: ClickSet 2.2.5 estable.
+
+IMPORTANT:
+Aquesta versió NO modifica:
+- motor del metrònom
+- reproducció de pistes
+- detecció automàtica de BPM
+- sortides L/R
+- sistema de còpies
+
+MILLORA:
+- Pantalla principal més equilibrada.
+- Botons amb jerarquia i mida més coherents.
+- Millor aprofitament d'altures petites.
+- Nom de pista més llegible.
+- Animació suau en canviar de cançó.
+- Estat PREPARAT / EN DIRECTE més clar.
+- Franja d'informació i controls més ordenats.
+- Editor agrupat visualment per seccions.
+- Pantalla inicial i targetes de grups més professionals.
+- Millor adaptació a mòbil, tauleta i ordinador.
+- Manté els colors de la versió 2.2.5.
 
 PUBLICACIÓ:
-1. Guarda la versió actual.
-2. Esborra els fitxers de l'arrel del repositori.
+1. Conserva el ZIP de la 2.2.5.
+2. Esborra els fitxers actuals de l'arrel del repositori.
 3. Puja tots els fitxers d'aquest ZIP directament a l'arrel.
 4. Fes Commit changes.
-5. Obre https://njnp.njnp09.workers.dev/?v=225
+5. Obre https://njnp.njnp09.workers.dev/?v=230
 
 COMPROVACIÓ:
-La pestanya i l'etiqueta inferior han d'indicar 2.2.5.
+La pestanya i l'etiqueta inferior han d'indicar 2.3.0.

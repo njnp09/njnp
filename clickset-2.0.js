@@ -291,6 +291,16 @@ function renderConcertSetlist(){
  });
  requestAnimationFrame(()=>{const active=box.querySelector('.active');if(active)active.scrollIntoView({block:'center',behavior:'smooth'})})
 }
+
+function pulseSongChange(){
+ const nodes=[$("song"),$("bpm"),$("parentLabel"),$("nextup"),$("concertSong"),$("concertBpm")].filter(Boolean);
+ nodes.forEach(node=>{
+  node.classList.remove("songChangePulse");
+  void node.offsetWidth;
+  node.classList.add("songChangePulse");
+ });
+}
+
 function render(){flatten();if(!flat.length)return;const x=flat[current],n=flat[(current+1)%flat.length],accentOn=Boolean(x.song.accentFirst),activeSound=x.song.sound||currentSetlist().sound||"classic";$("parentLabel").textContent=x.parent;$("song").textContent=x.song.name;$("bpm").textContent=x.song.bpm;$("bpm").className="bpm "+bpmClass(x.song.bpm);$("position").textContent=`${current+1} / ${flat.length}`;$("nextup").textContent=`Després: ${n.song.name} · ${n.song.bpm} BPM`;if($("normalAccent")){$("normalAccent").textContent=`Accent: ${accentOn?"ON":"OFF"}`;$("normalAccent").classList.toggle("active",accentOn)}if($("normalSound"))$("normalSound").textContent=soundName(activeSound);const trackLabel=x.song.trackName?`🎵 ${x.song.trackName}`:"🎵 Carregar pista";if($("normalTrack")){ $("normalTrack").textContent=trackLabel; $("normalTrack").title=x.song.trackName?"Clica per substituir la pista":"Clica per carregar una pista"; }if($("concertTrack")){ $("concertTrack").textContent=trackLabel; $("concertTrack").title=x.song.trackName?"Clica per substituir la pista":"Clica per carregar una pista"; }
 if($("normalRemoveTrack"))$("normalRemoveTrack").classList.toggle("hidden",!x.song.trackId);
 if($("concertRemoveTrack"))$("concertRemoveTrack").classList.toggle("hidden",!x.song.trackId);renderBeatDots();if($("concertParent")){$("concertParent").textContent=x.parent;$("concertSong").textContent=x.song.name;$("concertBpm").textContent=x.song.bpm;$("concertBpm").className="concertBpm "+bpmClass(x.song.bpm);$("concertPosition").textContent=`${current+1} / ${flat.length}`;$("concertNext").textContent=`Després: ${n.song.name} · ${n.song.bpm} BPM`;$("concertMeter").textContent=x.song.meter||"4/4";$("concertAccent").textContent=`Accent: ${accentOn?"ON":"OFF"}`;$("concertAccent").classList.toggle("active",accentOn);$("concertSound").textContent=soundName(activeSound);renderConcertSetlist()}renderSetlist()}

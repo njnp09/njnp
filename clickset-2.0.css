@@ -421,3 +421,543 @@ body.audioSettingsOpen:after{content:"";position:fixed;inset:0;z-index:170;backg
  color:var(--accent);
  outline:none;
 }
+
+
+/* =========================================================
+   CLICKSET 2.3.0 · MILLORA VISUAL I D'ÚS
+   No modifica motor d'àudio ni detecció BPM.
+   ========================================================= */
+
+:root{
+  --cs-radius-xl:28px;
+  --cs-radius-lg:20px;
+  --cs-radius-md:14px;
+  --cs-gap:14px;
+  --cs-fast:.16s;
+  --cs-ease:cubic-bezier(.2,.8,.2,1);
+}
+
+/* Jerarquia global */
+body{
+  font-feature-settings:"tnum" 1,"ss01" 1;
+}
+button{
+  transition:
+    transform var(--cs-fast) var(--cs-ease),
+    box-shadow var(--cs-fast) var(--cs-ease),
+    border-color var(--cs-fast) var(--cs-ease),
+    background var(--cs-fast) var(--cs-ease),
+    opacity var(--cs-fast) var(--cs-ease);
+}
+button:hover{
+  border-color:color-mix(in srgb,var(--accent) 38%,var(--border));
+}
+button:focus-visible{
+  outline:2px solid var(--accent);
+  outline-offset:2px;
+}
+
+/* Pantalla inicial */
+.chooserCard{
+  max-width:1040px;
+  padding:26px;
+  border-radius:30px;
+}
+.chooserTop{
+  margin-bottom:20px;
+}
+.chooserSubtitle{
+  font-size:16px;
+  line-height:1.45;
+}
+.homeBrand{
+  gap:18px;
+}
+.homeBrand img{
+  width:126px;
+  height:92px;
+  border-radius:20px;
+}
+.homeBrand h1{
+  letter-spacing:.045em;
+}
+.grid{
+  gap:16px;
+}
+.card{
+  min-height:150px;
+  padding:20px;
+  border-radius:20px;
+}
+.card h2,.card h3{
+  font-size:22px;
+  line-height:1.12;
+}
+.cardLogo{
+  width:64px;
+  height:64px;
+  border-radius:16px;
+}
+.cardActions{
+  margin-top:18px;
+}
+.recentSection{
+  margin-top:32px;
+}
+.recentCard{
+  min-height:76px;
+  padding:14px;
+  border-radius:18px;
+}
+.recentCard img,.recentFallback{
+  width:54px;
+  height:54px;
+  border-radius:13px;
+}
+
+/* Estructura principal */
+.app{
+  gap:12px;
+  padding:10px;
+}
+.sidebar,.main{
+  border-radius:26px;
+}
+.sidebar{
+  box-shadow:0 18px 50px rgba(0,0,0,.30);
+}
+.sideHead{
+  min-height:76px;
+  padding:18px;
+}
+.sideHead h2{
+  font-size:28px;
+  letter-spacing:-.03em;
+}
+.sideHead span{
+  padding:6px 10px;
+  border:1px solid var(--border);
+  border-radius:999px;
+  background:rgba(255,255,255,.035);
+}
+.setlist{
+  padding:9px;
+}
+.songItem{
+  min-height:48px;
+  margin:3px 0;
+  padding:10px;
+  border-radius:13px;
+}
+.songItem.active{
+  transform:translateX(2px);
+}
+.songItem .title{
+  line-height:1.16;
+}
+
+/* Capçalera superior */
+.top{
+  min-height:60px;
+  gap:14px;
+}
+.topIdentity{
+  min-width:0;
+}
+#position{
+  font-size:17px;
+  letter-spacing:.02em;
+}
+.topBtns{
+  gap:9px;
+}
+.topBtns .smallBtn,
+.editModeBadge.insideApp{
+  min-height:46px;
+  padding:10px 15px;
+  border-radius:14px;
+}
+
+/* Escenari central */
+.stage{
+  position:relative;
+  border-radius:30px;
+  padding:14px 24px 10px;
+  overflow:hidden;
+}
+.stageStatusLine{
+  position:absolute;
+  top:12px;
+  left:50%;
+  transform:translateX(-50%);
+  color:rgba(255,255,255,.16);
+  font-size:10px;
+  font-weight:900;
+  letter-spacing:.22em;
+  white-space:nowrap;
+  pointer-events:none;
+}
+.song{
+  max-width:92%;
+  line-height:1.01;
+  margin-top:14px;
+  text-wrap:balance;
+}
+.bpm{
+  text-shadow:0 12px 42px rgba(0,0,0,.38);
+}
+.label{
+  letter-spacing:.25em;
+}
+.liveBpmAdjust button{
+  min-height:42px;
+}
+.beatDots{
+  margin-top:10px;
+}
+
+/* Estat de directe */
+.liveState{
+  min-width:114px;
+  justify-content:center;
+  padding:8px 13px;
+  font-size:12px;
+  letter-spacing:.09em;
+}
+body.is-playing .stage{
+  box-shadow:
+    inset 0 1px rgba(255,255,255,.06),
+    0 0 0 1px rgba(53,224,139,.14),
+    0 18px 45px rgba(0,0,0,.24);
+}
+body.is-playing .song{
+  animation:csSongLive .35s var(--cs-ease);
+}
+@keyframes csSongLive{
+  from{opacity:.72;transform:translateY(5px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+/* Franja d'informació */
+.infoStrip{
+  border:1px solid var(--border);
+  border-radius:22px;
+  background:linear-gradient(160deg,rgba(255,255,255,.035),rgba(255,255,255,.012));
+  padding:10px 14px;
+}
+.nextup{
+  font-size:18px;
+}
+.liveMeta{
+  gap:8px;
+}
+.liveMetaBtn,.trackStatus{
+  min-height:44px;
+  padding:9px 13px!important;
+  font-size:13px;
+}
+.trackStatus{
+  max-width:none;
+}
+.trackControlStack{
+  min-width:0;
+}
+.trackControlStack .trackStatus{
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.trackControlStack .removeTrackLiveBtn{
+  margin-top:1px;
+}
+
+/* Controls principals */
+.controls{
+  gap:12px;
+}
+.big{
+  min-height:108px;
+  border-radius:22px;
+  font-size:25px;
+}
+.big.play{
+  font-size:29px;
+  letter-spacing:.01em;
+}
+.big:hover{
+  box-shadow:0 14px 34px rgba(0,0,0,.32);
+}
+.big.play:hover{
+  box-shadow:0 0 0 1px rgba(255,211,77,.24),0 18px 42px rgba(255,211,77,.15);
+}
+
+/* Transició en canviar de cançó */
+.song,.bpm,.nextup,.parentLabel{
+  transition:
+    opacity .18s var(--cs-ease),
+    transform .18s var(--cs-ease),
+    color .18s var(--cs-ease);
+}
+
+/* Editor */
+.editorPanel{
+  padding:22px;
+}
+.editorPanel .panelHead{
+  margin-bottom:12px;
+  border-bottom:1px solid var(--border);
+}
+.editorPanel .panelHead h2{
+  font-size:28px;
+}
+.editorGroup{
+  padding:16px;
+  margin:14px 0;
+  border-radius:20px;
+}
+.editorGroupTitle strong{
+  font-size:17px;
+}
+.addSongBar{
+  border-radius:18px;
+}
+.editorRow{
+  padding:10px;
+  border:1px solid rgba(255,255,255,.06);
+  border-radius:14px;
+  background:rgba(255,255,255,.018);
+}
+.editorRow:hover{
+  border-color:rgba(255,255,255,.11);
+}
+.dragHandle{
+  width:36px;
+  height:44px;
+  border-radius:10px;
+  background:rgba(255,255,255,.035);
+}
+.soundGrid{
+  gap:12px;
+}
+.soundChoice{
+  border-radius:16px;
+}
+.routingPresets button{
+  min-height:46px;
+}
+
+/* Modals */
+.modalCard{
+  border-radius:26px;
+  padding:22px;
+}
+.modalActions button{
+  min-height:44px;
+}
+.keyDisplay{
+  border-radius:18px;
+}
+
+/* Mode concert */
+.concertMode{
+  gap:10px;
+  padding:10px;
+}
+.concertSidebar,.concertMain{
+  border-radius:26px;
+}
+.concertStage{
+  border-radius:28px;
+}
+.concertControls{
+  gap:12px;
+}
+.concertBtn{
+  border-radius:22px;
+}
+
+/* Mode clar: mantenim l'estètica però amb contrast net */
+body.light-theme .stage,
+body.light-theme .infoStrip{
+  background:linear-gradient(160deg,rgba(255,255,255,.62),rgba(255,255,255,.28));
+}
+body.light-theme .stageStatusLine{
+  color:rgba(23,32,40,.18);
+}
+body.light-theme .editorRow{
+  background:rgba(255,255,255,.35);
+  border-color:rgba(23,32,40,.08);
+}
+
+/* Pantalles mitjanes */
+@media(min-width:751px) and (max-width:1180px){
+  .app{grid-template-columns:290px minmax(0,1fr)}
+  .topBtns .smallBtn,
+  .editModeBadge.insideApp{
+    padding:9px 11px;
+    font-size:13px;
+  }
+  .song{font-size:clamp(30px,4vw,52px)}
+  .bpm{font-size:clamp(115px,18vw,230px)}
+  .big{font-size:21px}
+  .big.play{font-size:25px}
+}
+
+/* Alçades reduïdes: tot visible sense scroll */
+@media(min-width:751px) and (max-height:900px){
+  .main{
+    grid-template-rows:auto minmax(0,1fr) auto 92px;
+    gap:7px;
+  }
+  .top{min-height:50px}
+  .stage{
+    padding-top:7px;
+    padding-bottom:4px;
+  }
+  .stageStatusLine{top:7px}
+  .song{
+    margin-top:9px;
+    font-size:clamp(26px,3.5vw,46px);
+  }
+  .bpm{
+    font-size:clamp(112px,17vh,185px);
+  }
+  .label{font-size:15px}
+  .liveBpmAdjust{margin:3px auto}
+  .liveBpmAdjust button{min-height:36px;padding:6px 9px}
+  .beatDots{margin:5px auto 1px}
+  .infoStrip{padding:7px 12px}
+  .liveMetaBtn,.trackStatus{min-height:38px}
+  .controls{height:92px}
+  .big{min-height:92px}
+}
+
+/* Mòbil i tauleta */
+@media(max-width:750px){
+  .app{
+    padding:6px;
+    gap:6px;
+    grid-template-rows:29vh minmax(0,1fr);
+  }
+  .sidebar{height:29vh}
+  .main{
+    height:calc(71vh - 12px);
+    padding:8px;
+  }
+  .sideHead{
+    min-height:52px;
+    padding:10px 12px;
+  }
+  .sideHead h2{font-size:21px}
+  .songItem{
+    min-height:41px;
+    padding:7px 8px;
+  }
+  .top{
+    min-height:40px;
+  }
+  .topBtns{
+    gap:5px;
+    flex-wrap:nowrap;
+  }
+  .topBtns .smallBtn,
+  .editModeBadge.insideApp{
+    min-height:36px;
+    padding:6px 8px;
+    font-size:10px;
+    border-radius:10px;
+  }
+  .liveState{
+    min-width:auto;
+    padding:6px 8px;
+    font-size:9px;
+  }
+  #position{font-size:12px}
+  .stage{
+    border-radius:18px;
+    padding:5px 7px;
+  }
+  .stageStatusLine{display:none}
+  .song{
+    margin-top:0;
+    max-width:100%;
+    font-size:clamp(23px,7vw,39px);
+  }
+  .bpm{
+    font-size:clamp(88px,23vw,165px);
+  }
+  .label{font-size:13px}
+  .liveBpmAdjust button{
+    min-width:40px;
+    min-height:32px;
+    padding:5px;
+    font-size:12px;
+  }
+  .infoStrip{
+    border-radius:14px;
+    padding:6px 8px;
+  }
+  .nextup{
+    font-size:13px;
+  }
+  .liveMeta{
+    gap:4px;
+  }
+  .liveMetaBtn,.trackStatus{
+    min-height:32px;
+    padding:5px 7px!important;
+    font-size:10px;
+  }
+  .controls{
+    gap:5px;
+  }
+  .big{
+    min-height:62px;
+    border-radius:14px;
+    font-size:15px;
+  }
+  .big.play{
+    font-size:18px;
+  }
+  .editorPanel{
+    padding:12px;
+  }
+  .editorPanel .panelHead h2{
+    font-size:22px;
+  }
+  .editorGroup{
+    padding:12px;
+    border-radius:16px;
+  }
+}
+
+/* Mòbil molt estret */
+@media(max-width:480px){
+  .topBtns .smallBtn,
+  .editModeBadge.insideApp{
+    font-size:9px;
+    padding:5px 6px;
+  }
+  .liveState{display:none}
+  .song{font-size:clamp(20px,6.4vw,34px)}
+  .bpm{font-size:clamp(78px,22vw,145px)}
+  .nextup{font-size:11px}
+}
+
+/* Respectar usuaris que prefereixen menys moviment */
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{
+    animation-duration:.01ms!important;
+    animation-iteration-count:1!important;
+    transition-duration:.01ms!important;
+    scroll-behavior:auto!important;
+  }
+}
+
+.songChangePulse{
+  animation:csSongChange .24s var(--cs-ease);
+}
+@keyframes csSongChange{
+  0%{opacity:.35;transform:translateY(5px)}
+  100%{opacity:1;transform:translateY(0)}
+}
