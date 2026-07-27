@@ -1,17 +1,22 @@
-CLICKSET 2.2.2 — CORRECCIÓ SAFARI EN CARREGAR PISTES
+CLICKSET 2.2.3 — BPM VISIBLE + PISTA COMPACTA
 
-CORRECCIONS:
-- Safari ja no hauria d'obrir l'MP3 com una pàgina/reproductor independent.
-- Nou selector temporal d'arxius, més estable en Safari.
-- Arrossegar un MP3 damunt la finestra ja no substitueix l'app.
-- Es mantenen detecció BPM, substituir/eliminar pista, modificar setlist i còpia completa.
+CANVIS:
+- La detecció de BPM s'executa també quan carregues la pista des de la pantalla principal o mode concert.
+- Mostra “ANALITZANT BPM…” mentre treballa.
+- Mostra sempre el resultat o l'error; ja no falla silenciosament.
+- Amb confiança >=90%, aplica automàticament el BPM.
+- Amb confiança inferior, demana confirmació.
+- Segona via de descodificació per a Safari.
+- “Eliminar pista” és ara petit i queda davall del nom de la pista.
+- Manté la confirmació abans d'eliminar.
+- La zona inferior s'ha compactat perquè PLAY, ANTERIOR i SEGÜENT no quedin tapats.
 
 PUBLICACIÓ:
 1. Guarda la versió actual.
 2. Esborra els fitxers de l'arrel del repositori.
-3. Puja tots els fitxers d'aquest ZIP directament a l'arrel.
+3. Puja els fitxers d'aquest ZIP directament a l'arrel.
 4. Fes Commit changes.
-5. Obre https://njnp.njnp09.workers.dev/?v=222
+5. Obre https://njnp.njnp09.workers.dev/?v=223
 
 COMPROVACIÓ:
-La pestanya i l'etiqueta inferior han d'indicar 2.2.2.
+La pestanya i l'etiqueta inferior han d'indicar 2.2.3.

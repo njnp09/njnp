@@ -528,7 +528,18 @@ async function handleQuickTrackFile(file){
   song.countInBars=song.countInBars??1;song.trackOriginalBpm=song.trackOriginalBpm||song.bpm||120;
   if(oldId)deleteTrack(oldId).catch(()=>{});
   save();render();
-  const detected=await applyDetectedBpm(file,song,{});if(detected){rebuildFlat();render()}
+  const trackButton=$("normalTrack");
+  const concertTrackButton=$("concertTrack");
+  const previousNormal=trackButton?.textContent||"";
+  const previousConcert=concertTrackButton?.textContent||"";
+  if(trackButton){trackButton.textContent="⏳ ANALITZANT BPM…";trackButton.disabled=true}
+  if(concertTrackButton){concertTrackButton.textContent="⏳ ANALITZANT BPM…";concertTrackButton.disabled=true}
+  try{await applyDetectedBpm(file,song,{})}
+  finally{
+   if(trackButton)trackButton.disabled=false;
+   if(concertTrackButton)concertTrackButton.disabled=false;
+   rebuildFlat();render();
+  }
  }catch(error){console.error(error);alert("No s’ha pogut guardar la pista d’àudio.")}
 }
 async function loadCurrentTrackBuffer(){
@@ -691,7 +702,18 @@ function analyzeBpmWindow(buffer,startSec,durationSec=22){
 }
 async function detectBpmFromFile(file,onProgress=()=>{}){
  await ensureAudio();onProgress('Descodificant la pista…');
- const bytes=await file.arrayBuffer(),buffer=await audioCtx.decodeAudioData(bytes.slice(0));
+ const bytes=await file.arrayBuffer();
+ let buffer;
+ try{
+  buffer=await audioCtx.decodeAudioData(bytes.slice(0));
+ }catch(mainError){
+  // Segona via per Safari, que en alguns casos falla amb el context principal.
+  const Decoder=window.AudioContext||window.webkitAudioContext;
+  if(!Decoder)throw mainError;
+  const decoder=new Decoder();
+  try{buffer=await decoder.decodeAudioData(bytes.slice(0))}
+  finally{try{await decoder.close()}catch(e){}}
+ }
  const duration=buffer.duration;if(duration<12)throw new Error('La pista és massa curta per detectar-ne el tempo amb precisió.');
  const windowLength=Math.min(24,Math.max(14,duration*.18));
  const positions=duration<45?[Math.max(0,(duration-windowLength)/2)]:[.08,.30,.52,.74].map(p=>Math.min(Math.max(0,duration-windowLength),duration*p));
@@ -712,15 +734,43 @@ async function detectBpmFromFile(file,onProgress=()=>{}){
  return {bpm:Math.round(bpm),confidence,duration,windows:results.map(r=>r.bpm)}
 }
 async function applyDetectedBpm(file,song,ui={}){
- const setStatus=text=>{if(ui.hint)ui.hint.textContent=text;if(ui.label)ui.label.classList.toggle('bpmAnalyzing',/Analitzant|Descodificant/.test(text))};
+ const setStatus=text=>{
+  if(ui.hint)ui.hint.textContent=text;
+  if(ui.label)ui.label.classList.toggle('bpmAnalyzing',/Analitzant|Descodificant/.test(text));
+  showAudioToast(text);
+ };
  try{
-  const result=await detectBpmFromFile(file,setStatus);song.detectedTrackBpm=result.bpm;song.bpmDetectionConfidence=result.confidence;song.trackOriginalBpm=result.bpm;
-  const current=Math.round(Number(song.bpm)||120);let apply=false;
-  if(result.confidence>=90){apply=true;setStatus(`BPM detectat amb confiança alta: ${result.bpm} (${result.confidence}%). Aplicat automàticament.`)}
-  else{apply=confirm(`ClickSet ha detectat ${result.bpm} BPM amb una confiança del ${result.confidence}%.\n\nEl tempo actual és ${current} BPM. Vols aplicar el tempo detectat?`);setStatus(apply?`BPM detectat: ${result.bpm} (${result.confidence}%). Aplicat.`:`BPM detectat: ${result.bpm} (${result.confidence}%). Has mantingut ${current} BPM.`)}
-  if(apply){song.bpm=result.bpm;if(ui.bpmButton)ui.bpmButton.textContent=result.bpm;if(ui.originalInput)ui.originalInput.value=result.bpm}
-  save();return result
- }catch(error){console.warn('Detecció BPM',error);setStatus(`Pista guardada. BPM no detectat: ${error.message||'ritme poc clar'}`);return null}
+  const result=await detectBpmFromFile(file,setStatus);
+  song.detectedTrackBpm=result.bpm;
+  song.bpmDetectionConfidence=result.confidence;
+  song.trackOriginalBpm=result.bpm;
+  const current=Math.round(Number(song.bpm)||120);
+  let apply=false;
+  if(result.confidence>=90){
+   apply=true;
+  }else{
+   apply=confirm(`BPM detectat: ${result.bpm}\nConfiança: ${result.confidence}%\nTempo actual: ${current}\n\nVols aplicar el BPM detectat?`);
+  }
+  if(apply){
+   song.bpm=result.bpm;
+   if(ui.bpmButton)ui.bpmButton.textContent=result.bpm;
+   if(ui.originalInput)ui.originalInput.value=result.bpm;
+   save();rebuildFlat();render();
+   const message=`✓ BPM ${result.bpm} aplicat (${result.confidence}% de confiança)`;
+   setStatus(message);
+   alert(`ClickSet ha detectat ${result.bpm} BPM amb una confiança del ${result.confidence}%.\n\nEl tempo del metrònom s'ha actualitzat.`);
+  }else{
+   save();
+   setStatus(`BPM detectat: ${result.bpm} (${result.confidence}%). Tempo anterior mantingut.`);
+  }
+  return result;
+ }catch(error){
+  console.warn('Detecció BPM',error);
+  const message=`No s'ha pogut detectar el BPM: ${error.message||'ritme poc clar'}`;
+  setStatus(message);
+  alert(`La pista s'ha guardat, però ClickSet no n'ha pogut detectar el tempo amb prou precisió.\n\n${error.message||''}`);
+  return null;
+ }
 }
 async function exportFullBackup(){
  try{

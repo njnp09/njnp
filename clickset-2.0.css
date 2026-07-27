@@ -313,3 +313,65 @@ body.audioSettingsOpen:after{content:"";position:fixed;inset:0;z-index:170;backg
 }
 
 #quickTrackInput{display:none!important}
+
+
+/* ClickSet 2.2.3 · pista compacta i pantalla sense superposicions */
+.trackControlStack{
+ display:grid;
+ grid-template-rows:auto auto;
+ gap:4px;
+ min-width:0;
+ width:100%;
+ align-self:stretch;
+}
+.trackControlStack .trackStatus{
+ width:100%;
+ min-width:0;
+}
+.trackControlStack .removeTrackLiveBtn{
+ justify-self:center;
+ width:auto;
+ min-height:0;
+ padding:2px 8px;
+ border:0;
+ background:transparent;
+ color:#d98b91;
+ font-size:10px;
+ line-height:1.2;
+ font-weight:800;
+ opacity:.85;
+ text-transform:none;
+}
+.trackControlStack .removeTrackLiveBtn:hover,
+.trackControlStack .removeTrackLiveBtn:focus{
+ background:rgba(220,115,120,.09);
+ color:#ffb5bd;
+}
+.trackStatusBtn:disabled{
+ opacity:.75;
+ cursor:wait;
+ border-color:var(--accent)!important;
+ color:var(--accent)!important;
+}
+@media(min-width:751px){
+ .liveMeta{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .infoStrip{min-height:82px;padding-top:7px;padding-bottom:7px}
+ .trackControlStack .trackStatus{min-height:42px!important}
+ .controls{height:118px;min-height:118px}
+ .editModeBadge{bottom:134px}
+}
+@media(min-width:751px) and (max-height:900px){
+ .main{grid-template-rows:auto minmax(0,1fr) 72px 96px;gap:6px}
+ .stage{padding-top:4px;padding-bottom:2px}
+ .song{font-size:clamp(27px,3.7vw,50px)}
+ .bpm{font-size:clamp(120px,18vh,190px)}
+ .infoStrip{min-height:72px;padding:5px 12px}
+ .liveMetaBtn,.trackStatus{min-height:38px!important}
+ .controls{height:96px;min-height:96px}
+ .big{font-size:22px}
+ .editModeBadge{bottom:108px}
+}
+@media(max-width:750px){
+ .trackControlStack{gap:2px}
+ .trackControlStack .removeTrackLiveBtn{font-size:10px;padding:3px 7px}
+}
