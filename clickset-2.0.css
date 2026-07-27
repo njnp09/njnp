@@ -287,3 +287,27 @@ body.audioSettingsOpen:after{content:"";position:fixed;inset:0;z-index:170;backg
 @keyframes bpmScan{0%,100%{opacity:.72}50%{opacity:1}}
 .chooserTools #exportBackupBtn,.chooserTools #restoreBackupBtn{white-space:nowrap}
 @media(max-width:720px){.chooserTools #exportBackupBtn,.chooserTools #restoreBackupBtn{flex-basis:calc(50% - 4px)}}
+
+
+/* ClickSet 2.2.1 · substitució i eliminació de pistes */
+.removeTrackLiveBtn{
+ display:inline-flex;
+ align-items:center;
+ justify-content:center;
+ padding:8px 11px;
+ border:1px solid #8f3d46;
+ border-radius:999px;
+ background:#4b2024;
+ color:#ffd6da;
+ font-weight:900;
+ cursor:pointer;
+}
+.removeTrackLiveBtn:hover,.removeTrackLiveBtn:focus{
+ background:#6b2930;
+ border-color:#dc7378;
+ outline:none;
+}
+.removeTrackLiveBtn:active{transform:scale(.97)}
+@media(max-width:600px){
+ .removeTrackLiveBtn{font-size:11px;padding:6px 9px}
+}

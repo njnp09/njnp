@@ -280,7 +280,9 @@ function renderConcertSetlist(){
  });
  requestAnimationFrame(()=>{const active=box.querySelector('.active');if(active)active.scrollIntoView({block:'center',behavior:'smooth'})})
 }
-function render(){flatten();if(!flat.length)return;const x=flat[current],n=flat[(current+1)%flat.length],accentOn=Boolean(x.song.accentFirst),activeSound=x.song.sound||currentSetlist().sound||"classic";$("parentLabel").textContent=x.parent;$("song").textContent=x.song.name;$("bpm").textContent=x.song.bpm;$("bpm").className="bpm "+bpmClass(x.song.bpm);$("position").textContent=`${current+1} / ${flat.length}`;$("nextup").textContent=`Després: ${n.song.name} · ${n.song.bpm} BPM`;if($("normalAccent")){$("normalAccent").textContent=`Accent: ${accentOn?"ON":"OFF"}`;$("normalAccent").classList.toggle("active",accentOn)}if($("normalSound"))$("normalSound").textContent=soundName(activeSound);const trackLabel=x.song.trackName?`🎵 ${x.song.trackName}`:"🎵 Carregar pista";if($("normalTrack")){ $("normalTrack").textContent=trackLabel; $("normalTrack").title=x.song.trackName?"Clica per substituir la pista":"Clica per carregar una pista"; }if($("concertTrack")){ $("concertTrack").textContent=trackLabel; $("concertTrack").title=x.song.trackName?"Clica per substituir la pista":"Clica per carregar una pista"; }renderBeatDots();if($("concertParent")){$("concertParent").textContent=x.parent;$("concertSong").textContent=x.song.name;$("concertBpm").textContent=x.song.bpm;$("concertBpm").className="concertBpm "+bpmClass(x.song.bpm);$("concertPosition").textContent=`${current+1} / ${flat.length}`;$("concertNext").textContent=`Després: ${n.song.name} · ${n.song.bpm} BPM`;$("concertMeter").textContent=x.song.meter||"4/4";$("concertAccent").textContent=`Accent: ${accentOn?"ON":"OFF"}`;$("concertAccent").classList.toggle("active",accentOn);$("concertSound").textContent=soundName(activeSound);renderConcertSetlist()}renderSetlist()}
+function render(){flatten();if(!flat.length)return;const x=flat[current],n=flat[(current+1)%flat.length],accentOn=Boolean(x.song.accentFirst),activeSound=x.song.sound||currentSetlist().sound||"classic";$("parentLabel").textContent=x.parent;$("song").textContent=x.song.name;$("bpm").textContent=x.song.bpm;$("bpm").className="bpm "+bpmClass(x.song.bpm);$("position").textContent=`${current+1} / ${flat.length}`;$("nextup").textContent=`Després: ${n.song.name} · ${n.song.bpm} BPM`;if($("normalAccent")){$("normalAccent").textContent=`Accent: ${accentOn?"ON":"OFF"}`;$("normalAccent").classList.toggle("active",accentOn)}if($("normalSound"))$("normalSound").textContent=soundName(activeSound);const trackLabel=x.song.trackName?`🎵 ${x.song.trackName}`:"🎵 Carregar pista";if($("normalTrack")){ $("normalTrack").textContent=trackLabel; $("normalTrack").title=x.song.trackName?"Clica per substituir la pista":"Clica per carregar una pista"; }if($("concertTrack")){ $("concertTrack").textContent=trackLabel; $("concertTrack").title=x.song.trackName?"Clica per substituir la pista":"Clica per carregar una pista"; }
+if($("normalRemoveTrack"))$("normalRemoveTrack").classList.toggle("hidden",!x.song.trackId);
+if($("concertRemoveTrack"))$("concertRemoveTrack").classList.toggle("hidden",!x.song.trackId);renderBeatDots();if($("concertParent")){$("concertParent").textContent=x.parent;$("concertSong").textContent=x.song.name;$("concertBpm").textContent=x.song.bpm;$("concertBpm").className="concertBpm "+bpmClass(x.song.bpm);$("concertPosition").textContent=`${current+1} / ${flat.length}`;$("concertNext").textContent=`Després: ${n.song.name} · ${n.song.bpm} BPM`;$("concertMeter").textContent=x.song.meter||"4/4";$("concertAccent").textContent=`Accent: ${accentOn?"ON":"OFF"}`;$("concertAccent").classList.toggle("active",accentOn);$("concertSound").textContent=soundName(activeSound);renderConcertSetlist()}renderSetlist()}
 function toggleCurrentAccent(){
  if(!flat.length)return;
  const song=flat[current].song;
@@ -459,6 +461,28 @@ async function deleteTrack(id){
  })
 }
 function makeTrackId(){return `track_${Date.now()}_${Math.random().toString(36).slice(2,10)}`}
+async function removeSongTrack(song,{ask=true}={}){
+ if(!song?.trackId)return false;
+ if(ask&&!confirm(`Eliminar la pista “${song.trackName||""}” d’aquesta cançó?`))return false;
+ const oldId=song.trackId;
+ // Si la pista està sonant, aturam abans d'esborrar-la.
+ try{if(trackSource||trackAudioEl)stopTrack()}catch(e){}
+ try{await deleteTrack(oldId)}catch(error){console.warn("No s'ha pogut eliminar el fitxer d'àudio",error)}
+ delete song.trackId;
+ delete song.trackName;
+ delete song.trackDuration;
+ delete song.trackDetectedBpm;
+ delete song.trackBpmConfidence;
+ song.timeStretch=false;
+ save();
+ render();
+ return true;
+}
+async function removeCurrentTrack(){
+ if(!flat.length)return;
+ await removeSongTrack(flat[current].song,{ask:true});
+}
+
 function openQuickTrackPicker(){
  if(!flat.length)return;
  const input=$("quickTrackInput");
@@ -751,8 +775,46 @@ function renderEditorItems(sl){
    const originalBpmInput=row.querySelector('.trackOriginalBpm'),stretchToggle=row.querySelector('.timeStretch'),stretchHint=row.querySelector('.stretchHint');
    originalBpmInput.oninput=e=>song.trackOriginalBpm=Math.max(20,Math.min(400,Number(e.target.value)||Number(song.bpm)||120));
    stretchToggle.onchange=e=>{song.timeStretch=e.target.checked;stretchHint.textContent=song.timeStretch?'Adapta la pista al BPM actual. Pot variar lleugerament el to.':'Pista a velocitat original.'};
-   trackInput.onchange=async e=>{const file=e.target.files[0];if(!file)return;if(file.size>150*1024*1024){alert('La pista és massa gran. Màxim recomanat: 150 MB.');trackInput.value='';return}try{if(song.trackId)await deleteTrack(song.trackId);const id=makeTrackId();await putTrack(id,file);song.trackId=id;song.trackName=file.name;song.trackVolume=song.trackVolume??0.85;song.countInBars=song.countInBars??1;song.trackOriginalBpm=song.trackOriginalBpm||song.bpm;song.timeStretch=Boolean(song.timeStretch);trackLabel.childNodes[0].nodeValue=`🎵 ${file.name}`;removeTrackBtn.classList.remove('hidden');trackHint.textContent='Pista guardada. Preparant detecció del BPM…';await applyDetectedBpm(file,song,{hint:trackHint,label:trackLabel,bpmButton:row.querySelector('.bpmEditBtn'),originalInput:originalBpmInput})}catch(err){console.error(err);alert('No s’ha pogut guardar la pista en aquest dispositiu.')}};
-   removeTrackBtn.onclick=async()=>{if(!song.trackId)return;if(!confirm(`Eliminar la pista “${song.trackName||''}” d’aquesta cançó?`))return;await deleteTrack(song.trackId);delete song.trackId;delete song.trackName;removeTrackBtn.classList.add('hidden');trackLabel.childNodes[0].nodeValue='🎵 Afegir MP3/WAV';trackHint.textContent='Sense pista associada.'};
+   trackInput.onclick=()=>{trackInput.value=""};
+   trackInput.onchange=async e=>{
+    const file=e.target.files?.[0];
+    if(!file)return;
+    if(file.size>150*1024*1024){alert('La pista és massa gran. Màxim recomanat: 150 MB.');trackInput.value='';return}
+    const oldId=song.trackId||"";
+    const id=makeTrackId();
+    try{
+     // Primer guardam la nova. Només després eliminam l'antiga, per no quedar sense pista si falla.
+     await putTrack(id,file);
+     song.trackId=id;
+     song.trackName=file.name;
+     song.trackVolume=song.trackVolume??0.85;
+     song.countInBars=song.countInBars??1;
+     song.trackOriginalBpm=song.trackOriginalBpm||song.bpm;
+     song.timeStretch=Boolean(song.timeStretch);
+     if(oldId&&oldId!==id)deleteTrack(oldId).catch(()=>{});
+     trackLabel.childNodes[0].nodeValue=`🎵 ${file.name}`;
+     removeTrackBtn.classList.remove('hidden');
+     trackHint.textContent='Pista substituïda i guardada. Preparant detecció del BPM…';
+     save();
+     render();
+     await applyDetectedBpm(file,song,{hint:trackHint,label:trackLabel,bpmButton:row.querySelector('.bpmEditBtn'),originalInput:originalBpmInput});
+    }catch(err){
+     console.error(err);
+     try{await deleteTrack(id)}catch(e){}
+     alert('No s’ha pogut guardar la pista en aquest dispositiu.');
+    }finally{
+     // Necessari perquè Safari permeti tornar a seleccionar el mateix arxiu.
+     trackInput.value='';
+    }
+   };
+   removeTrackBtn.onclick=async()=>{
+    const removed=await removeSongTrack(song,{ask:true});
+    if(!removed)return;
+    removeTrackBtn.classList.add('hidden');
+    trackLabel.childNodes[0].nodeValue='🎵 Afegir MP3/WAV';
+    trackHint.textContent='Sense pista associada. Ja pots carregar-ne una altra.';
+    trackInput.value='';
+   };
    row.querySelector('.bpmEditBtn').onclick=()=>openBpmEditor(song,row.querySelector('.bpmEditBtn'));
    const soundButton=row.querySelector('.soundBtn'),pickerBox=row.querySelector('.songSoundPicker');
    soundButton.onclick=()=>{pickerBox.classList.toggle('hidden');if(!pickerBox.childNodes.length)pickerBox.appendChild(soundPicker(song.sound||'',id=>{song.sound=id;soundButton.textContent=soundName(id)},true))};
@@ -950,11 +1012,14 @@ $("normalSound").onclick=openQuickSoundMenu;
 $("concertSound").onclick=openQuickSoundMenu;
 $("normalTrack").onclick=openQuickTrackPicker;
 $("concertTrack").onclick=openQuickTrackPicker;
+$("normalRemoveTrack").onclick=removeCurrentTrack;
+$("concertRemoveTrack").onclick=removeCurrentTrack;
+$("quickTrackInput").addEventListener("click",e=>{e.currentTarget.value=""});
 $("quickTrackInput").onchange=async e=>{
  const file=e.target.files?.[0];
  if(!file)return;
- await handleQuickTrackFile(file);
- e.target.value="";
+ try{await handleQuickTrackFile(file)}
+ finally{e.target.value=""}
 };
 $("closeQuickSound").onclick=closeQuickSoundMenu;
 $("quickSoundMenu").onclick=e=>{if(e.target===$("quickSoundMenu"))closeQuickSoundMenu()};

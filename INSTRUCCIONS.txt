@@ -1,22 +1,23 @@
-CLICKSET 2.2.0 — BPM AUTOMÀTIC + CÒPIA COMPLETA
+CLICKSET 2.2.1 — GESTIÓ DE PISTES CORREGIDA
 
-Base: versió estable 2.1.3, amb els mateixos colors.
+Base: ClickSet 2.2.0
 
-NOVETATS
-- Modificar setlist ràpid.
-- Sortida d’àudio compacta.
-- Còpia completa i restauració de grups, repertoris, tempos, ordre, configuració i pistes.
-- Detecció automàtica de BPM quan carregues MP3/WAV.
-- Analitza diversos fragments de la pista.
-- Confiança >=90%: aplica automàticament.
-- Confiança inferior: demana confirmació.
+CANVIS:
+- Es pot carregar una pista nova directament damunt una pista existent.
+- També funciona quan el nou arxiu té exactament el mateix nom.
+- La pista antiga només s'elimina després d'haver guardat correctament la nova.
+- Botó visible “ELIMINAR PISTA” a la pantalla normal.
+- Botó visible “ELIMINAR PISTA” al mode concert.
+- Botó “Eliminar pista” corregit dins l'editor.
+- En eliminar-la, es netegen les dades associades i ja es pot carregar una pista nova.
+- Es manté la detecció automàtica de BPM de la versió 2.2.0.
 
-IMPORTANT
-La detecció musical no pot garantir el 100% en pistes amb introduccions lliures, canvis de tempo, ritmes molt sincopats o ambigüitat de mig/doble tempo. ClickSet només aplica automàticament quan la detecció és molt coherent.
+PUBLICACIÓ:
+1. Guarda una còpia de la versió actual.
+2. Esborra els fitxers de l'arrel del repositori.
+3. Puja tots els fitxers d'aquest ZIP directament a l'arrel.
+4. Fes Commit changes.
+5. Obre https://njnp.njnp09.workers.dev/?v=221
 
-PUBLICAR
-1. Conserva una còpia de la 2.1.3.
-2. Esborra els fitxers actuals del repositori.
-3. Puja els fitxers de dins aquest ZIP directament a l’arrel.
-4. Commit changes.
-5. Obre https://njnp.njnp09.workers.dev/?v=220
+COMPROVACIÓ:
+A baix a l'esquerra ha d'aparèixer 2.2.1.
