@@ -1744,3 +1744,168 @@ body.light-theme .tempoMapRow input{
     font-size:18px;
   }
 }
+
+
+/* CLICKSET 2.6.0 · CANVI AUTOMÀTIC DE CANÇÓ */
+.autoNextTools{
+  display:grid;
+  gap:6px;
+  padding:10px 12px;
+  margin:7px 0;
+  border:1px solid rgba(111,188,255,.30);
+  border-radius:17px;
+  background:rgba(87,161,224,.07);
+}
+.autoNextHead{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+}
+.autoNextHead>div:first-child{
+  display:grid;
+  grid-template-columns:auto auto;
+  align-items:end;
+  column-gap:10px;
+}
+.autoNextHead small{
+  grid-column:1/-1;
+  color:#9fabb5;
+  font-size:9px;
+  font-weight:950;
+  letter-spacing:.12em;
+}
+.autoNextHead strong{
+  color:#74bfff;
+  font-size:36px;
+  line-height:.9;
+  font-variant-numeric:tabular-nums;
+}
+.autoNextHead>div:first-child span{
+  color:#dbe7ef;
+  font-size:13px;
+  font-weight:850;
+}
+.autoNextExtend{
+  display:flex;
+  align-items:center;
+  gap:5px;
+}
+.autoNextExtend span{
+  color:var(--muted);
+  font-size:10px;
+  font-weight:850;
+}
+.autoNextExtend button{
+  min-width:39px;
+  min-height:31px;
+  border:1px solid rgba(111,188,255,.28);
+  border-radius:9px;
+  background:#263746;
+  color:#fff;
+  font-weight:950;
+}
+.autoNextBar{
+  height:8px;
+  overflow:hidden;
+  border-radius:999px;
+  background:rgba(255,255,255,.08);
+}
+.autoNextBar i{
+  display:block;
+  width:0;
+  height:100%;
+  border-radius:inherit;
+  background:linear-gradient(90deg,#5aaeff,#8bd2ff);
+  transition:width .18s linear;
+}
+.autoNextMeta{
+  display:flex;
+  justify-content:space-between;
+  color:var(--muted);
+  font-size:9px;
+  font-weight:850;
+}
+.autoNextMeta span:last-child{color:#77c7ff}
+.autoNextApproaching{
+  border-color:rgba(255,207,63,.38);
+  background:rgba(255,207,63,.06);
+}
+.autoNextApproaching .autoNextHead strong{color:var(--accent)}
+.autoNextApproaching .autoNextBar i{background:linear-gradient(90deg,#ffd34d,#ffe181)}
+.autoNextWarning{
+  border-color:rgba(255,155,66,.48);
+  background:rgba(255,155,66,.08);
+}
+.autoNextWarning .autoNextHead strong{color:#ffab50}
+.autoNextWarning .autoNextBar i{background:linear-gradient(90deg,#ffb152,#ff843e)}
+.autoNextLastBar .autoNextHead strong{
+  color:#fff;
+  animation:autoNextPulse .55s ease-in-out infinite alternate;
+}
+@keyframes autoNextPulse{
+  from{transform:scale(1)}
+  to{transform:scale(1.12);text-shadow:0 0 22px rgba(255,155,66,.55)}
+}
+.concertAutoNextTools{
+  width:min(760px,97%);
+  margin:4px auto;
+}
+.autoNextBtn{
+  border:1px solid rgba(111,188,255,.25);
+  border-radius:10px;
+  background:rgba(87,161,224,.07);
+  color:#8dccff;
+  padding:11px 9px;
+  font-weight:900;
+  white-space:nowrap;
+}
+.autoNextCard{
+  width:min(620px,96vw);
+  background:linear-gradient(160deg,#26333e,#1f2a34);
+}
+.autoNextToggle{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:15px;
+  margin:14px 0;
+  border:1px solid rgba(255,255,255,.13);
+  border-radius:15px;
+  background:#33414d;
+  color:#fff;
+  font-weight:850;
+}
+.autoNextToggle input{
+  width:22px;height:22px;
+}
+.autoNextBarsField{
+  display:grid;
+  gap:8px;
+  color:#e7ecef;
+  font-weight:850;
+}
+.autoNextBarsField input{
+  min-height:56px;
+  border:2px solid #d3dadd;
+  border-radius:13px;
+  background:#f3f5f5;
+  color:#16202a;
+  padding:10px 14px;
+  font-size:22px;
+  font-weight:950;
+}
+.autoNextBarsField input:disabled{
+  opacity:.45;
+}
+@media(min-width:751px){
+  .editorRow{grid-template-columns:34px minmax(150px,1fr) 82px 105px 112px 140px minmax(140px,auto) auto}
+}
+@media(max-width:760px){
+  .autoNextHead{align-items:flex-start}
+  .autoNextExtend{flex-wrap:wrap;justify-content:flex-end}
+  .autoNextExtend span{width:100%;text-align:right}
+  .autoNextHead strong{font-size:30px}
+  .autoNextHead>div:first-child span{font-size:11px}
+  .editorRow .autoNextBtn{grid-column:2/4}
+}

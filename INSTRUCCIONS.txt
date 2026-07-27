@@ -1,26 +1,29 @@
-CLICKSET 2.5.5 — BPM SUPERIOR I EDITOR LLEGIBLE
+CLICKSET 2.6.0 — CANVI AUTOMÀTIC DE CANÇÓ
 
-CORRECCIONS:
-- El BPM gran superior s'actualitza quan canvia el tram.
-- El BPM superior i la franja inferior queden sempre sincronitzats.
-- Funciona també en mode concert.
+NOVETATS:
+- Qualsevol cançó pot canviar automàticament a la següent després de X compassos.
+- Funciona tant amb medleys com amb cançons normals.
+- Compte enrere de compassos fins al canvi.
+- Barra de progrés de la cançó.
+- Avisos visuals als darrers compassos.
+- Botons +1 / +2 / +4 per allargar només la cançó actual.
+- L'allargament de cançó és independent de l'allargament del tram de tempo.
+- En arribar a zero, CLICKSET passa a la següent cançó sense aturar el metrònom.
+- Si la següent cançó té pista, intenta iniciar-la amb la seva configuració.
 
-EDITOR DE TEMPOS:
-- Fons més suau i diferenciat.
-- Targetes de cada tram més clares.
-- Camps numèrics amb fons clar i text fosc.
-- Números més grans i visibles.
-- Etiquetes i textos secundaris amb més contrast.
-- Més espai entre trams.
-- Botons finals més clars i fàcils de distingir.
-- Manté l'estil general fosc de CLICKSET.
+CONFIGURACIÓ:
+1. Entra a EDITAR.
+2. A la cançó, prem “⏭ SEGÜENT”.
+3. Activa el canvi automàtic.
+4. Indica quants compassos ha de durar la cançó.
+5. Guarda.
 
 PUBLICACIÓ:
-1. Conserva el ZIP de la 2.5.4.
+1. Conserva el ZIP de la 2.5.5.
 2. Esborra els fitxers actuals de l'arrel del repositori.
 3. Puja tots els fitxers d'aquest ZIP directament a l'arrel.
 4. Fes Commit changes.
-5. Obre https://njnp.njnp09.workers.dev/?v=255
+5. Obre https://njnp.njnp09.workers.dev/?v=260
 
 COMPROVACIÓ:
-La pestanya i l'etiqueta inferior han d'indicar 2.5.5.
+La pestanya i l'etiqueta inferior han d'indicar 2.6.0.

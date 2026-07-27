@@ -8,11 +8,11 @@
 <meta name="theme-color" content="#0d1318">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="cover.png">
-<title>ClickSet 2.5.5</title>
-<link rel="stylesheet" href="clickset-2.0.css?v=255">
+<title>ClickSet 2.6.0</title>
+<link rel="stylesheet" href="clickset-2.0.css?v=260">
 </head>
 <body>
-<div class="buildBadge">2.5.5</div>
+<div class="buildBadge">2.6.0</div>
 <button id="themeToggle" class="themeToggle" type="button" aria-label="Activar mode clar" title="Activar mode clar">☀️</button>
 <button id="editModeBadge" class="editModeBadge locked" type="button" aria-label="Estat del mode edició">🔒 Mode lectura</button>
 <div id="splash" class="splash"><img src="cover.png" alt="ClickSet"></div>
@@ -69,7 +69,25 @@
       <button type="button" data-extend-bars="2">+2</button>
       <button type="button" data-extend-bars="4">+4</button>
     </div>
-  </div><div id="nextup" class="nextup"></div><div class="liveMeta"><button id="normalAccent" class="liveMetaBtn" type="button">Accent: OFF</button><button id="normalSound" class="liveMetaBtn" type="button">❤️ ClickSet Original</button><div class="trackControlStack"><button id="normalTrack" class="trackStatus trackStatusBtn" type="button">🎵 Carregar pista</button><button id="normalRemoveTrack" class="removeTrackLiveBtn hidden" type="button">🗑️ Eliminar pista</button></div></div></section><section class="controls controlsWithPause">
+  </div><div id="nextup" class="nextup"></div>
+<div id="autoNextTools" class="autoNextTools hidden">
+  <div class="autoNextHead">
+    <div>
+      <small>CANVI AUTOMÀTIC DE CANÇÓ</small>
+      <strong id="autoNextCountdown">—</strong>
+      <span id="autoNextText">Canvi en — compassos</span>
+    </div>
+    <div class="autoNextExtend">
+      <span>Allargar cançó:</span>
+      <button type="button" data-extend-song-bars="1">+1</button>
+      <button type="button" data-extend-song-bars="2">+2</button>
+      <button type="button" data-extend-song-bars="4">+4</button>
+    </div>
+  </div>
+  <div class="autoNextBar"><i id="autoNextBarFill"></i></div>
+  <div class="autoNextMeta"><span id="autoNextBarCount">0 / 0 compassos</span><span id="autoNextExtraLabel"></span></div>
+</div>
+<div class="liveMeta"><button id="normalAccent" class="liveMetaBtn" type="button">Accent: OFF</button><button id="normalSound" class="liveMetaBtn" type="button">❤️ ClickSet Original</button><div class="trackControlStack"><button id="normalTrack" class="trackStatus trackStatusBtn" type="button">🎵 Carregar pista</button><button id="normalRemoveTrack" class="removeTrackLiveBtn hidden" type="button">🗑️ Eliminar pista</button></div></div></section><section class="controls controlsWithPause">
       <button id="prev" class="big">◀ ANTERIOR</button>
       <button id="pauseResume" class="big pauseResume hidden">⏸ PAUSA</button>
       <button id="play" class="big play">▶ PLAY</button>
@@ -141,7 +159,25 @@
           <button type="button" data-extend-bars="4">+4</button>
         </div>
       </div>
-      <div id="concertNext" class="concertNext"></div>
+      
+<div id="concertAutoNextTools" class="autoNextTools concertAutoNextTools hidden">
+  <div class="autoNextHead">
+    <div>
+      <small>CANVI AUTOMÀTIC DE CANÇÓ</small>
+      <strong id="concertAutoNextCountdown">—</strong>
+      <span id="concertAutoNextText">Canvi en — compassos</span>
+    </div>
+    <div class="autoNextExtend">
+      <span>Allargar cançó:</span>
+      <button type="button" data-extend-song-bars="1">+1</button>
+      <button type="button" data-extend-song-bars="2">+2</button>
+      <button type="button" data-extend-song-bars="4">+4</button>
+    </div>
+  </div>
+  <div class="autoNextBar"><i id="concertAutoNextBarFill"></i></div>
+  <div class="autoNextMeta"><span id="concertAutoNextBarCount">0 / 0 compassos</span><span id="concertAutoNextExtraLabel"></span></div>
+</div>
+<div id="concertNext" class="concertNext"></div>
     </div>
     <div class="concertControls">
       <button id="concertPrev" class="concertBtn">◀ ANTERIOR</button>
@@ -188,6 +224,33 @@
   <div class="panelHead"><div><h2 style="margin:0">Modificar setlist</h2><small id="reorderSubtitle" class="note">Arrossega les cançons o usa les fletxes.</small></div><div class="reorderHeadActions"><button id="cancelSetlistReorder" type="button" class="secondary">CANCEL·LAR</button><button id="saveSetlistReorder" type="button" class="primary">GUARDAR ORDRE</button></div></div>
   <div id="setlistReorderContent" class="reorderContent"></div>
 </section>
+
+
+<div id="autoNextModal" class="modal">
+  <div class="modalCard autoNextCard">
+    <div class="tempoMapHead">
+      <div>
+        <h2>Canvi automàtic de cançó</h2>
+        <p id="autoNextSubtitle" class="note"></p>
+      </div>
+      <button id="closeAutoNext" class="secondary" type="button">✕</button>
+    </div>
+    <p class="note">CLICKSET passarà automàticament a la cançó següent després del nombre de compassos indicat.</p>
+    <label class="autoNextToggle">
+      <input id="autoNextEnabled" type="checkbox">
+      <span>Activar canvi automàtic a la següent cançó</span>
+    </label>
+    <label class="autoNextBarsField">
+      <span>Compassos abans del canvi</span>
+      <input id="autoNextBarsInput" type="number" min="1" max="999" inputmode="numeric" value="16">
+    </label>
+    <div class="modalActions">
+      <button id="removeAutoNext" class="secondary danger" type="button">ELIMINAR CONFIGURACIÓ</button>
+      <button id="cancelAutoNext" class="secondary" type="button">CANCEL·LAR</button>
+      <button id="saveAutoNext" class="primary" type="button">GUARDAR</button>
+    </div>
+  </div>
+</div>
 
 <div id="tempoMapModal" class="modal">
   <div class="modalCard tempoMapCard">
@@ -244,5 +307,5 @@
 window.addEventListener("error",function(){setTimeout(function(){document.getElementById("splash")?.classList.add("hidden")},50)});
 setTimeout(function(){document.getElementById("splash")?.classList.add("hidden")},2500);
 </script>
-<script src="clickset-2.0.js?v=255" defer></script>
+<script src="clickset-2.0.js?v=260" defer></script>
 </body></html>

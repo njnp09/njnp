@@ -87,6 +87,7 @@ let stored=null;try{stored=JSON.parse(localStorage.getItem(STORAGE_KEY)||localSt
 let groups=normalize(stored||defaults),groupIndex=null,setlistIndex=null,current=0,flat=[],openMixes={},playing=false,editingGroups=null;
 let audioCtx=null,classicBuffer=null,schedulerTimer=null,nextBeatTime=0,runId=0,activeNodes=new Set(),beatInBar=0,clickOutputNode=null,trackOutputNode=null;
 let liveTempoStep=0,liveBarsInStep=0,liveSongBar=1,liveExtraBars=0,currentLiveBpm=null;
+let liveExtraSongBars=0,autoNextTransitioning=false;
 let paused=false,pauseRemainingToBeat=.01,pauseTrackOffset=0;
 let trackStartedAt=0,trackStartOffset=0,trackPlaybackRate=1,trackScheduledAt=0;
 const IS_IOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
@@ -320,8 +321,104 @@ function tempoSectionsFor(song){
  valid[valid.length-1].bars=null;
  return valid;
 }
+
+function autoNextBarsFor(song){
+ const bars=Math.round(Number(song?.autoNextBars)||0);
+ return bars>0?Math.max(1,Math.min(999,bars)):0;
+}
+function hasAutoNext(song){return autoNextBarsFor(song)>0}
+function resetAutoNextTimeline(){liveExtraSongBars=0;autoNextTransitioning=false}
+function extendCurrentSong(bars){
+ if(!playing&&!paused)return;
+ const song=flat[current]?.song;
+ if(!hasAutoNext(song)){
+  showAudioToast("Aquesta cançó no té canvi automàtic configurat");
+  return;
+ }
+ liveExtraSongBars+=Math.max(1,Number(bars)||1);
+ updateAutoNextUi(song);
+ render();
+ showAudioToast(`Cançó allargada ${bars} ${Number(bars)===1?"compàs":"compassos"}`);
+}
+async function performAutomaticSongChange(){
+ if(autoNextTransitioning||!playing||!flat.length)return;
+ autoNextTransitioning=true;
+ const oldSong=flat[current]?.song;
+ const nextIndex=(current+1)%flat.length;
+ const nextSong=flat[nextIndex]?.song;
+ if(!nextSong){autoNextTransitioning=false;return}
+
+ // Aturam només els nodes programats; mantenim l'estat de reproducció.
+ runId++;
+ clearTimeout(schedulerTimer);
+ schedulerTimer=null;
+ clearVisualBeatTimers();
+ for(const node of activeNodes){try{node.stop(0)}catch(e){}}
+ activeNodes.clear();
+ trackSource=null;trackGainNode=null;trackBuffer=null;
+ current=nextIndex;
+ paused=false;
+ resetLiveTimeline(nextSong);
+ resetAutoNextTimeline();
+ setLiveState("live");
+ beatInBar=0;
+ nextBeatTime=audioCtx.currentTime+.012;
+ const myRun=runId;
+ const firstAccented=Boolean(nextSong.accentFirst);
+ scheduleBeatSound(nextBeatTime,firstAccented);
+ pulseAt(nextBeatTime,myRun,0,firstAccented);
+ beatInBar=1%beatsForSong(nextSong);
+ nextBeatTime+=60/Math.max(20,Math.min(400,Number(currentLiveBpm||nextSong.bpm)||120));
+ scheduler(myRun);
+ render();
+ showAudioToast(`Següent: ${nextSong.name}`);
+
+ if(nextSong.trackId){
+  const beatsPerBar=beatsForSong(nextSong);
+  const sec=60/Math.max(20,Math.min(400,Number(currentLiveBpm||nextSong.bpm)||120));
+  const countInBars=Math.max(0,Math.min(2,Number(nextSong.countInBars??0)));
+  await startTrackFrom(nextSong,audioCtx.currentTime+.012+(countInBars*beatsPerBar*sec),0);
+ }
+ autoNextTransitioning=false;
+}
+function updateAutoNextUi(song){
+ const base=autoNextBarsFor(song);
+ const visible=base>0;
+ const total=base+Math.max(0,liveExtraSongBars);
+ const completed=Math.max(0,liveSongBar-1);
+ const remaining=Math.max(0,total-completed);
+ const progress=total?Math.max(0,Math.min(100,(completed/total)*100)):0;
+ const barText=`${Math.min(completed,total)} / ${total} compassos`;
+ const extraText=liveExtraSongBars>0?`+${liveExtraSongBars} extra`:"";
+ const changeText=remaining===1?"Canvi en 1 compàs":`Canvi en ${remaining} compassos`;
+
+ for(const id of ["autoNextTools","concertAutoNextTools"])$(id)?.classList.toggle("hidden",!visible);
+ if(!visible)return;
+
+ setTempoUiValue("autoNextCountdown",remaining);
+ setTempoUiValue("concertAutoNextCountdown",remaining);
+ setTempoUiValue("autoNextText",changeText);
+ setTempoUiValue("concertAutoNextText",changeText);
+ setTempoUiValue("autoNextBarCount",barText);
+ setTempoUiValue("concertAutoNextBarCount",barText);
+ setTempoUiValue("autoNextExtraLabel",extraText);
+ setTempoUiValue("concertAutoNextExtraLabel",extraText);
+ setTempoUiWidth("autoNextBarFill",progress);
+ setTempoUiWidth("concertAutoNextBarFill",progress);
+
+ for(const id of ["autoNextTools","concertAutoNextTools"]){
+  const panel=$(id);
+  if(!panel)continue;
+  panel.classList.toggle("autoNextApproaching",remaining<=4);
+  panel.classList.toggle("autoNextWarning",remaining<=2);
+  panel.classList.toggle("autoNextLastBar",remaining===1);
+ }
+ document.querySelectorAll("[data-extend-song-bars]").forEach(button=>button.disabled=!visible||(!playing&&!paused));
+}
+
 function resetLiveTimeline(song){
  const sections=tempoSectionsFor(song);
+ resetAutoNextTimeline();
  liveTempoStep=0;
  liveBarsInStep=0;
  liveSongBar=1;
@@ -378,6 +475,11 @@ function advanceTempoBar(song){
  // no només quan hi ha una interacció manual.
  updateTempoLiveUi(song);
  updateTempoStageDisplay(song);
+ updateAutoNextUi(song);
+ const autoBars=autoNextBarsFor(song)+Math.max(0,liveExtraSongBars);
+ if(autoBars>0&&liveSongBar>autoBars&&!autoNextTransitioning){
+  performAutomaticSongChange();
+ }
 }
 function extendCurrentTempo(bars){
  if(!playing&&!paused)return;
@@ -506,7 +608,7 @@ function updateTransportButtons(){
 }
 
 function render(){flatten();if(!flat.length)return;const x=flat[current],n=flat[(current+1)%flat.length],displayBpm=liveBpmFor(x.song),accentOn=Boolean(x.song.accentFirst),activeSound=x.song.sound||currentSetlist().sound||"classic";$("parentLabel").textContent=x.parent;$("song").textContent=x.song.name;$("bpm").textContent=displayBpm;$("bpm").className="bpm "+bpmClass(displayBpm);$("position").textContent=`${current+1} / ${flat.length}`;$("nextup").textContent=`Després: ${n.song.name} · ${n.song.bpm} BPM`;if($("normalAccent")){$("normalAccent").textContent=`Accent: ${accentOn?"ON":"OFF"}`;$("normalAccent").classList.toggle("active",accentOn)}if($("normalSound"))$("normalSound").textContent=soundName(activeSound);const trackLabel=x.song.trackName?`🎵 ${x.song.trackName}`:"🎵 Carregar pista";if($("normalTrack")){ $("normalTrack").textContent=trackLabel; $("normalTrack").title=x.song.trackName?"Clica per substituir la pista":"Clica per carregar una pista"; }if($("concertTrack")){ $("concertTrack").textContent=trackLabel; $("concertTrack").title=x.song.trackName?"Clica per substituir la pista":"Clica per carregar una pista"; }
-updateTempoLiveUi(x.song);updateTempoStageDisplay(x.song);updateTransportButtons();if($("normalRemoveTrack"))$("normalRemoveTrack").classList.toggle("hidden",!x.song.trackId);
+updateTempoLiveUi(x.song);updateTempoStageDisplay(x.song);updateAutoNextUi(x.song);updateTransportButtons();if($("normalRemoveTrack"))$("normalRemoveTrack").classList.toggle("hidden",!x.song.trackId);
 if($("concertRemoveTrack"))$("concertRemoveTrack").classList.toggle("hidden",!x.song.trackId);renderBeatDots();if($("concertParent")){$("concertParent").textContent=x.parent;$("concertSong").textContent=x.song.name;$("concertBpm").textContent=displayBpm;$("concertBpm").className="concertBpm "+bpmClass(displayBpm);$("concertPosition").textContent=`${current+1} / ${flat.length}`;$("concertNext").textContent=`Després: ${n.song.name} · ${n.song.bpm} BPM`;$("concertMeter").textContent=x.song.meter||"4/4";$("concertAccent").textContent=`Accent: ${accentOn?"ON":"OFF"}`;$("concertAccent").classList.toggle("active",accentOn);$("concertSound").textContent=soundName(activeSound);renderConcertSetlist()}renderSetlist()}
 function toggleCurrentAccent(){
  if(!flat.length)return;
@@ -1380,6 +1482,43 @@ function moveSong(list,from,to){
  const [item]=list.splice(from,1);list.splice(to,0,item)
 }
 
+
+let autoNextTarget=null,autoNextButton=null;
+function openAutoNextEditor(song,button){
+ autoNextTarget=song;autoNextButton=button;
+ $("autoNextSubtitle").textContent=song.name||"Cançó";
+ const bars=autoNextBarsFor(song);
+ $("autoNextEnabled").checked=bars>0;
+ $("autoNextBarsInput").value=bars||16;
+ $("autoNextBarsInput").disabled=bars<=0;
+ $("autoNextModal").classList.add("open");
+}
+function closeAutoNextEditor(){
+ $("autoNextModal").classList.remove("open");
+ autoNextTarget=null;autoNextButton=null;
+}
+$("autoNextEnabled").onchange=e=>$("autoNextBarsInput").disabled=!e.target.checked;
+$("closeAutoNext").onclick=closeAutoNextEditor;
+$("cancelAutoNext").onclick=closeAutoNextEditor;
+$("removeAutoNext").onclick=()=>{
+ if(!autoNextTarget||!confirm("Eliminar el canvi automàtic d’aquesta cançó?"))return;
+ delete autoNextTarget.autoNextBars;
+ if(autoNextButton)autoNextButton.textContent="⏭ SEGÜENT";
+ closeAutoNextEditor();
+};
+$("saveAutoNext").onclick=()=>{
+ if(!autoNextTarget)return;
+ if($("autoNextEnabled").checked){
+  const bars=Math.max(1,Math.min(999,Math.round(Number($("autoNextBarsInput").value)||16)));
+  autoNextTarget.autoNextBars=bars;
+  if(autoNextButton)autoNextButton.textContent=`⏭ ${bars} comp.`;
+ }else{
+  delete autoNextTarget.autoNextBars;
+  if(autoNextButton)autoNextButton.textContent="⏭ SEGÜENT";
+ }
+ closeAutoNextEditor();
+};
+
 let tempoMapTarget=null,tempoMapButton=null,tempoMapDraft=[];
 function openTempoMapEditor(song,button){
  tempoMapTarget=song;tempoMapButton=button;
@@ -1443,7 +1582,7 @@ function renderEditorItems(sl){
    const list=g.children||sl.items;
    const listIndex=g.children?si:gi;
    const row=document.createElement('div');row.className='editorRow';row.draggable=true;
-   row.innerHTML=`<span class="dragHandle" title="Arrossega per reordenar">☰</span><input class="songName" value="${esc(song.name)}"><button class="bpmEditBtn">${song.bpm}</button><button type="button" class="tempoMapBtn">${tempoSectionsFor(song).length?`⏱ ${tempoSectionsFor(song).length} trams`:"⏱ TEMPOS"}</button><button type="button" class="soundBtn">${soundName(song.sound||'')}</button><label class="accentToggle"><input class="accentFirst" type="checkbox" ${song.accentFirst?'checked':''}> Accentuar 1r temps</label><div class="trackEditor"><label class="trackFileLabel">🎵 ${song.trackName?esc(song.trackName):'Afegir MP3/WAV'}<input class="trackFile" type="file" accept="audio/mpeg,audio/wav,audio/x-wav,audio/mp4,audio/aac"></label><label>Volum pista <input class="trackVolume" type="range" min="0" max="100" value="${Math.round((song.trackVolume??0.85)*100)}"></label><label>Compte enrere <select class="countInBars"><option value="0" ${Number(song.countInBars??1)===0?'selected':''}>0 compassos</option><option value="1" ${Number(song.countInBars??1)===1?'selected':''}>1 compàs</option><option value="2" ${Number(song.countInBars??1)===2?'selected':''}>2 compassos</option></select></label><label>BPM original pista <input class="trackOriginalBpm" type="number" min="20" max="400" inputmode="numeric" value="${Number(song.trackOriginalBpm||song.bpm||120)}"></label><label class="timeStretchToggle"><input class="timeStretch" type="checkbox" ${song.timeStretch?'checked':''}> Time-stretch</label><small class="stretchHint">${song.timeStretch?'Adapta la pista al BPM actual. Pot variar lleugerament el to.':'Pista a velocitat original.'}</small><button type="button" class="removeTrackBtn ${song.trackId?'':'hidden'}">Eliminar pista</button><small class="trackHint">${song.trackId?'La pista començarà sincronitzada després del compte enrere.':'Sense pista associada.'}</small></div><div class="songActions"><button type="button" class="moveBtn moveUp" title="Pujar cançó" aria-label="Pujar cançó">▲</button><button type="button" class="moveBtn moveDown" title="Baixar cançó" aria-label="Baixar cançó">▼</button><button type="button" class="deleteSongBtn" title="Eliminar cançó" aria-label="Eliminar cançó">🗑️</button></div><div class="songSoundPicker hidden"></div>`;
+   row.innerHTML=`<span class="dragHandle" title="Arrossega per reordenar">☰</span><input class="songName" value="${esc(song.name)}"><button class="bpmEditBtn">${song.bpm}</button><button type="button" class="tempoMapBtn">${tempoSectionsFor(song).length?`⏱ ${tempoSectionsFor(song).length} trams`:"⏱ TEMPOS"}</button><button type="button" class="autoNextBtn">${hasAutoNext(song)?`⏭ ${autoNextBarsFor(song)} comp.`:"⏭ SEGÜENT"}</button><button type="button" class="soundBtn">${soundName(song.sound||'')}</button><label class="accentToggle"><input class="accentFirst" type="checkbox" ${song.accentFirst?'checked':''}> Accentuar 1r temps</label><div class="trackEditor"><label class="trackFileLabel">🎵 ${song.trackName?esc(song.trackName):'Afegir MP3/WAV'}<input class="trackFile" type="file" accept="audio/mpeg,audio/wav,audio/x-wav,audio/mp4,audio/aac"></label><label>Volum pista <input class="trackVolume" type="range" min="0" max="100" value="${Math.round((song.trackVolume??0.85)*100)}"></label><label>Compte enrere <select class="countInBars"><option value="0" ${Number(song.countInBars??1)===0?'selected':''}>0 compassos</option><option value="1" ${Number(song.countInBars??1)===1?'selected':''}>1 compàs</option><option value="2" ${Number(song.countInBars??1)===2?'selected':''}>2 compassos</option></select></label><label>BPM original pista <input class="trackOriginalBpm" type="number" min="20" max="400" inputmode="numeric" value="${Number(song.trackOriginalBpm||song.bpm||120)}"></label><label class="timeStretchToggle"><input class="timeStretch" type="checkbox" ${song.timeStretch?'checked':''}> Time-stretch</label><small class="stretchHint">${song.timeStretch?'Adapta la pista al BPM actual. Pot variar lleugerament el to.':'Pista a velocitat original.'}</small><button type="button" class="removeTrackBtn ${song.trackId?'':'hidden'}">Eliminar pista</button><small class="trackHint">${song.trackId?'La pista començarà sincronitzada després del compte enrere.':'Sense pista associada.'}</small></div><div class="songActions"><button type="button" class="moveBtn moveUp" title="Pujar cançó" aria-label="Pujar cançó">▲</button><button type="button" class="moveBtn moveDown" title="Baixar cançó" aria-label="Baixar cançó">▼</button><button type="button" class="deleteSongBtn" title="Eliminar cançó" aria-label="Eliminar cançó">🗑️</button></div><div class="songSoundPicker hidden"></div>`;
    row.querySelector('.songName').oninput=e=>song.name=e.target.value;row.querySelector('.accentFirst').onchange=e=>song.accentFirst=e.target.checked;
    const trackInput=row.querySelector('.trackFile'),trackLabel=row.querySelector('.trackFileLabel'),removeTrackBtn=row.querySelector('.removeTrackBtn'),trackHint=row.querySelector('.trackHint');
    row.querySelector('.trackVolume').oninput=e=>song.trackVolume=Number(e.target.value)/100;
@@ -1491,7 +1630,7 @@ function renderEditorItems(sl){
     trackHint.textContent='Sense pista associada. Ja pots carregar-ne una altra.';
     trackInput.value='';
    };
-   row.querySelector('.bpmEditBtn').onclick=()=>openBpmEditor(song,row.querySelector('.bpmEditBtn'));row.querySelector('.tempoMapBtn').onclick=()=>openTempoMapEditor(song,row.querySelector('.tempoMapBtn'));
+   row.querySelector('.bpmEditBtn').onclick=()=>openBpmEditor(song,row.querySelector('.bpmEditBtn'));row.querySelector('.tempoMapBtn').onclick=()=>openTempoMapEditor(song,row.querySelector('.tempoMapBtn'));row.querySelector('.autoNextBtn').onclick=()=>openAutoNextEditor(song,row.querySelector('.autoNextBtn'));
    const soundButton=row.querySelector('.soundBtn'),pickerBox=row.querySelector('.songSoundPicker');
    soundButton.onclick=()=>{pickerBox.classList.toggle('hidden');if(!pickerBox.childNodes.length)pickerBox.appendChild(soundPicker(song.sound||'',id=>{song.sound=id;soundButton.textContent=soundName(id)},true))};
    row.querySelector('.moveUp').disabled=listIndex===0;
@@ -1679,7 +1818,7 @@ function openGroupEditor(i){groupEditIndex=i;const isNew=i===null,g=isNew?{name:
 $("groupLogo").onchange=e=>{const f=e.target.files[0];if(!f)return;if(f.size>2_500_000){alert("El logo és massa gran. Prova una imatge de menys de 2,5 MB.");return}const r=new FileReader();r.onload=()=>{groupLogoDraft=r.result;$("logoPreview").src=groupLogoDraft};r.readAsDataURL(f)};
 $("cancelGroup").onclick=()=>$("groupModal").classList.remove("open");$("saveGroup").onclick=()=>{const name=$("groupName").value.trim()||"Grup";const data={name,color:$("groupColor").value,logo:groupLogoDraft};if(groupEditIndex===null)groups.push({...data,setlists:[{name:"Setlist principal",sound:"wood",items:[]}]});else Object.assign(groups[groupEditIndex],data);save();$("groupModal").classList.remove("open");showGroups()};$("deleteGroup").onclick=()=>{if(groupEditIndex===null)return;if(confirm(`Eliminar el grup “${groups[groupEditIndex].name}” i tots els seus repertoris?`)){groups.splice(groupEditIndex,1);save();$("groupModal").classList.remove("open");showGroups()}};
 $("cancelSetlistName").onclick=closeSetlistNameEditor;$("saveSetlistName").onclick=()=>{if(setlistEditIndex===null)return;const name=$("setlistName").value.trim()||"Repertori";groups[groupIndex].setlists[setlistEditIndex].name=name;save();closeSetlistNameEditor();renderSetlists(groupIndex)};$("setlistName").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();$("saveSetlistName").click()}else if(e.key==="Escape")closeSetlistNameEditor()});
-function openConcertMode(){$("concertMode").classList.remove("hidden");render()}function closeConcertMode(){$("concertMode").classList.add("hidden")}$("concertModeBtn").onclick=openConcertMode;$("pauseResume").onclick=togglePauseResume;$("concertPauseResume").onclick=togglePauseResume;document.querySelectorAll("[data-extend-bars]").forEach(button=>button.onclick=()=>extendCurrentTempo(Number(button.dataset.extendBars)));$("closeConcertMode").onclick=closeConcertMode;$("concertPrev").onclick=()=>change(-1);$("concertNextBtn").onclick=()=>change(1);$("concertPlay").onclick=()=>playing||paused?stop():start(true);
+function openConcertMode(){$("concertMode").classList.remove("hidden");render()}function closeConcertMode(){$("concertMode").classList.add("hidden")}$("concertModeBtn").onclick=openConcertMode;$("pauseResume").onclick=togglePauseResume;$("concertPauseResume").onclick=togglePauseResume;document.querySelectorAll("[data-extend-bars]").forEach(button=>button.onclick=()=>extendCurrentTempo(Number(button.dataset.extendBars)));document.querySelectorAll("[data-extend-song-bars]").forEach(button=>button.onclick=()=>extendCurrentSong(Number(button.dataset.extendSongBars)));$("closeConcertMode").onclick=closeConcertMode;$("concertPrev").onclick=()=>change(-1);$("concertNextBtn").onclick=()=>change(1);$("concertPlay").onclick=()=>playing||paused?stop():start(true);
 
 $("importClicksetBtn").onclick=()=>{$("clicksetImportInput").value="";try{$("clicksetImportInput").showPicker?.()||$("clicksetImportInput").click()}catch(e){$("clicksetImportInput").click()}};$("clicksetImportInput").onchange=e=>{const file=e.target.files?.[0];if(file)importClicksetFile(file)};
 $("exportBackupBtn").onclick=()=>requestEdit(exportFullBackup);
