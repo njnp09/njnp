@@ -1,22 +1,20 @@
-CLICKSET 2.1.4 — PALETA VISUAL SUAU
+CLICKSET 2.2.5 — CORRECCIÓ ACTIVAR SO
 
-Aquesta versió conserva totes les funcions de la 2.1.3.
-Només s'han ajustat colors, contrast, ombres i llegibilitat.
-
-PALETA:
-- Fons blau grisós molt fosc
-- Panells pissarra
-- Accent daurat suau
-- Verd menta per a EN DIRECTE
-- Vermell coral per aturar
-- Mode clar més càlid i menys blanc pur
+CANVIS:
+- Analitzar el BPM ja no activa ni necessita el motor del metrònom.
+- Carregar una pista no obre la pantalla ACTIVAR SO.
+- ACTIVAR SO només apareix quan prems PLAY i Safari necessita desbloquejar l'àudio.
+- Nou botó ARA NO per poder tancar sempre la pantalla.
+- Tornar enrere o reobrir la pestanya no torna a mostrar automàticament el bloqueig.
+- Es manté l'algoritme reforçat de BPM de la 2.2.4.
+- Es manté Mode lectura a la barra superior.
 
 PUBLICACIÓ:
-1. Guarda una còpia de la versió 2.1.3.
-2. Esborra els fitxers actuals de l'arrel del repositori.
+1. Guarda la versió actual.
+2. Esborra els fitxers de l'arrel del repositori.
 3. Puja tots els fitxers d'aquest ZIP directament a l'arrel.
 4. Fes Commit changes.
-5. Obre: https://njnp.njnp09.workers.dev/?v=214
+5. Obre https://njnp.njnp09.workers.dev/?v=225
 
 COMPROVACIÓ:
-Ha d'aparèixer “2.1.4” a baix a l'esquerra.
+La pestanya i l'etiqueta inferior han d'indicar 2.2.5.

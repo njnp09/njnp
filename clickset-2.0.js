@@ -1,5 +1,5 @@
 "use strict";
-const VERSION="2.0", STORAGE_KEY="clickset_017_groups";
+const VERSION="2.2.0", STORAGE_KEY="clickset_017_groups";
 const EDIT_PASSWORD="45";
 let editUnlocked=false,pendingEditAction=null;
 const SOUNDS=[
@@ -258,13 +258,24 @@ setTimeout(()=>{try{$("splash")?.classList.add("hidden");showGroups()}catch(erro
 setTimeout(()=>$("splash")?.classList.add("hidden"),2200);
 
 updateEditModeBadge();
-function showGroups(){stop();groupIndex=null;setlistIndex=null;setAccent();$("app").classList.add("hidden");$("chooser").classList.remove("hidden");$("chooserBack").classList.add("hidden");$("newGroupBtn").classList.remove("hidden");$("importSetlistBtn").classList.add("hidden");$("homeBrand").classList.remove("hidden");$("chooserTitle").classList.add("hidden");$("chooserTitle").textContent="Grup musical";$("chooserSubtitle").textContent="Selecciona un grup";const grid=$("chooserGrid");grid.innerHTML="";if(!groups.length){grid.innerHTML=`<div class="emptyState"><div class="emptyIcon">🎵</div><h2>Benvingut a ClickSet</h2><p>Crea el teu primer grup o importa un repertori .clickset.</p><button class="primary" id="emptyCreateGroup">+ CREAR PRIMER GRUP</button></div>`;$("emptyCreateGroup").onclick=()=>requestEdit(()=>openGroupEditor(null));renderRecentSetlists();return}groups.forEach((g,i)=>{const c=document.createElement("div");c.className="card";c.style.setProperty("--card-color",g.color);c.innerHTML=`${g.logo?`<img class="cardLogo" src="${g.logo}" alt="">`:""}<h2>${esc(g.name)}</h2><small>${g.setlists.length} repertoris</small><div class="cardActions"><button class="smallBtn openGroup">OBRIR</button><button class="smallBtn editGroup">EDITAR</button></div>`;c.querySelector(".openGroup").onclick=e=>{e.stopPropagation();showSetlists(i)};c.querySelector(".editGroup").onclick=e=>{e.stopPropagation();requestEdit(()=>openGroupEditor(i))};c.onclick=()=>showSetlists(i);grid.appendChild(c)});renderRecentSetlists()}
+function showGroups(){stop();dismissAudioGate();groupIndex=null;setlistIndex=null;setAccent();placeEditBadge(false);$("app").classList.add("hidden");$("chooser").classList.remove("hidden");$("chooserBack").classList.add("hidden");$("newGroupBtn").classList.remove("hidden");$("importSetlistBtn").classList.add("hidden");$("homeBrand").classList.remove("hidden");$("chooserTitle").classList.add("hidden");$("chooserTitle").textContent="Grup musical";$("chooserSubtitle").textContent="Selecciona un grup";const grid=$("chooserGrid");grid.innerHTML="";if(!groups.length){grid.innerHTML=`<div class="emptyState"><div class="emptyIcon">🎵</div><h2>Benvingut a ClickSet</h2><p>Crea el teu primer grup o importa un repertori .clickset.</p><button class="primary" id="emptyCreateGroup">+ CREAR PRIMER GRUP</button></div>`;$("emptyCreateGroup").onclick=()=>requestEdit(()=>openGroupEditor(null));renderRecentSetlists();return}groups.forEach((g,i)=>{const c=document.createElement("div");c.className="card";c.style.setProperty("--card-color",g.color);c.innerHTML=`${g.logo?`<img class="cardLogo" src="${g.logo}" alt="">`:""}<h2>${esc(g.name)}</h2><small>${g.setlists.length} repertoris</small><div class="cardActions"><button class="smallBtn openGroup">OBRIR</button><button class="smallBtn editGroup">EDITAR</button></div>`;c.querySelector(".openGroup").onclick=e=>{e.stopPropagation();showSetlists(i)};c.querySelector(".editGroup").onclick=e=>{e.stopPropagation();requestEdit(()=>openGroupEditor(i))};c.onclick=()=>showSetlists(i);grid.appendChild(c)});renderRecentSetlists()}
 function renderSetlists(gi){groupIndex=gi;setAccent();$("recentSection")?.classList.add("hidden");$("chooserBack").classList.remove("hidden");$("chooserBack").onclick=showGroups;$("newGroupBtn").classList.add("hidden");$("importSetlistBtn").classList.remove("hidden");$("homeBrand").classList.add("hidden");$("chooserTitle").classList.remove("hidden");$("chooserTitle").textContent=groups[gi].name;$("chooserSubtitle").textContent="Selecciona un repertori";const grid=$("chooserGrid");grid.innerHTML="";groups[gi].setlists.forEach((s,i)=>{const c=document.createElement("div");c.className="card";c.style.setProperty("--card-color",groups[gi].color);c.innerHTML=`<h3>${esc(s.name)}</h3><small>${countFlat(s.items)} parts · ${soundName(s.sound)}</small><div class="cardActions"><button class="smallBtn openSetlistBtn">OBRIR</button><button class="smallBtn exportSetlistBtn">📦 EXPORTAR</button><button class="smallBtn editSetlistBtn">EDITAR NOM</button></div>`;c.querySelector(".openSetlistBtn").onclick=e=>{e.stopPropagation();openSetlist(i)};c.querySelector(".exportSetlistBtn").onclick=e=>{e.stopPropagation();exportClickset(gi,i)};c.querySelector(".editSetlistBtn").onclick=e=>{e.stopPropagation();requestEdit(()=>openSetlistNameEditor(i))};c.onclick=()=>openSetlist(i);grid.appendChild(c)})}
 function showSetlists(gi){const g=groups[gi];if(!g.logo){renderSetlists(gi);return}const intro=$("groupIntro"),img=$("groupIntroLogo"),name=$("groupIntroName");img.src=g.logo;name.textContent=g.name;intro.style.setProperty("--intro-color",g.color||"#ffd34d");intro.classList.remove("hidden","closing");requestAnimationFrame(()=>intro.classList.add("visible"));setTimeout(()=>{intro.classList.add("closing");setTimeout(()=>{intro.classList.add("hidden");intro.classList.remove("visible","closing");renderSetlists(gi)},260)},850)}
 function countFlat(items){return items.reduce((n,i)=>n+(i.children?i.children.length:1),0)}
 function openSetlistNameEditor(i){setlistEditIndex=i;$("setlistName").value=groups[groupIndex].setlists[i].name||"Repertori";$("setlistModal").classList.add("open");setTimeout(()=>$("setlistName").focus(),0)}
 function closeSetlistNameEditor(){$("setlistModal").classList.remove("open");setlistEditIndex=null}
-function openSetlist(si){setlistIndex=si;current=0;rememberRecentSetlist(groupIndex,si);$("chooser").classList.add("hidden");$("app").classList.remove("hidden");render()}
+function placeEditBadge(inApp){
+ const badge=$("editModeBadge");
+ if(!badge)return;
+ if(inApp){
+  badge.classList.add("insideApp");
+  document.querySelector(".topBtns")?.prepend(badge);
+ }else{
+  badge.classList.remove("insideApp");
+  document.body.appendChild(badge);
+ }
+}
+function openSetlist(si){setlistIndex=si;current=0;rememberRecentSetlist(groupIndex,si);$("chooser").classList.add("hidden");$("app").classList.remove("hidden");placeEditBadge(true);render()}
 function renderSetlist(){const box=$("setlist");box.innerHTML="";let idx=0;currentItems().forEach((g,gi)=>{if(g.children){const start=idx,end=idx+g.children.length-1,inside=current>=start&&current<=end;if(inside){Object.keys(openMixes).forEach(k=>openMixes[k]=false);openMixes[gi]=true}const p=document.createElement("div");p.className="songItem parent"+(inside?" active":"");p.innerHTML=`<div>${openMixes[gi]?"▼":"▶"}</div><div>${esc(g.name)}</div><div></div>`;p.onclick=()=>{openMixes[gi]=!openMixes[gi];renderSetlist()};box.appendChild(p);if(openMixes[gi])g.children.forEach((s,ci)=>{const i=idx++;const e=document.createElement("div");e.className="songItem child"+(i===current?" active":"")+(i<current?" passed":"");e.innerHTML=`<div>${ci+1}</div><div>${esc(s.name)}</div><div>${s.bpm}</div>`;e.onclick=()=>jump(i);box.appendChild(e)});else idx+=g.children.length}else{const i=idx++;const e=document.createElement("div");e.className="songItem"+(i===current?" active":"")+(i<current?" passed":"");e.innerHTML=`<div>${gi+1}</div><div>${esc(g.name)}</div><div>${g.bpm}</div>`;e.onclick=()=>jump(i);box.appendChild(e)}});$("songCount").textContent=`${flat.length} parts`}
 function renderConcertSetlist(){
  if(!$('concertSetlist')||groupIndex===null||setlistIndex===null)return;
@@ -280,7 +291,9 @@ function renderConcertSetlist(){
  });
  requestAnimationFrame(()=>{const active=box.querySelector('.active');if(active)active.scrollIntoView({block:'center',behavior:'smooth'})})
 }
-function render(){flatten();if(!flat.length)return;const x=flat[current],n=flat[(current+1)%flat.length],accentOn=Boolean(x.song.accentFirst),activeSound=x.song.sound||currentSetlist().sound||"classic";$("parentLabel").textContent=x.parent;$("song").textContent=x.song.name;$("bpm").textContent=x.song.bpm;$("bpm").className="bpm "+bpmClass(x.song.bpm);$("position").textContent=`${current+1} / ${flat.length}`;$("nextup").textContent=`Després: ${n.song.name} · ${n.song.bpm} BPM`;if($("normalAccent")){$("normalAccent").textContent=`Accent: ${accentOn?"ON":"OFF"}`;$("normalAccent").classList.toggle("active",accentOn)}if($("normalSound"))$("normalSound").textContent=soundName(activeSound);const trackLabel=x.song.trackName?`🎵 ${x.song.trackName}`:"🎵 Carregar pista";if($("normalTrack")){ $("normalTrack").textContent=trackLabel; $("normalTrack").title=x.song.trackName?"Clica per substituir la pista":"Clica per carregar una pista"; }if($("concertTrack")){ $("concertTrack").textContent=trackLabel; $("concertTrack").title=x.song.trackName?"Clica per substituir la pista":"Clica per carregar una pista"; }renderBeatDots();if($("concertParent")){$("concertParent").textContent=x.parent;$("concertSong").textContent=x.song.name;$("concertBpm").textContent=x.song.bpm;$("concertBpm").className="concertBpm "+bpmClass(x.song.bpm);$("concertPosition").textContent=`${current+1} / ${flat.length}`;$("concertNext").textContent=`Després: ${n.song.name} · ${n.song.bpm} BPM`;$("concertMeter").textContent=x.song.meter||"4/4";$("concertAccent").textContent=`Accent: ${accentOn?"ON":"OFF"}`;$("concertAccent").classList.toggle("active",accentOn);$("concertSound").textContent=soundName(activeSound);renderConcertSetlist()}renderSetlist()}
+function render(){flatten();if(!flat.length)return;const x=flat[current],n=flat[(current+1)%flat.length],accentOn=Boolean(x.song.accentFirst),activeSound=x.song.sound||currentSetlist().sound||"classic";$("parentLabel").textContent=x.parent;$("song").textContent=x.song.name;$("bpm").textContent=x.song.bpm;$("bpm").className="bpm "+bpmClass(x.song.bpm);$("position").textContent=`${current+1} / ${flat.length}`;$("nextup").textContent=`Després: ${n.song.name} · ${n.song.bpm} BPM`;if($("normalAccent")){$("normalAccent").textContent=`Accent: ${accentOn?"ON":"OFF"}`;$("normalAccent").classList.toggle("active",accentOn)}if($("normalSound"))$("normalSound").textContent=soundName(activeSound);const trackLabel=x.song.trackName?`🎵 ${x.song.trackName}`:"🎵 Carregar pista";if($("normalTrack")){ $("normalTrack").textContent=trackLabel; $("normalTrack").title=x.song.trackName?"Clica per substituir la pista":"Clica per carregar una pista"; }if($("concertTrack")){ $("concertTrack").textContent=trackLabel; $("concertTrack").title=x.song.trackName?"Clica per substituir la pista":"Clica per carregar una pista"; }
+if($("normalRemoveTrack"))$("normalRemoveTrack").classList.toggle("hidden",!x.song.trackId);
+if($("concertRemoveTrack"))$("concertRemoveTrack").classList.toggle("hidden",!x.song.trackId);renderBeatDots();if($("concertParent")){$("concertParent").textContent=x.parent;$("concertSong").textContent=x.song.name;$("concertBpm").textContent=x.song.bpm;$("concertBpm").className="concertBpm "+bpmClass(x.song.bpm);$("concertPosition").textContent=`${current+1} / ${flat.length}`;$("concertNext").textContent=`Després: ${n.song.name} · ${n.song.bpm} BPM`;$("concertMeter").textContent=x.song.meter||"4/4";$("concertAccent").textContent=`Accent: ${accentOn?"ON":"OFF"}`;$("concertAccent").classList.toggle("active",accentOn);$("concertSound").textContent=soundName(activeSound);renderConcertSetlist()}renderSetlist()}
 function toggleCurrentAccent(){
  if(!flat.length)return;
  const song=flat[current].song;
@@ -370,10 +383,19 @@ function createAudioContext(){
  return audioCtx
 }
 function showAudioToast(message){const t=$("audioToast");if(!t)return;t.textContent=message;t.classList.remove("hidden");clearTimeout(showAudioToast.timer);showAudioToast.timer=setTimeout(()=>t.classList.add("hidden"),1800)}
+let audioGateRequested=false;
 function updateAudioGate(){
  const gate=$("audioGate");if(!gate)return;
  const running=audioCtx&&audioCtx.state==="running"&&audioUnlocked;
- gate.classList.toggle("hidden",running||$("app")?.classList.contains("hidden"));
+ gate.classList.toggle("hidden",running||!audioGateRequested||$("app")?.classList.contains("hidden"));
+}
+function requestAudioGate(){
+ audioGateRequested=true;
+ updateAudioGate();
+}
+function dismissAudioGate(){
+ audioGateRequested=false;
+ updateAudioGate();
 }
 async function unlockAudioNow(showFeedback=false){
  if(audioUnlockPromise)return audioUnlockPromise;
@@ -385,7 +407,7 @@ async function unlockAudioNow(showFeedback=false){
    const data=buffer.getChannelData(0);data[0]=.00001;
    const source=ctx.createBufferSource(),gain=ctx.createGain();gain.gain.value=.00001;source.buffer=buffer;source.connect(gain).connect(ctx.destination);source.start(ctx.currentTime);
    if(IS_IOS&&navigator.audioSession){try{navigator.audioSession.type="playback"}catch(e){}}
-   audioUnlocked=ctx.state==="running";updateAudioGate();
+   audioUnlocked=ctx.state==="running";if(audioUnlocked)audioGateRequested=false;updateAudioGate();
    loadClassicBuffer();loadSampleBuffers();
    if(showFeedback&&audioUnlocked)showAudioToast("🔊 So activat");
    return audioUnlocked
@@ -415,7 +437,10 @@ function loadClassicBuffer(){
 }
 async function ensureAudio(){
  const ok=await unlockAudioNow(false);
- if(!ok)throw new Error("AUDIO_LOCKED");
+ if(!ok){
+  requestAudioGate();
+  throw new Error("AUDIO_LOCKED");
+ }
  loadClassicBuffer();loadSampleBuffers();
  return audioCtx
 }
@@ -459,18 +484,61 @@ async function deleteTrack(id){
  })
 }
 function makeTrackId(){return `track_${Date.now()}_${Math.random().toString(36).slice(2,10)}`}
-function openQuickTrackPicker(){
+async function removeSongTrack(song,{ask=true}={}){
+ if(!song?.trackId)return false;
+ if(ask&&!confirm(`Eliminar la pista “${song.trackName||""}” d’aquesta cançó?`))return false;
+ const oldId=song.trackId;
+ // Si la pista està sonant, aturam abans d'esborrar-la.
+ try{if(trackSource||trackAudioEl)stopTrack()}catch(e){}
+ try{await deleteTrack(oldId)}catch(error){console.warn("No s'ha pogut eliminar el fitxer d'àudio",error)}
+ delete song.trackId;
+ delete song.trackName;
+ delete song.trackDuration;
+ delete song.trackDetectedBpm;
+ delete song.trackBpmConfidence;
+ song.timeStretch=false;
+ save();
+ render();
+ return true;
+}
+async function removeCurrentTrack(){
  if(!flat.length)return;
- const input=$("quickTrackInput");
- if(!input)return;
- input.value="";
- // Safari/iPhone/iPad: showPicker dins el mateix gest físic és més fiable.
- try{
-  if(typeof input.showPicker==="function") input.showPicker();
-  else input.click();
- }catch(e){
-  try{input.click()}catch(err){console.warn("No s'ha pogut obrir el selector d'àudio",err)}
- }
+ await removeSongTrack(flat[current].song,{ask:true});
+}
+
+function chooseAudioFile(){
+ return new Promise(resolve=>{
+  const input=document.createElement("input");
+  input.type="file";
+  input.accept=".mp3,.wav,.m4a,.aac,audio/mpeg,audio/wav,audio/x-wav,audio/mp4,audio/aac";
+  input.setAttribute("aria-hidden","true");
+  input.style.position="fixed";
+  input.style.left="-9999px";
+  input.style.top="-9999px";
+  input.style.width="1px";
+  input.style.height="1px";
+  input.style.opacity="0";
+  document.body.appendChild(input);
+  let finished=false;
+  const finish=file=>{
+   if(finished)return;
+   finished=true;
+   window.removeEventListener("focus",onFocus,true);
+   setTimeout(()=>input.remove(),0);
+   resolve(file||null);
+  };
+  const onFocus=()=>setTimeout(()=>{if(!finished&&!input.files?.length)finish(null)},350);
+  input.addEventListener("change",()=>finish(input.files?.[0]||null),{once:true});
+  window.addEventListener("focus",onFocus,true);
+  try{input.click()}catch(error){console.warn("Selector d'àudio",error);finish(null)}
+ });
+}
+async function openQuickTrackPicker(event){
+ if(event){event.preventDefault();event.stopPropagation()}
+ if(!flat.length)return;
+ const file=await chooseAudioFile();
+ if(!file)return;
+ await handleQuickTrackFile(file);
 }
 async function handleQuickTrackFile(file){
  if(!file||!flat.length)return;
@@ -483,6 +551,18 @@ async function handleQuickTrackFile(file){
   song.countInBars=song.countInBars??1;song.trackOriginalBpm=song.trackOriginalBpm||song.bpm||120;
   if(oldId)deleteTrack(oldId).catch(()=>{});
   save();render();
+  const trackButton=$("normalTrack");
+  const concertTrackButton=$("concertTrack");
+  const previousNormal=trackButton?.textContent||"";
+  const previousConcert=concertTrackButton?.textContent||"";
+  if(trackButton){trackButton.textContent="⏳ ANALITZANT BPM…";trackButton.disabled=true}
+  if(concertTrackButton){concertTrackButton.textContent="⏳ ANALITZANT BPM…";concertTrackButton.disabled=true}
+  try{await applyDetectedBpm(file,song,{})}
+  finally{
+   if(trackButton)trackButton.disabled=false;
+   if(concertTrackButton)concertTrackButton.disabled=false;
+   rebuildFlat();render();
+  }
  }catch(error){console.error(error);alert("No s’ha pogut guardar la pista d’àudio.")}
 }
 async function loadCurrentTrackBuffer(){
@@ -550,7 +630,11 @@ function setLiveState(state){
 }
 async function start(immediateFirstBeat=true){
  if(playing||!flat.length)return;
- await ensureAudio();
+ try{await ensureAudio()}
+ catch(error){
+  if(error?.message!=="AUDIO_LOCKED")console.warn("No s'ha pogut iniciar l'àudio",error);
+  return;
+ }
  const song=flat[current].song;
  playing=true;setLiveState("live");runId++;const myRun=runId;beatInBar=0;trackBuffer=null;clearVisualBeatTimers();
  const sec=60/Math.max(20,Math.min(400,Number(song.bpm)||120));
@@ -604,6 +688,317 @@ function soundPicker(selected,onSelect,allowDefault=false){
  choices.forEach(sound=>{const b=document.createElement('button');b.type='button';b.className='soundChoice'+(sound.id===selected?' selected':'')+(sound.inherit?' inherit':'');b.innerHTML=`<span class="emoji">${sound.emoji}</span><span class="soundLabel">${sound.name}${sound.recommended?' (recomanat)':''}</span>`;b.onclick=()=>{wrap.querySelectorAll('.soundChoice').forEach(x=>x.classList.remove('selected'));b.classList.add('selected');onSelect(sound.id);if(sound.id)previewSound(sound.id,b);else stopRepeatingPreview()};wrap.appendChild(b)});return wrap
 }
 
+
+
+// ClickSet 2.2.0 — detecció de BPM multipunt i còpia completa
+function allSongsFromGroups(source=groups){
+ const songs=[];for(const g of source||[])for(const sl of g.setlists||[])for(const item of sl.items||[])songs.push(...(item.children||[item]));return songs
+}
+function nextFrame(){return new Promise(resolve=>setTimeout(resolve,0))}
+function median(values){const a=values.filter(Number.isFinite).sort((x,y)=>x-y);if(!a.length)return 0;const m=Math.floor(a.length/2);return a.length%2?a[m]:(a[m-1]+a[m])/2}
+function foldBpm(bpm){let x=bpm;while(x<70)x*=2;while(x>190)x/=2;return x}
+function percentile(values,p){
+ const a=Array.from(values).filter(Number.isFinite).sort((x,y)=>x-y);
+ if(!a.length)return 0;
+ const i=Math.max(0,Math.min(a.length-1,Math.round((a.length-1)*p)));
+ return a[i];
+}
+function normalizeTempo(bpm,min=70,max=190){
+ let x=Number(bpm)||0;
+ while(x<min)x*=2;
+ while(x>max)x/=2;
+ return x;
+}
+function tempoDistance(a,b){
+ const direct=Math.abs(a-b);
+ const half=Math.abs(a*2-b);
+ const double=Math.abs(a/2-b);
+ return Math.min(direct,half,double);
+}
+function analyzeBpmWindow(buffer,startSec,durationSec=28){
+ const sr=buffer.sampleRate;
+ const start=Math.max(0,Math.floor(startSec*sr));
+ const end=Math.min(buffer.length,start+Math.floor(durationSec*sr));
+ if(end-start<sr*10)return null;
+
+ // Envolupant de transitoris: combina canvi ràpid, energia i una mica més de pes
+ // a freqüències de caixa/plats. Això és més robust que mirar només el volum.
+ const targetRate=250;
+ const step=Math.max(1,Math.floor(sr/targetRate));
+ const n=Math.floor((end-start)/step);
+ const raw=new Float32Array(n);
+ const channels=[];
+ for(let c=0;c<buffer.numberOfChannels;c++)channels.push(buffer.getChannelData(c));
+
+ let prev=0;
+ for(let i=0;i<n;i++){
+  const from=start+i*step;
+  const to=Math.min(end,from+step);
+  let rms=0,flux=0,count=0,last=prev;
+  for(let p=from;p<to;p+=2){
+   let mono=0;
+   for(const ch of channels)mono+=ch[p]||0;
+   mono/=channels.length;
+   const hp=mono-last*.97;
+   flux+=Math.abs(hp);
+   rms+=mono*mono;
+   last=mono;
+   count++;
+  }
+  prev=last;
+  raw[i]=Math.sqrt(rms/Math.max(1,count))*.42+(flux/Math.max(1,count))*.58;
+ }
+
+ // Suavitzat curt i flux positiu.
+ const onset=new Float32Array(n);
+ for(let i=2;i<n-2;i++){
+  const smooth=(raw[i-2]+2*raw[i-1]+3*raw[i]+2*raw[i+1]+raw[i+2])/9;
+  const before=(raw[i-2]+raw[i-1]+raw[i])/3;
+  onset[i]=Math.max(0,smooth-before*.90);
+ }
+ const floor=percentile(onset,.55);
+ for(let i=0;i<n;i++)onset[i]=Math.max(0,onset[i]-floor*.72);
+
+ const high=percentile(onset,.88);
+ const medium=percentile(onset,.72);
+ if(high<=1e-6)return null;
+
+ // Pics de transitori amb distància mínima de 120 ms.
+ const peaks=[];
+ const minGap=Math.round(targetRate*.12);
+ let lastPeak=-minGap;
+ for(let i=2;i<n-2;i++){
+  const v=onset[i];
+  if(v<medium||v<onset[i-1]||v<onset[i+1])continue;
+  if(i-lastPeak<minGap){
+   if(peaks.length&&v>peaks[peaks.length-1].strength){
+    peaks[peaks.length-1]={time:i/targetRate,strength:v};
+    lastPeak=i;
+   }
+   continue;
+  }
+  peaks.push({time:i/targetRate,strength:v});
+  lastPeak=i;
+ }
+ if(peaks.length<14)return null;
+
+ let onsetEnergy=0;
+ for(const v of onset)onsetEnergy+=v*v;
+ onsetEnergy=Math.max(onsetEnergy,1e-12);
+
+ const scores=[];
+ for(let bpm=55;bpm<=210;bpm++){
+  const period=60/bpm;
+  const lag=targetRate*period;
+
+  // Autocorrelació de l'envolupant.
+  let corr=0,normA=0,normB=0;
+  for(let i=Math.ceil(lag)+1;i<n;i++){
+   const j=i-lag,j0=Math.floor(j),f=j-j0;
+   const b=onset[j0]*(1-f)+(onset[j0+1]||0)*f;
+   const a=onset[i];
+   corr+=a*b; normA+=a*a; normB+=b*b;
+  }
+  const ac=corr/Math.sqrt(Math.max(1e-12,normA*normB));
+
+  // Histograma d'intervals entre pics. Premia pulsacions, dobles i subdivisions.
+  let intervalScore=0,weightSum=0;
+  for(let i=0;i<peaks.length;i++){
+   for(let j=i+1;j<Math.min(peaks.length,i+10);j++){
+    const dt=peaks[j].time-peaks[i].time;
+    if(dt>period*4.1)break;
+    const weight=Math.sqrt(peaks[i].strength*peaks[j].strength);
+    const ratios=[1,2,.5,3,4];
+    let best=0;
+    for(const ratio of ratios){
+     const expected=period*ratio;
+     const error=Math.abs(dt-expected)/expected;
+     best=Math.max(best,Math.exp(-error*error/0.0035)*(ratio===1?1:ratio===2?.72:ratio===.5?.55:.35));
+    }
+    intervalScore+=best*weight;
+    weightSum+=weight;
+   }
+  }
+  intervalScore/=Math.max(1e-9,weightSum);
+
+  // Comprovació de graella: cerca la fase que millor encaixa amb els transitoris.
+  const periodSamples=targetRate*period;
+  let gridBest=0;
+  const phaseSteps=24;
+  for(let phase=0;phase<phaseSteps;phase++){
+   const offset=periodSamples*phase/phaseSteps;
+   let grid=0,count=0;
+   for(let p=offset;p<n;p+=periodSamples){
+    const center=Math.round(p);
+    let local=0;
+    for(let d=-3;d<=3;d++)local=Math.max(local,onset[center+d]||0);
+    grid+=local;count++;
+   }
+   gridBest=Math.max(gridBest,grid/Math.max(1,count)/high);
+  }
+
+  // Penalitza tempos que només encaixen per meitat/doble sense suport propi.
+  const score=ac*.50+intervalScore*.32+Math.min(1.4,gridBest)*.18;
+  scores.push({bpm,score,ac,intervalScore,grid:gridBest});
+ }
+ scores.sort((a,b)=>b.score-a.score);
+ const best=scores[0];
+ const second=scores.find(x=>tempoDistance(x.bpm,best.bpm)>4)||scores[1];
+ return {
+  bpm:best.bpm,
+  score:best.score,
+  margin:best.score-(second?.score||0),
+  peakCount:peaks.length,
+  top:scores.slice(0,8)
+ };
+}
+async function detectBpmFromFile(file,onProgress=()=>{}){
+ onProgress('Descodificant la pista…');
+ const bytes=await file.arrayBuffer();
+ const Decoder=window.AudioContext||window.webkitAudioContext;
+ if(!Decoder)throw new Error("Aquest navegador no permet analitzar l'àudio.");
+ const decoder=new Decoder();
+ let buffer;
+ try{
+  buffer=await decoder.decodeAudioData(bytes.slice(0));
+ }finally{
+  try{await decoder.close()}catch(e){}
+ }
+
+ const duration=buffer.duration;
+ if(duration<15)throw new Error('La pista és massa curta per detectar-ne el tempo amb precisió.');
+
+ const windowLength=Math.min(32,Math.max(20,duration*.16));
+ const maxStart=Math.max(0,duration-windowLength);
+ const fractions=duration<55?[.18,.52]:[.08,.27,.46,.65,.82];
+ const positions=[...new Set(fractions.map(p=>Math.round(Math.min(maxStart,duration*p)*10)/10))];
+ const results=[];
+
+ for(let i=0;i<positions.length;i++){
+  onProgress(`Analitzant transitoris… ${i+1}/${positions.length}`);
+  const r=analyzeBpmWindow(buffer,positions[i],windowLength);
+  if(r)results.push(r);
+  await nextFrame();
+ }
+ if(results.length<2)throw new Error('No hi ha prou fragments amb un pols clar.');
+
+ // Votació conjunta de totes les finestres.
+ const candidates=[];
+ for(let bpm=55;bpm<=210;bpm++){
+  let total=0,strongWindows=0;
+  for(const r of results){
+   let local=0;
+   for(const c of r.top){
+    const d=tempoDistance(c.bpm,bpm);
+    const harmonicPenalty=Math.abs(c.bpm-bpm)<=4?1:.56;
+    local=Math.max(local,c.score*Math.exp(-(d*d)/10)*harmonicPenalty);
+   }
+   if(tempoDistance(r.bpm,bpm)<=3)strongWindows++;
+   total+=local*Math.max(.35,r.score);
+  }
+  // Preferència moderada pel tempo real més sostingut, no sempre la meitat.
+  const centerBias=bpm>=75&&bpm<=185?1.035:1;
+  candidates.push({bpm,total:total*centerBias,strongWindows});
+ }
+ candidates.sort((a,b)=>b.total-a.total);
+
+ let best=candidates[0];
+ // En cas de quasi empat entre mig/doble tempo, tria el que té més finestres directes.
+ const harmonicAlternatives=candidates.filter(c=>
+  c.bpm!==best.bpm &&
+  (Math.abs(c.bpm-best.bpm*2)<=3||Math.abs(c.bpm*2-best.bpm)<=3)
+ ).slice(0,4);
+ for(const alt of harmonicAlternatives){
+  if(alt.total>=best.total*.91 && alt.strongWindows>best.strongWindows)best=alt;
+ }
+
+ const runner=candidates.find(c=>tempoDistance(c.bpm,best.bpm)>4)||candidates[1];
+ const directVotes=results.filter(r=>Math.abs(r.bpm-best.bpm)<=3).length;
+ const harmonicVotes=results.filter(r=>tempoDistance(r.bpm,best.bpm)<=3).length;
+ const consistency=harmonicVotes/results.length;
+ const directConsistency=directVotes/results.length;
+ const margin=(best.total-(runner?.total||0))/Math.max(.001,best.total);
+ const avgScore=results.reduce((s,r)=>s+r.score,0)/results.length;
+
+ let confidence=Math.round(
+  28+
+  consistency*30+
+  directConsistency*20+
+  Math.max(0,margin)*45+
+  Math.max(0,Math.min(.22,avgScore-.10))*80
+ );
+ confidence=Math.max(1,Math.min(99,confidence));
+ if(consistency<.72)confidence=Math.min(confidence,79);
+ if(directConsistency<.45)confidence=Math.min(confidence,86);
+ if(margin<.08)confidence=Math.min(confidence,84);
+
+ return {
+  bpm:Math.round(best.bpm),
+  confidence,
+  duration,
+  windows:results.map(r=>r.bpm),
+  candidates:candidates.slice(0,5).map(c=>({bpm:c.bpm,score:Number(c.total.toFixed(3))}))
+ };
+}
+async function applyDetectedBpm(file,song,ui={}){
+ const setStatus=text=>{
+  if(ui.hint)ui.hint.textContent=text;
+  if(ui.label)ui.label.classList.toggle('bpmAnalyzing',/Analitzant|Descodificant/.test(text));
+  showAudioToast(text);
+ };
+ try{
+  const result=await detectBpmFromFile(file,setStatus);
+  song.detectedTrackBpm=result.bpm;
+  song.bpmDetectionConfidence=result.confidence;
+  song.trackOriginalBpm=result.bpm;
+  const current=Math.round(Number(song.bpm)||120);
+  let apply=false;
+  if(result.confidence>=90){
+   apply=true;
+  }else{
+   const fragments=(result.windows||[]).join(", ");
+   apply=confirm(`BPM detectat: ${result.bpm}\nConfiança: ${result.confidence}%\nFragments analitzats: ${fragments}\nTempo actual: ${current}\n\nVols aplicar el BPM detectat?`);
+  }
+  if(apply){
+   song.bpm=result.bpm;
+   if(ui.bpmButton)ui.bpmButton.textContent=result.bpm;
+   if(ui.originalInput)ui.originalInput.value=result.bpm;
+   save();rebuildFlat();render();
+   const message=`✓ BPM ${result.bpm} aplicat (${result.confidence}% de confiança)`;
+   setStatus(message);
+   alert(`ClickSet ha detectat ${result.bpm} BPM amb una confiança del ${result.confidence}%.\n\nEl tempo del metrònom s'ha actualitzat.`);
+  }else{
+   save();
+   setStatus(`BPM detectat: ${result.bpm} (${result.confidence}%). Tempo anterior mantingut.`);
+  }
+  return result;
+ }catch(error){
+  console.warn('Detecció BPM',error);
+  const message=`No s'ha pogut detectar el BPM: ${error.message||'ritme poc clar'}`;
+  setStatus(message);
+  alert(`La pista s'ha guardat, però ClickSet no n'ha pogut detectar el tempo amb prou precisió.\n\n${error.message||''}`);
+  return null;
+ }
+}
+async function exportFullBackup(){
+ try{
+  const copy=clone(groups),tracks={},ids=[...new Set(allSongsFromGroups(copy).map(s=>s.trackId).filter(Boolean))];
+  for(let i=0;i<ids.length;i++){const id=ids[i],file=await getTrack(id);if(file){tracks[id]={name:file.name||'pista',type:file.type||'audio/*',data:await blobToDataUrl(file)}}}
+  const settings={theme:localStorage.getItem(THEME_KEY)||'dark',countdownEnabled,appVolume,clickRoute,trackRoute,recents:getRecentSetlists()};
+  const pack={format:'clickset-full-backup',formatVersion:1,appVersion:VERSION,exportedAt:new Date().toISOString(),groups:copy,tracks,settings};
+  const blob=new Blob([JSON.stringify(pack)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`ClickSet_copia_${new Date().toISOString().slice(0,10)}.clicksetbackup`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);alert(`Còpia completa creada: ${copy.length} grups i ${ids.length} pistes.`)
+ }catch(error){console.error(error);alert('No s’ha pogut crear la còpia completa. Pot faltar espai o memòria al dispositiu.')}
+}
+async function restoreFullBackup(file){
+ try{
+  const pack=JSON.parse(await file.text());if(pack?.format!=='clickset-full-backup'||!Array.isArray(pack.groups))throw new Error('Format no vàlid');
+  if(!confirm('Aquesta restauració substituirà tots els grups, repertoris i pistes actuals. Continuar?'))return;
+  const db=await openTrackDb();await new Promise((resolve,reject)=>{const tx=db.transaction(TRACK_STORE,'readwrite');tx.objectStore(TRACK_STORE).clear();tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error)});
+  for(const [id,tr] of Object.entries(pack.tracks||{})){if(tr?.data)await putTrack(id,new File([dataUrlToBlob(tr.data)],tr.name||'pista',{type:tr.type||'audio/*'}))}
+  groups=normalize(pack.groups);save();const s=pack.settings||{};if(s.theme)localStorage.setItem(THEME_KEY,s.theme);if(typeof s.countdownEnabled==='boolean')localStorage.setItem(COUNTDOWN_KEY,String(s.countdownEnabled));if(Number.isFinite(s.appVolume))localStorage.setItem('clickset_app_volume',String(s.appVolume));if(s.clickRoute)localStorage.setItem(CLICK_ROUTE_KEY,s.clickRoute);if(s.trackRoute)localStorage.setItem(TRACK_ROUTE_KEY,s.trackRoute);if(Array.isArray(s.recents))saveRecentSetlists(s.recents);
+  alert('Còpia restaurada correctament. ClickSet es reiniciarà.');location.reload()
+ }catch(error){console.error(error);alert('No s’ha pogut restaurar aquesta còpia. El fitxer pot estar danyat o no ser una còpia completa de ClickSet.')}
+}
 
 function safeFileName(name){return String(name||"repertori").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9_-]+/gi,"_").replace(/^_+|_+$/g,"")||"repertori"}
 function blobToDataUrl(blob){return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=()=>reject(r.error);r.readAsDataURL(blob)})}
@@ -659,8 +1054,46 @@ function renderEditorItems(sl){
    const originalBpmInput=row.querySelector('.trackOriginalBpm'),stretchToggle=row.querySelector('.timeStretch'),stretchHint=row.querySelector('.stretchHint');
    originalBpmInput.oninput=e=>song.trackOriginalBpm=Math.max(20,Math.min(400,Number(e.target.value)||Number(song.bpm)||120));
    stretchToggle.onchange=e=>{song.timeStretch=e.target.checked;stretchHint.textContent=song.timeStretch?'Adapta la pista al BPM actual. Pot variar lleugerament el to.':'Pista a velocitat original.'};
-   trackInput.onchange=async e=>{const file=e.target.files[0];if(!file)return;if(file.size>150*1024*1024){alert('La pista és massa gran. Màxim recomanat: 150 MB.');trackInput.value='';return}try{if(song.trackId)await deleteTrack(song.trackId);const id=makeTrackId();await putTrack(id,file);song.trackId=id;song.trackName=file.name;song.trackVolume=song.trackVolume??0.85;song.countInBars=song.countInBars??1;song.trackOriginalBpm=song.trackOriginalBpm||song.bpm;song.timeStretch=Boolean(song.timeStretch);trackLabel.childNodes[0].nodeValue=`🎵 ${file.name}`;removeTrackBtn.classList.remove('hidden');trackHint.textContent='Pista guardada al dispositiu i disponible offline.'}catch(err){console.error(err);alert('No s’ha pogut guardar la pista en aquest dispositiu.')}};
-   removeTrackBtn.onclick=async()=>{if(!song.trackId)return;if(!confirm(`Eliminar la pista “${song.trackName||''}” d’aquesta cançó?`))return;await deleteTrack(song.trackId);delete song.trackId;delete song.trackName;removeTrackBtn.classList.add('hidden');trackLabel.childNodes[0].nodeValue='🎵 Afegir MP3/WAV';trackHint.textContent='Sense pista associada.'};
+   trackInput.onclick=()=>{trackInput.value=""};
+   trackInput.onchange=async e=>{
+    const file=e.target.files?.[0];
+    if(!file)return;
+    if(file.size>150*1024*1024){alert('La pista és massa gran. Màxim recomanat: 150 MB.');trackInput.value='';return}
+    const oldId=song.trackId||"";
+    const id=makeTrackId();
+    try{
+     // Primer guardam la nova. Només després eliminam l'antiga, per no quedar sense pista si falla.
+     await putTrack(id,file);
+     song.trackId=id;
+     song.trackName=file.name;
+     song.trackVolume=song.trackVolume??0.85;
+     song.countInBars=song.countInBars??1;
+     song.trackOriginalBpm=song.trackOriginalBpm||song.bpm;
+     song.timeStretch=Boolean(song.timeStretch);
+     if(oldId&&oldId!==id)deleteTrack(oldId).catch(()=>{});
+     trackLabel.childNodes[0].nodeValue=`🎵 ${file.name}`;
+     removeTrackBtn.classList.remove('hidden');
+     trackHint.textContent='Pista substituïda i guardada. Preparant detecció del BPM…';
+     save();
+     render();
+     await applyDetectedBpm(file,song,{hint:trackHint,label:trackLabel,bpmButton:row.querySelector('.bpmEditBtn'),originalInput:originalBpmInput});
+    }catch(err){
+     console.error(err);
+     try{await deleteTrack(id)}catch(e){}
+     alert('No s’ha pogut guardar la pista en aquest dispositiu.');
+    }finally{
+     // Necessari perquè Safari permeti tornar a seleccionar el mateix arxiu.
+     trackInput.value='';
+    }
+   };
+   removeTrackBtn.onclick=async()=>{
+    const removed=await removeSongTrack(song,{ask:true});
+    if(!removed)return;
+    removeTrackBtn.classList.add('hidden');
+    trackLabel.childNodes[0].nodeValue='🎵 Afegir MP3/WAV';
+    trackHint.textContent='Sense pista associada. Ja pots carregar-ne una altra.';
+    trackInput.value='';
+   };
    row.querySelector('.bpmEditBtn').onclick=()=>openBpmEditor(song,row.querySelector('.bpmEditBtn'));
    const soundButton=row.querySelector('.soundBtn'),pickerBox=row.querySelector('.songSoundPicker');
    soundButton.onclick=()=>{pickerBox.classList.toggle('hidden');if(!pickerBox.childNodes.length)pickerBox.appendChild(soundPicker(song.sound||'',id=>{song.sound=id;soundButton.textContent=soundName(id)},true))};
@@ -845,6 +1278,9 @@ $("cancelSetlistName").onclick=closeSetlistNameEditor;$("saveSetlistName").oncli
 function openConcertMode(){$("concertMode").classList.remove("hidden");render()}function closeConcertMode(){$("concertMode").classList.add("hidden")}$("concertModeBtn").onclick=openConcertMode;$("closeConcertMode").onclick=closeConcertMode;$("concertPrev").onclick=()=>change(-1);$("concertNextBtn").onclick=()=>change(1);$("concertPlay").onclick=()=>playing?stop():start(true);
 
 $("importClicksetBtn").onclick=()=>{$("clicksetImportInput").value="";try{$("clicksetImportInput").showPicker?.()||$("clicksetImportInput").click()}catch(e){$("clicksetImportInput").click()}};$("clicksetImportInput").onchange=e=>{const file=e.target.files?.[0];if(file)importClicksetFile(file)};
+$("exportBackupBtn").onclick=()=>requestEdit(exportFullBackup);
+$("restoreBackupBtn").onclick=()=>requestEdit(()=>{$("backupImportInput").value="";try{$("backupImportInput").showPicker?.()||$("backupImportInput").click()}catch(e){$("backupImportInput").click()}});
+$("backupImportInput").onchange=e=>{const file=e.target.files?.[0];if(file)restoreFullBackup(file)};
 $("importSetlistBtn").onclick=()=>requestEdit(openImportModal);$("cancelImport").onclick=closeImportModal;$("cameraInput").onchange=e=>handleImportFile(e.target.files[0]);$("imageInput").onchange=e=>handleImportFile(e.target.files[0]);$("fileInput").onchange=e=>handleImportFile(e.target.files[0]);$("importText").addEventListener("input",refreshImportPreview);$("createImportedSetlist").onclick=()=>{refreshImportPreview();if(!importSongs.length){alert("No s'ha detectat cap cançó. Revisa el text.");return}const name=$("importSetlistName").value.trim()||"Repertori importat";groups[groupIndex].setlists.push({name,sound:"classic",items:importSongs.map(s=>({name:s.name,bpm:s.bpm}))});save();closeImportModal();renderSetlists(groupIndex)};
 $("newGroupBtn").onclick=()=>requestEdit(()=>openGroupEditor(null));$("homeBtn").onclick=()=>{closeConcertMode();stopRepeatingPreview();showGroups()};$("prev").onclick=()=>change(-1);$("next").onclick=()=>change(1);$("play").onclick=async()=>{try{playing?stop():await start(true)}catch(error){console.error(error);updateAudioGate();showAudioToast("Toca ACTIVAR SO i torna-ho a provar")}};$("editBtn").onclick=()=>requestEdit(()=>{stop();renderEditor();$("editor").classList.add("open")});$("closeEditor").onclick=()=>{stopRepeatingPreview();groups=editingGroups;save();$("editor").classList.remove("open");render()};
 $("submitPassword").onclick=unlockEditing;$("cancelPassword").onclick=closePasswordModal;$("editModeBadge").onclick=()=>{if(editUnlocked){editUnlocked=false;updateEditModeBadge()}else requestEdit(()=>{})};$("editPassword").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();unlockEditing()}else if(e.key==="Escape")closePasswordModal()});
@@ -855,18 +1291,38 @@ $("normalSound").onclick=openQuickSoundMenu;
 $("concertSound").onclick=openQuickSoundMenu;
 $("normalTrack").onclick=openQuickTrackPicker;
 $("concertTrack").onclick=openQuickTrackPicker;
-$("quickTrackInput").onchange=async e=>{
- const file=e.target.files?.[0];
- if(!file)return;
- await handleQuickTrackFile(file);
- e.target.value="";
-};
+$("normalRemoveTrack").onclick=removeCurrentTrack;
+$("concertRemoveTrack").onclick=removeCurrentTrack;
 $("closeQuickSound").onclick=closeQuickSoundMenu;
 $("quickSoundMenu").onclick=e=>{if(e.target===$("quickSoundMenu"))closeQuickSoundMenu()};
+
+// Evita que Safari substitueixi CLICKSET per un reproductor d'àudio quan es deixa anar un fitxer damunt la finestra.
+["dragenter","dragover","drop"].forEach(type=>{
+ document.addEventListener(type,event=>{
+  const hasFiles=Array.from(event.dataTransfer?.types||[]).includes("Files");
+  if(!hasFiles)return;
+  event.preventDefault();
+  event.stopPropagation();
+  if(type==="drop")showAudioToast("Per carregar una pista, toca el botó 🎵 de CLICKSET");
+ },{capture:true});
+});
+
+window.addEventListener("pageshow",()=>{
+ if(audioCtx?.state==="running"){
+  audioUnlocked=true;
+  updateAudioGate();
+ }
+});
+
 // Safari mòbil exigeix inicialitzar l'àudio exactament durant un gest físic.
 ["pointerdown","touchend"].forEach(eventName=>document.addEventListener(eventName,()=>{if(!audioUnlocked)unlockAudioNow(false)},{capture:true,passive:true}));
 $("activateAudioBtn").addEventListener("click",async e=>{e.preventDefault();await unlockAudioNow(true)});
-window.addEventListener("pageshow",()=>{if(audioCtx?.state!=="running"){audioUnlocked=false;updateAudioGate()}});
+$("dismissAudioGate").addEventListener("click",e=>{e.preventDefault();dismissAudioGate()});
+window.addEventListener("pageshow",()=>{
+ if(audioCtx?.state!=="running")audioUnlocked=false;
+ // No tornam a obrir el bloqueig automàticament.
+ updateAudioGate();
+});
 document.addEventListener("keydown",e=>{const appVisible=!$("app").classList.contains("hidden");const modalOpen=$("bpmModal").classList.contains("open")||$("groupModal").classList.contains("open")||$("setlistModal").classList.contains("open")||$("passwordModal").classList.contains("open")||$("importModal").classList.contains("open")||$("editor").classList.contains("open");const target=e.target instanceof Element?e.target:null;if(!appVisible||modalOpen||(target&&target.matches("input,select,textarea,[contenteditable='true']")))return;if((e.code==="Space"||e.key===" "||e.key.toLowerCase()==="r")&&e.repeat)return;if(e.key==="ArrowLeft"){e.preventDefault();change(-1)}else if(e.key==="ArrowRight"){e.preventDefault();change(1)}else if(e.code==="Space"||e.key===" "){e.preventDefault();playing?stop():start(true)}else if(e.key.toLowerCase()==="r"){e.preventDefault();restart()}},true);
 document.addEventListener("visibilitychange",()=>{if(document.hidden&&playing)stop()});
 setLiveState("ready");updateAudioGate();
