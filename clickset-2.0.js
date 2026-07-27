@@ -424,6 +424,7 @@ function resetLiveTimeline(song){
  liveSongBar=1;
  liveExtraBars=0;
  currentLiveBpm=sections.length?sections[0].bpm:Math.max(20,Math.min(400,Number(song?.bpm)||120));
+ updateBarCounter();
 }
 function liveBpmFor(song){
  if((playing||paused)&&flat[current]?.song===song&&Number(currentLiveBpm))return Number(currentLiveBpm);
@@ -476,6 +477,7 @@ function advanceTempoBar(song){
  updateTempoLiveUi(song);
  updateTempoStageDisplay(song);
  updateAutoNextUi(song);
+ updateBarCounter();
  const autoBars=autoNextBarsFor(song)+Math.max(0,liveExtraSongBars);
  if(autoBars>0&&liveSongBar>autoBars&&!autoNextTransitioning){
   performAutomaticSongChange();
@@ -589,6 +591,19 @@ function updateTempoStageDisplay(song){
  }
 }
 
+
+function updateBarCounter(){
+ const value=Math.max(1,Math.round(Number(liveSongBar)||1));
+ setTempoUiValue("barCounterValue",value);
+ setTempoUiValue("concertBarCounterValue",value);
+ for(const id of ["barCounterBox","concertBarCounterBox"]){
+  const box=$(id);
+  if(!box)continue;
+  box.classList.toggle("counting",playing);
+  box.classList.toggle("paused",paused);
+ }
+}
+
 function updateTransportButtons(){
  const pauseVisible=playing||paused;
  for(const id of ["pauseResume","concertPauseResume"]){
@@ -608,7 +623,7 @@ function updateTransportButtons(){
 }
 
 function render(){flatten();if(!flat.length)return;const x=flat[current],n=flat[(current+1)%flat.length],displayBpm=liveBpmFor(x.song),accentOn=Boolean(x.song.accentFirst),activeSound=x.song.sound||currentSetlist().sound||"classic";$("parentLabel").textContent=x.parent;$("song").textContent=x.song.name;$("bpm").textContent=displayBpm;$("bpm").className="bpm "+bpmClass(displayBpm);$("position").textContent=`${current+1} / ${flat.length}`;$("nextup").textContent=`Després: ${n.song.name} · ${n.song.bpm} BPM`;if($("normalAccent")){$("normalAccent").textContent=`Accent: ${accentOn?"ON":"OFF"}`;$("normalAccent").classList.toggle("active",accentOn)}if($("normalSound"))$("normalSound").textContent=soundName(activeSound);const trackLabel=x.song.trackName?`🎵 ${x.song.trackName}`:"🎵 Carregar pista";if($("normalTrack")){ $("normalTrack").textContent=trackLabel; $("normalTrack").title=x.song.trackName?"Clica per substituir la pista":"Clica per carregar una pista"; }if($("concertTrack")){ $("concertTrack").textContent=trackLabel; $("concertTrack").title=x.song.trackName?"Clica per substituir la pista":"Clica per carregar una pista"; }
-updateTempoLiveUi(x.song);updateTempoStageDisplay(x.song);updateAutoNextUi(x.song);updateTransportButtons();if($("normalRemoveTrack"))$("normalRemoveTrack").classList.toggle("hidden",!x.song.trackId);
+updateTempoLiveUi(x.song);updateTempoStageDisplay(x.song);updateAutoNextUi(x.song);updateBarCounter();updateTransportButtons();if($("normalRemoveTrack"))$("normalRemoveTrack").classList.toggle("hidden",!x.song.trackId);
 if($("concertRemoveTrack"))$("concertRemoveTrack").classList.toggle("hidden",!x.song.trackId);renderBeatDots();if($("concertParent")){$("concertParent").textContent=x.parent;$("concertSong").textContent=x.song.name;$("concertBpm").textContent=displayBpm;$("concertBpm").className="concertBpm "+bpmClass(displayBpm);$("concertPosition").textContent=`${current+1} / ${flat.length}`;$("concertNext").textContent=`Després: ${n.song.name} · ${n.song.bpm} BPM`;$("concertMeter").textContent=x.song.meter||"4/4";$("concertAccent").textContent=`Accent: ${accentOn?"ON":"OFF"}`;$("concertAccent").classList.toggle("active",accentOn);$("concertSound").textContent=soundName(activeSound);renderConcertSetlist()}renderSetlist()}
 function toggleCurrentAccent(){
  if(!flat.length)return;

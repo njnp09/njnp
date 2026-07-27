@@ -1971,3 +1971,80 @@ body.light-theme .tempoMapAutoNextSummary{
 body.light-theme .tempoMapAutoNextSummary strong{
  color:#18394d;
 }
+
+
+/* CLICKSET 2.6.2 · COMPTADOR GENERAL DE COMPASSOS */
+.barCounterBox{
+  min-width:92px;
+  height:48px;
+  display:grid;
+  grid-template-columns:auto auto;
+  grid-template-rows:auto auto;
+  align-items:center;
+  justify-content:center;
+  column-gap:8px;
+  padding:6px 11px;
+  border:1px solid rgba(255,255,255,.13);
+  border-radius:14px;
+  background:linear-gradient(160deg,#22303b,#19242d);
+  color:var(--muted);
+  box-shadow:inset 0 1px rgba(255,255,255,.04);
+  flex:0 0 auto;
+}
+.barCounterBox small{
+  grid-column:1/-1;
+  text-align:center;
+  font-size:8px;
+  line-height:1;
+  font-weight:950;
+  letter-spacing:.12em;
+  color:#9ba8b2;
+}
+.barCounterBox strong{
+  grid-column:1/-1;
+  text-align:center;
+  font-size:22px;
+  line-height:1;
+  font-weight:950;
+  font-variant-numeric:tabular-nums;
+  color:#dce3e7;
+}
+.barCounterBox.counting{
+  border-color:rgba(255,207,63,.33);
+  background:linear-gradient(160deg,rgba(255,207,63,.12),rgba(255,207,63,.045));
+}
+.barCounterBox.counting strong{
+  color:var(--accent);
+  text-shadow:0 0 15px rgba(255,207,63,.16);
+}
+.barCounterBox.paused{
+  border-color:rgba(231,173,85,.42);
+}
+.barCounterBox.paused strong{
+  color:#e7ad55;
+}
+.concertBarCounterBox{
+  margin-left:8px;
+}
+@media(max-width:900px){
+  .barCounterBox{
+    min-width:72px;
+    height:42px;
+    padding:5px 8px;
+    border-radius:11px;
+  }
+  .barCounterBox strong{font-size:19px}
+  .barCounterBox small{font-size:7px}
+}
+@media(max-width:750px){
+  .barCounterBox{
+    min-width:60px;
+    height:36px;
+    padding:4px 6px;
+  }
+  .barCounterBox strong{font-size:16px}
+  .barCounterBox small{font-size:6px}
+}
+@media(max-width:520px){
+  #barCounterBox{display:none}
+}

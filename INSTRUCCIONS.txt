@@ -1,22 +1,23 @@
-CLICKSET 2.6.1 — CANVI DE CANÇÓ DES DE L'EDITOR DE TEMPOS
+CLICKSET 2.6.2 — COMPTADOR DE COMPASSOS
 
 NOVETATS:
-- Al final de l'editor TEMPOS hi ha:
-  “En acabar el darrer tram, passar a la següent cançó”.
-- En activar-ho, el camp de compassos del darrer tram queda editable.
-- CLICKSET suma automàticament tots els compassos dels trams.
-- No cal calcular manualment la durada total de la cançó.
-- El canvi automàtic passa exactament en acabar el darrer tram.
-- Si no està activat, el darrer tram continua fins a STOP.
-- La configuració separada “SEGÜENT” continua disponible per cançons sense mapa de tempos.
-- A la configuració separada s'aclareix que el recompte comença al primer compàs.
+- Quadrat visible “COMPASSOS” a la barra superior.
+- Mostra el compàs actual mentre sona la cançó.
+- Comença a 1 en prémer PLAY.
+- Augmenta automàticament a cada compàs.
+- PAUSA conserva el número.
+- CONTINUAR segueix des del mateix compàs.
+- STOP torna el comptador a 1.
+- També apareix en mode concert.
+- Funciona tant en cançons normals com amb canvis de tempo.
+- Facilita mesurar una cançó abans de configurar els trams.
 
 PUBLICACIÓ:
-1. Conserva el ZIP de la 2.6.0.
+1. Conserva el ZIP de la 2.6.1.
 2. Esborra els fitxers actuals de l'arrel del repositori.
 3. Puja tots els fitxers d'aquest ZIP directament a l'arrel.
 4. Fes Commit changes.
-5. Obre https://njnp.njnp09.workers.dev/?v=261
+5. Obre https://njnp.njnp09.workers.dev/?v=262
 
 COMPROVACIÓ:
-La pestanya i l'etiqueta inferior han d'indicar 2.6.1.
+La pestanya i l'etiqueta inferior han d'indicar 2.6.2.
