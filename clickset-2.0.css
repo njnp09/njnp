@@ -1455,3 +1455,133 @@ body{
     font-size:26px;
   }
 }
+
+
+/* CLICKSET 2.5.4 · BPM ACTUAL A L'ESQUERRA I SEGÜENT A LA DRETA */
+.tempoStagePair{
+  width:min(980px,94%);
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 86px minmax(0,.72fr);
+  align-items:center;
+  gap:18px;
+  margin:2px auto 0;
+}
+.tempoStageCurrent{
+  min-width:0;
+  display:grid;
+  justify-items:start;
+  align-content:center;
+}
+.tempoStageCurrent small,
+.tempoStageNext small{
+  font-size:10px;
+  font-weight:950;
+  letter-spacing:.16em;
+  color:var(--muted);
+}
+.tempoStageCurrent span,
+.tempoStageNext span{
+  font-size:13px;
+  font-weight:950;
+  letter-spacing:.18em;
+  color:var(--muted);
+}
+.tempoStageCurrent .bpm,
+.tempoStageCurrent .concertBpm{
+  margin:0;
+  text-align:left;
+}
+.tempoStageArrow{
+  display:grid;
+  place-items:center;
+  color:#7d8993;
+  font-size:54px;
+  font-weight:700;
+  opacity:.7;
+}
+.tempoStageNext{
+  display:grid;
+  justify-items:center;
+  align-content:center;
+  min-height:160px;
+  padding:14px 18px;
+  border-radius:24px;
+  border:1px solid rgba(255,255,255,.08);
+  background:rgba(255,255,255,.025);
+}
+.tempoStageNext strong{
+  color:#77838d;
+  font-size:clamp(70px,10vw,150px);
+  line-height:.85;
+  font-weight:950;
+  font-variant-numeric:tabular-nums;
+  letter-spacing:-.06em;
+}
+.tempoStagePair:not(.hasTempoMap){
+  grid-template-columns:1fr;
+  justify-items:center;
+}
+.tempoStagePair:not(.hasTempoMap) .tempoStageCurrent{
+  justify-items:center;
+}
+.tempoStagePair:not(.hasTempoMap) .tempoStageArrow,
+.tempoStagePair:not(.hasTempoMap) .tempoStageNext,
+.tempoStagePair:not(.hasTempoMap) .tempoStageCurrent small,
+.tempoStagePair:not(.hasTempoMap) .tempoStageCurrent span{
+  display:none;
+}
+.tempoStagePair.hasTempoMap + .standardBpmLabel{
+  display:none;
+}
+.tempoStagePair.finalTempo .tempoStageNext{
+  opacity:.35;
+}
+.tempoStagePair.finalTempo .tempoStageArrow{
+  opacity:.25;
+}
+.tempoShift.tempoTransitionPanel ~ * .tempoStageCurrent,
+.tempoStagePair.hasTempoMap.tempoShift .tempoStageCurrent{
+  animation:tempoStageSlideIn .42s cubic-bezier(.2,.85,.25,1);
+}
+@keyframes tempoStageSlideIn{
+  from{transform:translateX(18%);opacity:.45}
+  to{transform:translateX(0);opacity:1}
+}
+.concertTempoStagePair{
+  width:min(1040px,96%);
+}
+.concertTempoStagePair .tempoStageNext strong{
+  font-size:clamp(72px,11vw,160px);
+}
+@media(max-width:900px){
+  .tempoStagePair{
+    grid-template-columns:minmax(0,1fr) 52px minmax(100px,.6fr);
+    gap:8px;
+  }
+  .tempoStageArrow{font-size:34px}
+  .tempoStageNext{
+    min-height:120px;
+    padding:10px;
+    border-radius:18px;
+  }
+}
+@media(max-width:620px){
+  .tempoStagePair{
+    width:100%;
+    grid-template-columns:minmax(0,1fr) 34px 92px;
+    gap:4px;
+  }
+  .tempoStageArrow{font-size:24px}
+  .tempoStageNext{
+    min-height:90px;
+    padding:7px;
+    border-radius:14px;
+  }
+  .tempoStageNext strong{
+    font-size:44px;
+  }
+  .tempoStageCurrent small,
+  .tempoStageNext small{font-size:7px}
+  .tempoStageCurrent span,
+  .tempoStageNext span{font-size:8px}
+}

@@ -1,22 +1,21 @@
-CLICKSET 2.5.3 — COMPTE ENRERE DE COMPASSOS
+CLICKSET 2.5.4 — BPM DOBLE I COMPTE ENRERE REAL
 
-NOVETATS:
-- Número gran amb els compassos que falten per al canvi.
-- Compte enrere visible: 4 → 3 → 2 → 1.
-- Animació a cada nou compàs.
-- A partir de 4 compassos, el número s'il·lumina.
-- A 2 compassos, passa a color d'avís.
-- Al darrer compàs, queda molt destacat i pulsa.
-- Al darrer tram mostra ∞ perquè continua fins a STOP.
-- Funciona a la pantalla normal i al mode concert.
-- +1 / +2 / +4 actualitza immediatament el compte enrere.
+CORRECCIONS:
+- El compte enrere s'actualitza realment a cada compàs.
+- Mostra 4 → 3 → 2 → 1 abans del canvi.
+- El BPM actual queda a l'esquerra.
+- El BPM següent queda a la dreta, en gris.
+- Una fletxa central indica clarament el canvi.
+- Quan arriba el nou tempo, passa a ocupar la zona esquerra.
+- Al darrer tram, el BPM següent queda desactivat.
+- Funciona en pantalla normal i mode concert.
 
 PUBLICACIÓ:
-1. Conserva el ZIP de la 2.5.2.
+1. Conserva el ZIP de la 2.5.3.
 2. Esborra els fitxers actuals de l'arrel del repositori.
 3. Puja tots els fitxers d'aquest ZIP directament a l'arrel.
 4. Fes Commit changes.
-5. Obre https://njnp.njnp09.workers.dev/?v=253
+5. Obre https://njnp.njnp09.workers.dev/?v=254
 
 COMPROVACIÓ:
-La pestanya i l'etiqueta inferior han d'indicar 2.5.3.
+La pestanya i l'etiqueta inferior han d'indicar 2.5.4.

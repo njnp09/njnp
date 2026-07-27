@@ -374,6 +374,10 @@ function advanceTempoBar(song){
   animateTempoTransition();
   showAudioToast(`Tempo: ${previous} → ${currentLiveBpm} BPM`);
  }
+ // El compte enrere i els BPM visuals s'han d'actualitzar a cada compàs,
+ // no només quan hi ha una interacció manual.
+ updateTempoLiveUi(song);
+ updateTempoStageDisplay(song);
 }
 function extendCurrentTempo(bars){
  if(!playing&&!paused)return;
@@ -384,6 +388,8 @@ function extendCurrentTempo(bars){
   return;
  }
  liveExtraBars+=Math.max(1,Number(bars)||1);
+ updateTempoLiveUi(song);
+ updateTempoStageDisplay(song);
  render();
  showAudioToast(`Tram actual allargat ${bars} ${Number(bars)===1?"compàs":"compassos"}`);
 }
@@ -455,6 +461,26 @@ function updateTempoLiveUi(song){
  }
  document.querySelectorAll("[data-extend-bars]").forEach(button=>button.disabled=!hasNext||(!playing&&!paused));
 }
+
+function updateTempoStageDisplay(song){
+ const sections=tempoSectionsFor(song);
+ const hasMap=sections.length>0;
+ const current=Math.round(Number(currentLiveBpm||song?.bpm)||120);
+ const next=hasMap&&liveTempoStep<sections.length-1
+  ?Math.round(Number(sections[liveTempoStep+1].bpm)||120)
+  :"—";
+
+ setTempoUiValue("stageNextBpm",next);
+ setTempoUiValue("concertStageNextBpm",next);
+
+ for(const id of ["tempoStagePair","concertTempoStagePair"]){
+  const pair=$(id);
+  if(!pair)continue;
+  pair.classList.toggle("hasTempoMap",hasMap);
+  pair.classList.toggle("finalTempo",hasMap&&liveTempoStep>=sections.length-1);
+ }
+}
+
 function updateTransportButtons(){
  const pauseVisible=playing||paused;
  for(const id of ["pauseResume","concertPauseResume"]){
@@ -474,7 +500,7 @@ function updateTransportButtons(){
 }
 
 function render(){flatten();if(!flat.length)return;const x=flat[current],n=flat[(current+1)%flat.length],displayBpm=liveBpmFor(x.song),accentOn=Boolean(x.song.accentFirst),activeSound=x.song.sound||currentSetlist().sound||"classic";$("parentLabel").textContent=x.parent;$("song").textContent=x.song.name;$("bpm").textContent=displayBpm;$("bpm").className="bpm "+bpmClass(displayBpm);$("position").textContent=`${current+1} / ${flat.length}`;$("nextup").textContent=`Després: ${n.song.name} · ${n.song.bpm} BPM`;if($("normalAccent")){$("normalAccent").textContent=`Accent: ${accentOn?"ON":"OFF"}`;$("normalAccent").classList.toggle("active",accentOn)}if($("normalSound"))$("normalSound").textContent=soundName(activeSound);const trackLabel=x.song.trackName?`🎵 ${x.song.trackName}`:"🎵 Carregar pista";if($("normalTrack")){ $("normalTrack").textContent=trackLabel; $("normalTrack").title=x.song.trackName?"Clica per substituir la pista":"Clica per carregar una pista"; }if($("concertTrack")){ $("concertTrack").textContent=trackLabel; $("concertTrack").title=x.song.trackName?"Clica per substituir la pista":"Clica per carregar una pista"; }
-updateTempoLiveUi(x.song);updateTransportButtons();if($("normalRemoveTrack"))$("normalRemoveTrack").classList.toggle("hidden",!x.song.trackId);
+updateTempoLiveUi(x.song);updateTempoStageDisplay(x.song);updateTransportButtons();if($("normalRemoveTrack"))$("normalRemoveTrack").classList.toggle("hidden",!x.song.trackId);
 if($("concertRemoveTrack"))$("concertRemoveTrack").classList.toggle("hidden",!x.song.trackId);renderBeatDots();if($("concertParent")){$("concertParent").textContent=x.parent;$("concertSong").textContent=x.song.name;$("concertBpm").textContent=displayBpm;$("concertBpm").className="concertBpm "+bpmClass(displayBpm);$("concertPosition").textContent=`${current+1} / ${flat.length}`;$("concertNext").textContent=`Després: ${n.song.name} · ${n.song.bpm} BPM`;$("concertMeter").textContent=x.song.meter||"4/4";$("concertAccent").textContent=`Accent: ${accentOn?"ON":"OFF"}`;$("concertAccent").classList.toggle("active",accentOn);$("concertSound").textContent=soundName(activeSound);renderConcertSetlist()}renderSetlist()}
 function toggleCurrentAccent(){
  if(!flat.length)return;
