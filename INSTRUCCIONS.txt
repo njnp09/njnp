@@ -1,34 +1,28 @@
-CLICKSET 2.3.0 — MILLORA VISUAL I D'ÚS
+CLICKSET 2.4.0 — CONTROLS DE DIRECTE
 
-Base: ClickSet 2.2.5 estable.
+Base: ClickSet 2.3.0.
 
-IMPORTANT:
-Aquesta versió NO modifica:
-- motor del metrònom
-- reproducció de pistes
-- detecció automàtica de BPM
-- sortides L/R
-- sistema de còpies
-
-MILLORA:
-- Pantalla principal més equilibrada.
-- Botons amb jerarquia i mida més coherents.
-- Millor aprofitament d'altures petites.
-- Nom de pista més llegible.
-- Animació suau en canviar de cançó.
-- Estat PREPARAT / EN DIRECTE més clar.
-- Franja d'informació i controls més ordenats.
-- Editor agrupat visualment per seccions.
-- Pantalla inicial i targetes de grups més professionals.
-- Millor adaptació a mòbil, tauleta i ordinador.
-- Manté els colors de la versió 2.2.5.
+CANVIS:
+- Accent del primer temps clar i audible amb tots els sons.
+- L'accent té més diferència de volum, durada i brillantor.
+- Activar o llevar l'accent NO reinicia la pista.
+- Activar o llevar l'accent NO reinicia el metrònom.
+- El canvi s'aplica al següent primer temps disponible.
+- Fletxa ↑ = +1 BPM.
+- Fletxa ↓ = -1 BPM.
+- Fletxa ← = cançó anterior.
+- Fletxa → = cançó següent.
+- Espai = Play / Stop.
+- A = Accent ON / OFF.
+- R = Reiniciar.
+- El BPM continua canviant en temps real mentre sona.
 
 PUBLICACIÓ:
-1. Conserva el ZIP de la 2.2.5.
+1. Conserva el ZIP de la versió 2.3.0.
 2. Esborra els fitxers actuals de l'arrel del repositori.
 3. Puja tots els fitxers d'aquest ZIP directament a l'arrel.
 4. Fes Commit changes.
-5. Obre https://njnp.njnp09.workers.dev/?v=230
+5. Obre https://njnp.njnp09.workers.dev/?v=240
 
 COMPROVACIÓ:
-La pestanya i l'etiqueta inferior han d'indicar 2.3.0.
+La pestanya i l'etiqueta inferior han d'indicar 2.4.0.

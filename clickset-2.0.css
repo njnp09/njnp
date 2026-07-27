@@ -961,3 +961,23 @@ body.light-theme .editorRow{
   0%{opacity:.35;transform:translateY(5px)}
   100%{opacity:1;transform:translateY(0)}
 }
+
+
+/* ClickSet 2.4.0 · controls de directe */
+.keyboardHelp{
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ width:38px;
+ height:38px;
+ border:1px solid var(--border);
+ border-radius:12px;
+ background:rgba(255,255,255,.035);
+ color:var(--muted);
+ font-size:18px;
+ cursor:help;
+ flex:0 0 auto;
+}
+@media(max-width:750px){
+ .keyboardHelp{display:none}
+}

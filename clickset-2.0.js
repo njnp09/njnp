@@ -309,12 +309,10 @@ function toggleCurrentAccent(){
  const song=flat[current].song;
  song.accentFirst=!song.accentFirst;
  save();
- if(playing){
-  const keepCurrent=current;
-  playing=false;cancelScheduledAudio();current=keepCurrent;
-  start(true)
- }else{beatInBar=0}
- render()
+ // No aturam ni reiniciam res. El scheduler consultarà el nou estat
+ // al següent cop programat, mentre la pista continua exactament on era.
+ render();
+ showAudioToast(song.accentFirst?"Accent del primer temps: ON":"Accent del primer temps: OFF");
 }
 function openQuickSoundMenu(){
  if(!flat.length)return;
@@ -599,19 +597,80 @@ function playBuffer(buffer,time,level=1){
  gain.gain.setValueAtTime(Math.max(.0001,Math.min(1.15,level*appVolume)),time);
  src.connect(gain).connect(clickDestination());src.start(time);return true
 }
+function accentMarker(time,level=1){
+ // Capa curta i brillant que garanteix que el primer temps sigui distingible
+ // fins i tot quan la mostra accentuada és molt semblant a la normal.
+ tone(3150,"sine",time,.026,Math.min(1.15,level*.42));
+ tone(1575,"triangle",time,.038,Math.min(1.15,level*.22));
+}
 function scheduleSound(type,time,volume=1,accented=false){
  const level=Math.max(0,Math.min(1.15,volume));
+ const accentLevel=accented?Math.min(1.15,level*1.12):level;
  const sampled=sampleBuffers[`${type}:${accented?"accent":"normal"}`]||sampleBuffers[`${type}:normal`];
- if(sampled&&playBuffer(sampled,time,level))return;
- if(type==="classic"&&classicBuffer){playBuffer(classicBuffer,time,level);return}
+ if(sampled&&playBuffer(sampled,time,accentLevel)){
+  if(accented)accentMarker(time,level);
+  return;
+ }
+ if(type==="classic"&&classicBuffer){
+  playBuffer(classicBuffer,time,accentLevel);
+  if(accented)accentMarker(time,level);
+  return;
+ }
  // Fallbacks immediats mentre els WAV es carreguen.
  if(type==="classic")type="studio";
- if(type==="cowbell"){tone(accented?1250:980,"square",time,.055,level*.72);tone(accented?830:650,"triangle",time,.08,level*.38);return}
- if(type==="clave"){tone(accented?2850:2350,"sine",time,.035,level*.9);tone(accented?3700:3100,"sine",time,.024,level*.35);return}
- if(type==="rim"){const src=track(audioCtx.createBufferSource()),hp=audioCtx.createBiquadFilter(),gain=audioCtx.createGain();src.buffer=noiseBuffer(.014);hp.type="highpass";hp.frequency.value=accented?3100:2500;gain.gain.setValueAtTime(level*appVolume,time);gain.gain.exponentialRampToValueAtTime(.001,time+.035);src.connect(hp).connect(gain).connect(clickDestination());src.start(time);return}
- if(type==="clap"){const src=track(audioCtx.createBufferSource()),bp=audioCtx.createBiquadFilter(),gain=audioCtx.createGain();src.buffer=noiseBuffer(accented?.05:.04);bp.type="bandpass";bp.frequency.value=accented?1900:1500;bp.Q.value=.8;gain.gain.setValueAtTime(level*appVolume,time);gain.gain.exponentialRampToValueAtTime(.001,time+.08);src.connect(bp).connect(gain).connect(clickDestination());src.start(time);return}
- if(type==="wood"){const src=track(audioCtx.createBufferSource()),filter=audioCtx.createBiquadFilter(),gain=audioCtx.createGain();src.buffer=noiseBuffer(.028);filter.type="bandpass";filter.frequency.value=1120;filter.Q.value=5.5;gain.gain.setValueAtTime(level*appVolume,time);gain.gain.exponentialRampToValueAtTime(.001,time+.055);src.connect(filter).connect(gain).connect(clickDestination());src.start(time);return}
- tone(accented?2400:1850,"triangle",time,.045,level*.9);tone(accented?1200:950,"sine",time,.055,level*.35)
+ if(type==="cowbell"){
+  tone(accented?1380:980,"square",time,accented?.068:.055,accentLevel*.72);
+  tone(accented?910:650,"triangle",time,accented?.095:.08,accentLevel*.38);
+  if(accented)accentMarker(time,level);
+  return;
+ }
+ if(type==="clave"){
+  tone(accented?3100:2350,"sine",time,accented?.045:.035,accentLevel*.9);
+  tone(accented?4100:3100,"sine",time,accented?.032:.024,accentLevel*.35);
+  if(accented)accentMarker(time,level);
+  return;
+ }
+ if(type==="rim"){
+  const src=track(audioCtx.createBufferSource()),hp=audioCtx.createBiquadFilter(),gain=audioCtx.createGain();
+  src.buffer=noiseBuffer(accented?.021:.014);
+  hp.type="highpass";
+  hp.frequency.value=accented?3500:2500;
+  gain.gain.setValueAtTime(accentLevel*appVolume,time);
+  gain.gain.exponentialRampToValueAtTime(.001,time+(accented?.048:.035));
+  src.connect(hp).connect(gain).connect(clickDestination());
+  src.start(time);
+  if(accented)accentMarker(time,level);
+  return;
+ }
+ if(type==="clap"){
+  const src=track(audioCtx.createBufferSource()),bp=audioCtx.createBiquadFilter(),gain=audioCtx.createGain();
+  src.buffer=noiseBuffer(accented?.06:.04);
+  bp.type="bandpass";
+  bp.frequency.value=accented?2150:1500;
+  bp.Q.value=.8;
+  gain.gain.setValueAtTime(accentLevel*appVolume,time);
+  gain.gain.exponentialRampToValueAtTime(.001,time+(accented?.095:.08));
+  src.connect(bp).connect(gain).connect(clickDestination());
+  src.start(time);
+  if(accented)accentMarker(time,level);
+  return;
+ }
+ if(type==="wood"){
+  const src=track(audioCtx.createBufferSource()),filter=audioCtx.createBiquadFilter(),gain=audioCtx.createGain();
+  src.buffer=noiseBuffer(accented?.038:.028);
+  filter.type="bandpass";
+  filter.frequency.value=accented?1450:1120;
+  filter.Q.value=accented?4.4:5.5;
+  gain.gain.setValueAtTime(accentLevel*appVolume,time);
+  gain.gain.exponentialRampToValueAtTime(.001,time+(accented?.075:.055));
+  src.connect(filter).connect(gain).connect(clickDestination());
+  src.start(time);
+  if(accented)accentMarker(time,level);
+  return;
+ }
+ tone(accented?2700:1850,"triangle",time,accented?.058:.045,accentLevel*.9);
+ tone(accented?1350:950,"sine",time,accented?.068:.055,accentLevel*.35);
+ if(accented)accentMarker(time,level);
 }
 function effectiveSound(){const s=flat[current]?.song;return s?.sound||currentSetlist()?.sound||"classic"}
 function effectiveAccentSound(){const s=flat[current]?.song,sl=currentSetlist();return s?.accentSound||sl?.accentSound||effectiveSound()}
@@ -1333,7 +1392,43 @@ window.addEventListener("pageshow",()=>{
  // No tornam a obrir el bloqueig automàticament.
  updateAudioGate();
 });
-document.addEventListener("keydown",e=>{const appVisible=!$("app").classList.contains("hidden");const modalOpen=$("bpmModal").classList.contains("open")||$("groupModal").classList.contains("open")||$("setlistModal").classList.contains("open")||$("passwordModal").classList.contains("open")||$("importModal").classList.contains("open")||$("editor").classList.contains("open");const target=e.target instanceof Element?e.target:null;if(!appVisible||modalOpen||(target&&target.matches("input,select,textarea,[contenteditable='true']")))return;if((e.code==="Space"||e.key===" "||e.key.toLowerCase()==="r")&&e.repeat)return;if(e.key==="ArrowLeft"){e.preventDefault();change(-1)}else if(e.key==="ArrowRight"){e.preventDefault();change(1)}else if(e.code==="Space"||e.key===" "){e.preventDefault();playing?stop():start(true)}else if(e.key.toLowerCase()==="r"){e.preventDefault();restart()}},true);
+document.addEventListener("keydown",e=>{
+ const appVisible=!$("app").classList.contains("hidden");
+ const modalOpen=$("bpmModal").classList.contains("open")||
+  $("groupModal").classList.contains("open")||
+  $("setlistModal").classList.contains("open")||
+  $("passwordModal").classList.contains("open")||
+  $("importModal").classList.contains("open")||
+  $("editor").classList.contains("open");
+ const target=e.target instanceof Element?e.target:null;
+ if(!appVisible||modalOpen||(target&&target.matches("input,select,textarea,[contenteditable='true']")))return;
+
+ const key=e.key.toLowerCase();
+ if((e.code==="Space"||e.key===" "||key==="r"||key==="a")&&e.repeat)return;
+
+ if(e.key==="ArrowLeft"){
+  e.preventDefault();
+  change(-1);
+ }else if(e.key==="ArrowRight"){
+  e.preventDefault();
+  change(1);
+ }else if(e.key==="ArrowUp"){
+  e.preventDefault();
+  adjustCurrentBpm(1);
+ }else if(e.key==="ArrowDown"){
+  e.preventDefault();
+  adjustCurrentBpm(-1);
+ }else if(e.code==="Space"||e.key===" "){
+  e.preventDefault();
+  playing?stop():start(true);
+ }else if(key==="a"){
+  e.preventDefault();
+  toggleCurrentAccent();
+ }else if(key==="r"){
+  e.preventDefault();
+  restart();
+ }
+},true);
 document.addEventListener("visibilitychange",()=>{if(document.hidden&&playing)stop()});
 setLiveState("ready");updateAudioGate();
 if("serviceWorker" in navigator)window.addEventListener("load",async()=>{try{const registration=await navigator.serviceWorker.register("./sw.js",{updateViaCache:"none"});await registration.update()}catch(error){console.warn("Service worker",error)}});
