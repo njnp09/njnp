@@ -280,3 +280,10 @@ body.audioSettingsOpen:after{content:"";position:fixed;inset:0;z-index:170;backg
 .reorderHandle{font-size:24px;text-align:center;cursor:grab;color:var(--muted)}.reorderNumber{font-weight:950;color:var(--accent);text-align:center}.reorderName{font-weight:900;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.reorderActions{display:flex;gap:6px}.reorderActions button{width:43px;height:43px;padding:0;border-radius:10px;border:1px solid var(--border);background:var(--panel);color:var(--text);font-weight:950}
 .reorderHeadActions{display:flex;gap:8px}
 @media(max-width:650px){.editorQuickTools{grid-template-columns:1fr}.quickToolBtn{min-height:58px}.reorderRow{grid-template-columns:30px 32px minmax(0,1fr);padding:9px 7px}.reorderActions{grid-column:2/4;justify-content:flex-end}.reorderActions button{width:48px}.reorderHeadActions{width:100%}.reorderHeadActions button{flex:1}.reorderPanel .panelHead{flex-wrap:wrap}}
+
+
+/* ClickSet 2.2.0 · BPM i còpies */
+.bpmAnalyzing{border-color:var(--accent)!important;box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 18%,transparent);animation:bpmScan 1s ease-in-out infinite}
+@keyframes bpmScan{0%,100%{opacity:.72}50%{opacity:1}}
+.chooserTools #exportBackupBtn,.chooserTools #restoreBackupBtn{white-space:nowrap}
+@media(max-width:720px){.chooserTools #exportBackupBtn,.chooserTools #restoreBackupBtn{flex-basis:calc(50% - 4px)}}

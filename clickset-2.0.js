@@ -1,5 +1,5 @@
 "use strict";
-const VERSION="2.0", STORAGE_KEY="clickset_017_groups";
+const VERSION="2.2.0", STORAGE_KEY="clickset_017_groups";
 const EDIT_PASSWORD="45";
 let editUnlocked=false,pendingEditAction=null;
 const SOUNDS=[
@@ -483,6 +483,7 @@ async function handleQuickTrackFile(file){
   song.countInBars=song.countInBars??1;song.trackOriginalBpm=song.trackOriginalBpm||song.bpm||120;
   if(oldId)deleteTrack(oldId).catch(()=>{});
   save();render();
+  const detected=await applyDetectedBpm(file,song,{});if(detected){rebuildFlat();render()}
  }catch(error){console.error(error);alert("No s’ha pogut guardar la pista d’àudio.")}
 }
 async function loadCurrentTrackBuffer(){
@@ -605,6 +606,97 @@ function soundPicker(selected,onSelect,allowDefault=false){
 }
 
 
+
+// ClickSet 2.2.0 — detecció de BPM multipunt i còpia completa
+function allSongsFromGroups(source=groups){
+ const songs=[];for(const g of source||[])for(const sl of g.setlists||[])for(const item of sl.items||[])songs.push(...(item.children||[item]));return songs
+}
+function nextFrame(){return new Promise(resolve=>setTimeout(resolve,0))}
+function median(values){const a=values.filter(Number.isFinite).sort((x,y)=>x-y);if(!a.length)return 0;const m=Math.floor(a.length/2);return a.length%2?a[m]:(a[m-1]+a[m])/2}
+function foldBpm(bpm){let x=bpm;while(x<70)x*=2;while(x>190)x/=2;return x}
+function analyzeBpmWindow(buffer,startSec,durationSec=22){
+ const sr=buffer.sampleRate,start=Math.max(0,Math.floor(startSec*sr)),end=Math.min(buffer.length,start+Math.floor(durationSec*sr));
+ if(end-start<sr*8)return null;
+ const targetRate=200,step=Math.max(1,Math.floor(sr/targetRate)),n=Math.floor((end-start)/step),energy=new Float32Array(n);
+ const channels=[];for(let c=0;c<buffer.numberOfChannels;c++)channels.push(buffer.getChannelData(c));
+ for(let i=0;i<n;i++){
+  const from=start+i*step,to=Math.min(end,from+step);let sum=0,count=0;
+  for(let p=from;p<to;p+=4){let v=0;for(const ch of channels)v+=ch[p]||0;v/=channels.length;sum+=v*v;count++}
+  energy[i]=Math.sqrt(sum/Math.max(1,count));
+ }
+ const onset=new Float32Array(n);let mean=0;
+ for(let i=1;i<n;i++){const v=Math.max(0,energy[i]-energy[i-1]);onset[i]=v;mean+=v}
+ mean/=Math.max(1,n-1);let variance=0;for(let i=0;i<n;i++){onset[i]=Math.max(0,onset[i]-mean*.55);variance+=onset[i]*onset[i]}
+ if(variance<1e-8)return null;
+ const scores=[];
+ for(let bpm=60;bpm<=200;bpm++){
+  const lag=targetRate*60/bpm;let corr=0,normA=0,normB=0;
+  for(let i=Math.ceil(lag)+1;i<n;i++){
+   const j=i-lag,j0=Math.floor(j),f=j-j0,b=onset[j0]*(1-f)+(onset[j0+1]||0)*f,a=onset[i];corr+=a*b;normA+=a*a;normB+=b*b
+  }
+  let score=corr/Math.sqrt(Math.max(1e-12,normA*normB));
+  // Reforç si també hi ha estructura a mig/doble període.
+  const halfLag=lag/2;let harmonic=0,hCount=0;
+  for(let i=Math.ceil(halfLag)+1;i<n;i+=2){const j=i-halfLag,j0=Math.floor(j),f=j-j0,b=onset[j0]*(1-f)+(onset[j0+1]||0)*f;harmonic+=onset[i]*b;hCount++}
+  score+=Math.min(.12,harmonic/Math.max(1,hCount)/(variance/n)*.02);
+  scores.push({bpm,score})
+ }
+ scores.sort((a,b)=>b.score-a.score);const best=scores[0],second=scores.find(x=>Math.abs(x.bpm-best.bpm)>4)||scores[1];
+ return {bpm:best.bpm,score:best.score,margin:best.score-(second?.score||0),top:scores.slice(0,5)}
+}
+async function detectBpmFromFile(file,onProgress=()=>{}){
+ await ensureAudio();onProgress('Descodificant la pista…');
+ const bytes=await file.arrayBuffer(),buffer=await audioCtx.decodeAudioData(bytes.slice(0));
+ const duration=buffer.duration;if(duration<12)throw new Error('La pista és massa curta per detectar-ne el tempo amb precisió.');
+ const windowLength=Math.min(24,Math.max(14,duration*.18));
+ const positions=duration<45?[Math.max(0,(duration-windowLength)/2)]:[.08,.30,.52,.74].map(p=>Math.min(Math.max(0,duration-windowLength),duration*p));
+ const results=[];
+ for(let i=0;i<positions.length;i++){onProgress(`Analitzant ritme… ${i+1}/${positions.length}`);const r=analyzeBpmWindow(buffer,positions[i],windowLength);if(r)results.push(r);await nextFrame()}
+ if(!results.length)throw new Error('No s’ha pogut detectar un pols prou clar.');
+ const candidates=[];for(let bpm=60;bpm<=200;bpm++){
+  let total=0;for(const r of results){const distance=Math.abs(r.bpm-bpm);const harmonic=Math.min(Math.abs(r.bpm*2-bpm),Math.abs(r.bpm/2-bpm));total+=r.score*Math.exp(-distance*distance/18)+r.score*.35*Math.exp(-harmonic*harmonic/18)}
+  candidates.push({bpm,total})
+ }
+ candidates.sort((a,b)=>b.total-a.total);let bpm=candidates[0].bpm;
+ const folded=results.map(r=>foldBpm(r.bpm)),consistency=folded.filter(x=>Math.abs(x-foldBpm(bpm))<=3).length/results.length;
+ const margin=(candidates[0].total-(candidates.find(x=>Math.abs(x.bpm-bpm)>4)?.total||0))/Math.max(.001,candidates[0].total);
+ const avgScore=results.reduce((s,r)=>s+r.score,0)/results.length;
+ let confidence=Math.round(Math.max(0,Math.min(99,45+consistency*35+margin*35+(avgScore-.12)*45)));
+ // Evita la falsa precisió quan les finestres discrepen o el pols és dèbil.
+ if(consistency<.75)confidence=Math.min(confidence,84);if(avgScore<.16)confidence=Math.min(confidence,78);
+ return {bpm:Math.round(bpm),confidence,duration,windows:results.map(r=>r.bpm)}
+}
+async function applyDetectedBpm(file,song,ui={}){
+ const setStatus=text=>{if(ui.hint)ui.hint.textContent=text;if(ui.label)ui.label.classList.toggle('bpmAnalyzing',/Analitzant|Descodificant/.test(text))};
+ try{
+  const result=await detectBpmFromFile(file,setStatus);song.detectedTrackBpm=result.bpm;song.bpmDetectionConfidence=result.confidence;song.trackOriginalBpm=result.bpm;
+  const current=Math.round(Number(song.bpm)||120);let apply=false;
+  if(result.confidence>=90){apply=true;setStatus(`BPM detectat amb confiança alta: ${result.bpm} (${result.confidence}%). Aplicat automàticament.`)}
+  else{apply=confirm(`ClickSet ha detectat ${result.bpm} BPM amb una confiança del ${result.confidence}%.\n\nEl tempo actual és ${current} BPM. Vols aplicar el tempo detectat?`);setStatus(apply?`BPM detectat: ${result.bpm} (${result.confidence}%). Aplicat.`:`BPM detectat: ${result.bpm} (${result.confidence}%). Has mantingut ${current} BPM.`)}
+  if(apply){song.bpm=result.bpm;if(ui.bpmButton)ui.bpmButton.textContent=result.bpm;if(ui.originalInput)ui.originalInput.value=result.bpm}
+  save();return result
+ }catch(error){console.warn('Detecció BPM',error);setStatus(`Pista guardada. BPM no detectat: ${error.message||'ritme poc clar'}`);return null}
+}
+async function exportFullBackup(){
+ try{
+  const copy=clone(groups),tracks={},ids=[...new Set(allSongsFromGroups(copy).map(s=>s.trackId).filter(Boolean))];
+  for(let i=0;i<ids.length;i++){const id=ids[i],file=await getTrack(id);if(file){tracks[id]={name:file.name||'pista',type:file.type||'audio/*',data:await blobToDataUrl(file)}}}
+  const settings={theme:localStorage.getItem(THEME_KEY)||'dark',countdownEnabled,appVolume,clickRoute,trackRoute,recents:getRecentSetlists()};
+  const pack={format:'clickset-full-backup',formatVersion:1,appVersion:VERSION,exportedAt:new Date().toISOString(),groups:copy,tracks,settings};
+  const blob=new Blob([JSON.stringify(pack)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`ClickSet_copia_${new Date().toISOString().slice(0,10)}.clicksetbackup`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);alert(`Còpia completa creada: ${copy.length} grups i ${ids.length} pistes.`)
+ }catch(error){console.error(error);alert('No s’ha pogut crear la còpia completa. Pot faltar espai o memòria al dispositiu.')}
+}
+async function restoreFullBackup(file){
+ try{
+  const pack=JSON.parse(await file.text());if(pack?.format!=='clickset-full-backup'||!Array.isArray(pack.groups))throw new Error('Format no vàlid');
+  if(!confirm('Aquesta restauració substituirà tots els grups, repertoris i pistes actuals. Continuar?'))return;
+  const db=await openTrackDb();await new Promise((resolve,reject)=>{const tx=db.transaction(TRACK_STORE,'readwrite');tx.objectStore(TRACK_STORE).clear();tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error)});
+  for(const [id,tr] of Object.entries(pack.tracks||{})){if(tr?.data)await putTrack(id,new File([dataUrlToBlob(tr.data)],tr.name||'pista',{type:tr.type||'audio/*'}))}
+  groups=normalize(pack.groups);save();const s=pack.settings||{};if(s.theme)localStorage.setItem(THEME_KEY,s.theme);if(typeof s.countdownEnabled==='boolean')localStorage.setItem(COUNTDOWN_KEY,String(s.countdownEnabled));if(Number.isFinite(s.appVolume))localStorage.setItem('clickset_app_volume',String(s.appVolume));if(s.clickRoute)localStorage.setItem(CLICK_ROUTE_KEY,s.clickRoute);if(s.trackRoute)localStorage.setItem(TRACK_ROUTE_KEY,s.trackRoute);if(Array.isArray(s.recents))saveRecentSetlists(s.recents);
+  alert('Còpia restaurada correctament. ClickSet es reiniciarà.');location.reload()
+ }catch(error){console.error(error);alert('No s’ha pogut restaurar aquesta còpia. El fitxer pot estar danyat o no ser una còpia completa de ClickSet.')}
+}
+
 function safeFileName(name){return String(name||"repertori").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9_-]+/gi,"_").replace(/^_+|_+$/g,"")||"repertori"}
 function blobToDataUrl(blob){return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=()=>reject(r.error);r.readAsDataURL(blob)})}
 function dataUrlToBlob(dataUrl){const [head,data]=String(dataUrl).split(",");const mime=(head.match(/data:([^;]+)/)||[])[1]||"application/octet-stream";const bin=atob(data),bytes=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);return new Blob([bytes],{type:mime})}
@@ -659,7 +751,7 @@ function renderEditorItems(sl){
    const originalBpmInput=row.querySelector('.trackOriginalBpm'),stretchToggle=row.querySelector('.timeStretch'),stretchHint=row.querySelector('.stretchHint');
    originalBpmInput.oninput=e=>song.trackOriginalBpm=Math.max(20,Math.min(400,Number(e.target.value)||Number(song.bpm)||120));
    stretchToggle.onchange=e=>{song.timeStretch=e.target.checked;stretchHint.textContent=song.timeStretch?'Adapta la pista al BPM actual. Pot variar lleugerament el to.':'Pista a velocitat original.'};
-   trackInput.onchange=async e=>{const file=e.target.files[0];if(!file)return;if(file.size>150*1024*1024){alert('La pista és massa gran. Màxim recomanat: 150 MB.');trackInput.value='';return}try{if(song.trackId)await deleteTrack(song.trackId);const id=makeTrackId();await putTrack(id,file);song.trackId=id;song.trackName=file.name;song.trackVolume=song.trackVolume??0.85;song.countInBars=song.countInBars??1;song.trackOriginalBpm=song.trackOriginalBpm||song.bpm;song.timeStretch=Boolean(song.timeStretch);trackLabel.childNodes[0].nodeValue=`🎵 ${file.name}`;removeTrackBtn.classList.remove('hidden');trackHint.textContent='Pista guardada al dispositiu i disponible offline.'}catch(err){console.error(err);alert('No s’ha pogut guardar la pista en aquest dispositiu.')}};
+   trackInput.onchange=async e=>{const file=e.target.files[0];if(!file)return;if(file.size>150*1024*1024){alert('La pista és massa gran. Màxim recomanat: 150 MB.');trackInput.value='';return}try{if(song.trackId)await deleteTrack(song.trackId);const id=makeTrackId();await putTrack(id,file);song.trackId=id;song.trackName=file.name;song.trackVolume=song.trackVolume??0.85;song.countInBars=song.countInBars??1;song.trackOriginalBpm=song.trackOriginalBpm||song.bpm;song.timeStretch=Boolean(song.timeStretch);trackLabel.childNodes[0].nodeValue=`🎵 ${file.name}`;removeTrackBtn.classList.remove('hidden');trackHint.textContent='Pista guardada. Preparant detecció del BPM…';await applyDetectedBpm(file,song,{hint:trackHint,label:trackLabel,bpmButton:row.querySelector('.bpmEditBtn'),originalInput:originalBpmInput})}catch(err){console.error(err);alert('No s’ha pogut guardar la pista en aquest dispositiu.')}};
    removeTrackBtn.onclick=async()=>{if(!song.trackId)return;if(!confirm(`Eliminar la pista “${song.trackName||''}” d’aquesta cançó?`))return;await deleteTrack(song.trackId);delete song.trackId;delete song.trackName;removeTrackBtn.classList.add('hidden');trackLabel.childNodes[0].nodeValue='🎵 Afegir MP3/WAV';trackHint.textContent='Sense pista associada.'};
    row.querySelector('.bpmEditBtn').onclick=()=>openBpmEditor(song,row.querySelector('.bpmEditBtn'));
    const soundButton=row.querySelector('.soundBtn'),pickerBox=row.querySelector('.songSoundPicker');
@@ -845,6 +937,9 @@ $("cancelSetlistName").onclick=closeSetlistNameEditor;$("saveSetlistName").oncli
 function openConcertMode(){$("concertMode").classList.remove("hidden");render()}function closeConcertMode(){$("concertMode").classList.add("hidden")}$("concertModeBtn").onclick=openConcertMode;$("closeConcertMode").onclick=closeConcertMode;$("concertPrev").onclick=()=>change(-1);$("concertNextBtn").onclick=()=>change(1);$("concertPlay").onclick=()=>playing?stop():start(true);
 
 $("importClicksetBtn").onclick=()=>{$("clicksetImportInput").value="";try{$("clicksetImportInput").showPicker?.()||$("clicksetImportInput").click()}catch(e){$("clicksetImportInput").click()}};$("clicksetImportInput").onchange=e=>{const file=e.target.files?.[0];if(file)importClicksetFile(file)};
+$("exportBackupBtn").onclick=()=>requestEdit(exportFullBackup);
+$("restoreBackupBtn").onclick=()=>requestEdit(()=>{$("backupImportInput").value="";try{$("backupImportInput").showPicker?.()||$("backupImportInput").click()}catch(e){$("backupImportInput").click()}});
+$("backupImportInput").onchange=e=>{const file=e.target.files?.[0];if(file)restoreFullBackup(file)};
 $("importSetlistBtn").onclick=()=>requestEdit(openImportModal);$("cancelImport").onclick=closeImportModal;$("cameraInput").onchange=e=>handleImportFile(e.target.files[0]);$("imageInput").onchange=e=>handleImportFile(e.target.files[0]);$("fileInput").onchange=e=>handleImportFile(e.target.files[0]);$("importText").addEventListener("input",refreshImportPreview);$("createImportedSetlist").onclick=()=>{refreshImportPreview();if(!importSongs.length){alert("No s'ha detectat cap cançó. Revisa el text.");return}const name=$("importSetlistName").value.trim()||"Repertori importat";groups[groupIndex].setlists.push({name,sound:"classic",items:importSongs.map(s=>({name:s.name,bpm:s.bpm}))});save();closeImportModal();renderSetlists(groupIndex)};
 $("newGroupBtn").onclick=()=>requestEdit(()=>openGroupEditor(null));$("homeBtn").onclick=()=>{closeConcertMode();stopRepeatingPreview();showGroups()};$("prev").onclick=()=>change(-1);$("next").onclick=()=>change(1);$("play").onclick=async()=>{try{playing?stop():await start(true)}catch(error){console.error(error);updateAudioGate();showAudioToast("Toca ACTIVAR SO i torna-ho a provar")}};$("editBtn").onclick=()=>requestEdit(()=>{stop();renderEditor();$("editor").classList.add("open")});$("closeEditor").onclick=()=>{stopRepeatingPreview();groups=editingGroups;save();$("editor").classList.remove("open");render()};
 $("submitPassword").onclick=unlockEditing;$("cancelPassword").onclick=closePasswordModal;$("editModeBadge").onclick=()=>{if(editUnlocked){editUnlocked=false;updateEditModeBadge()}else requestEdit(()=>{})};$("editPassword").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();unlockEditing()}else if(e.key==="Escape")closePasswordModal()});
