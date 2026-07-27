@@ -1,23 +1,22 @@
-CLICKSET 2.5.2 — CANVIS DE TEMPO MÉS VISUALS
+CLICKSET 2.5.3 — COMPTE ENRERE DE COMPASSOS
 
 NOVETATS:
-- BPM actual a l'esquerra, il·luminat.
-- BPM següent a la dreta, en gris.
-- Quan arriba el canvi, el tempo nou es desplaça visualment al lloc principal.
-- Comptador de compàs global i tram actual.
-- Text “Canvi en X compassos”.
-- Barra de progrés del tram.
-- Els darrers 2 compassos canvien a color d'avís.
-- El darrer compàs fa pulsar discretament el tempo següent.
-- +1 / +2 / +4 actualitzen immediatament el comptador i la barra.
-- Darrer tram identificat clarament com “fins a STOP”.
+- Número gran amb els compassos que falten per al canvi.
+- Compte enrere visible: 4 → 3 → 2 → 1.
+- Animació a cada nou compàs.
+- A partir de 4 compassos, el número s'il·lumina.
+- A 2 compassos, passa a color d'avís.
+- Al darrer compàs, queda molt destacat i pulsa.
+- Al darrer tram mostra ∞ perquè continua fins a STOP.
+- Funciona a la pantalla normal i al mode concert.
+- +1 / +2 / +4 actualitza immediatament el compte enrere.
 
 PUBLICACIÓ:
-1. Conserva el ZIP de la 2.5.1.
+1. Conserva el ZIP de la 2.5.2.
 2. Esborra els fitxers actuals de l'arrel del repositori.
 3. Puja tots els fitxers d'aquest ZIP directament a l'arrel.
 4. Fes Commit changes.
-5. Obre https://njnp.njnp09.workers.dev/?v=252
+5. Obre https://njnp.njnp09.workers.dev/?v=253
 
 COMPROVACIÓ:
-La pestanya i l'etiqueta inferior han d'indicar 2.5.2.
+La pestanya i l'etiqueta inferior han d'indicar 2.5.3.

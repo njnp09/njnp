@@ -345,9 +345,19 @@ function animateTempoTransition(){
   panel.classList.add("tempoShift");
  }
 }
+function pulseTempoCountdown(){
+ for(const id of ["tempoBigCountdown","concertTempoBigCountdown"]){
+  const el=$(id);
+  if(!el)continue;
+  el.classList.remove("countPulse");
+  void el.offsetWidth;
+  el.classList.add("countPulse");
+ }
+}
 function advanceTempoBar(song){
  const sections=tempoSectionsFor(song);
  liveSongBar++;
+ pulseTempoCountdown();
  if(!sections.length)return;
  const section=sections[Math.min(liveTempoStep,sections.length-1)];
  if(liveExtraBars>0){
@@ -412,6 +422,7 @@ function updateTempoLiveUi(song){
 
  const barText=totalBars==null?`${currentBarInSection} compassos en aquest tram`:`${Math.min(completed,totalBars)} / ${totalBars} compassos`;
  const extraText=liveExtraBars>0?`+${liveExtraBars} extra`:"";
+ const bigCountdown=hasNext?Math.max(1,remaining):"∞";
 
  for(const prefix of ["","concert"]){
   const p=prefix?`${prefix}T`:"t";
@@ -428,15 +439,19 @@ function updateTempoLiveUi(song){
  setTempoUiValue("concertTempoBarCount",barText);
  setTempoUiValue("tempoExtraLabel",extraText);
  setTempoUiValue("concertTempoExtraLabel",extraText);
+ setTempoUiValue("tempoBigCountdown",bigCountdown);
+ setTempoUiValue("concertTempoBigCountdown",bigCountdown);
  setTempoUiWidth("tempoBarFill",progress);
  setTempoUiWidth("concertTempoBarFill",progress);
 
  for(const id of ["liveTempoTools","concertTempoTools"]){
   const panel=$(id);
   if(!panel)continue;
+  panel.classList.toggle("tempoApproaching",hasNext&&remaining<=4);
   panel.classList.toggle("tempoWarning",hasNext&&remaining<=2);
   panel.classList.toggle("tempoLastBar",hasNext&&remaining===1);
   panel.classList.toggle("tempoFinalSection",!hasNext);
+  panel.dataset.remainingBars=hasNext?String(remaining):"final";
  }
  document.querySelectorAll("[data-extend-bars]").forEach(button=>button.disabled=!hasNext||(!playing&&!paused));
 }

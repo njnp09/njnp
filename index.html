@@ -8,11 +8,11 @@
 <meta name="theme-color" content="#0d1318">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="cover.png">
-<title>ClickSet 2.5.2</title>
-<link rel="stylesheet" href="clickset-2.0.css?v=252">
+<title>ClickSet 2.5.3</title>
+<link rel="stylesheet" href="clickset-2.0.css?v=253">
 </head>
 <body>
-<div class="buildBadge">2.5.2</div>
+<div class="buildBadge">2.5.3</div>
 <button id="themeToggle" class="themeToggle" type="button" aria-label="Activar mode clar" title="Activar mode clar">☀️</button>
 <button id="editModeBadge" class="editModeBadge locked" type="button" aria-label="Estat del mode edició">🔒 Mode lectura</button>
 <div id="splash" class="splash"><img src="cover.png" alt="ClickSet"></div>
@@ -34,6 +34,7 @@
       </div>
       <div class="tempoFlowCenter">
         <div class="tempoArrow">→</div>
+        <div id="tempoBigCountdown" class="tempoBigCountdown" aria-label="Compassos fins al canvi">—</div>
         <div class="tempoCountdown">
           <strong id="tempoProgressLabel">Compàs 1</strong>
           <small id="tempoNextChange"></small>
@@ -92,6 +93,7 @@
           </div>
           <div class="tempoFlowCenter">
             <div class="tempoArrow">→</div>
+            <div id="concertTempoBigCountdown" class="tempoBigCountdown" aria-label="Compassos fins al canvi">—</div>
             <div class="tempoCountdown">
               <strong id="concertTempoProgressLabel">Compàs 1</strong>
               <small id="concertTempoNextChange"></small>
@@ -217,5 +219,5 @@
 window.addEventListener("error",function(){setTimeout(function(){document.getElementById("splash")?.classList.add("hidden")},50)});
 setTimeout(function(){document.getElementById("splash")?.classList.add("hidden")},2500);
 </script>
-<script src="clickset-2.0.js?v=252" defer></script>
+<script src="clickset-2.0.js?v=253" defer></script>
 </body></html>

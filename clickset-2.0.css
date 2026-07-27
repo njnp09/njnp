@@ -1369,3 +1369,89 @@ body{
  .tempoCountdown strong,.tempoCountdown small{font-size:9px}
  .tempoBarMeta{font-size:8px}
 }
+
+
+/* CLICKSET 2.5.3 · COMPTE ENRERE VISUAL DE COMPASSOS */
+.tempoFlowCenter{
+  grid-template-columns:auto auto minmax(0,1fr);
+}
+.tempoBigCountdown{
+  width:54px;
+  height:54px;
+  display:grid;
+  place-items:center;
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,.10);
+  background:rgba(255,255,255,.035);
+  color:#8b98a3;
+  font-size:30px;
+  line-height:1;
+  font-weight:950;
+  font-variant-numeric:tabular-nums;
+  box-shadow:inset 0 1px rgba(255,255,255,.05);
+  transition:
+    color .18s ease,
+    background .18s ease,
+    border-color .18s ease,
+    box-shadow .18s ease,
+    transform .18s ease;
+}
+.tempoApproaching .tempoBigCountdown{
+  color:#f0c762;
+  border-color:rgba(255,207,63,.30);
+  background:rgba(255,207,63,.08);
+}
+.tempoWarning .tempoBigCountdown{
+  color:#ffae52;
+  border-color:rgba(255,155,66,.48);
+  background:rgba(255,155,66,.11);
+  box-shadow:0 0 18px rgba(255,155,66,.11);
+}
+.tempoLastBar .tempoBigCountdown{
+  color:#fff;
+  background:linear-gradient(150deg,#ff9b42,#e56b32);
+  border-color:#ffb269;
+  box-shadow:0 0 26px rgba(255,155,66,.32);
+  animation:lastBarBreath .55s ease-in-out infinite alternate;
+}
+.tempoFinalSection .tempoBigCountdown{
+  color:#77848f;
+  background:rgba(255,255,255,.025);
+  border-color:rgba(255,255,255,.07);
+}
+.tempoBigCountdown.countPulse{
+  animation:tempoCountPulse .30s cubic-bezier(.2,.85,.3,1);
+}
+.tempoLastBar .tempoBigCountdown.countPulse{
+  animation:tempoCountPulse .30s cubic-bezier(.2,.85,.3,1),lastBarBreath .55s ease-in-out infinite alternate;
+}
+@keyframes tempoCountPulse{
+  0%{transform:scale(.72);opacity:.32}
+  55%{transform:scale(1.15);opacity:1}
+  100%{transform:scale(1);opacity:1}
+}
+@keyframes lastBarBreath{
+  from{transform:scale(1);box-shadow:0 0 18px rgba(255,155,66,.24)}
+  to{transform:scale(1.055);box-shadow:0 0 34px rgba(255,155,66,.48)}
+}
+.concertTempoTools .tempoBigCountdown{
+  width:62px;
+  height:62px;
+  font-size:36px;
+}
+@media(max-width:620px){
+  .tempoFlowCenter{
+    grid-template-columns:auto auto minmax(0,1fr);
+  }
+  .tempoBigCountdown{
+    width:40px;
+    height:40px;
+    border-radius:12px;
+    font-size:23px;
+  }
+  .concertTempoTools .tempoBigCountdown{
+    width:44px;
+    height:44px;
+    font-size:26px;
+  }
+}
