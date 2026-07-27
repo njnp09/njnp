@@ -258,13 +258,24 @@ setTimeout(()=>{try{$("splash")?.classList.add("hidden");showGroups()}catch(erro
 setTimeout(()=>$("splash")?.classList.add("hidden"),2200);
 
 updateEditModeBadge();
-function showGroups(){stop();groupIndex=null;setlistIndex=null;setAccent();$("app").classList.add("hidden");$("chooser").classList.remove("hidden");$("chooserBack").classList.add("hidden");$("newGroupBtn").classList.remove("hidden");$("importSetlistBtn").classList.add("hidden");$("homeBrand").classList.remove("hidden");$("chooserTitle").classList.add("hidden");$("chooserTitle").textContent="Grup musical";$("chooserSubtitle").textContent="Selecciona un grup";const grid=$("chooserGrid");grid.innerHTML="";if(!groups.length){grid.innerHTML=`<div class="emptyState"><div class="emptyIcon">🎵</div><h2>Benvingut a ClickSet</h2><p>Crea el teu primer grup o importa un repertori .clickset.</p><button class="primary" id="emptyCreateGroup">+ CREAR PRIMER GRUP</button></div>`;$("emptyCreateGroup").onclick=()=>requestEdit(()=>openGroupEditor(null));renderRecentSetlists();return}groups.forEach((g,i)=>{const c=document.createElement("div");c.className="card";c.style.setProperty("--card-color",g.color);c.innerHTML=`${g.logo?`<img class="cardLogo" src="${g.logo}" alt="">`:""}<h2>${esc(g.name)}</h2><small>${g.setlists.length} repertoris</small><div class="cardActions"><button class="smallBtn openGroup">OBRIR</button><button class="smallBtn editGroup">EDITAR</button></div>`;c.querySelector(".openGroup").onclick=e=>{e.stopPropagation();showSetlists(i)};c.querySelector(".editGroup").onclick=e=>{e.stopPropagation();requestEdit(()=>openGroupEditor(i))};c.onclick=()=>showSetlists(i);grid.appendChild(c)});renderRecentSetlists()}
+function showGroups(){stop();groupIndex=null;setlistIndex=null;setAccent();placeEditBadge(false);$("app").classList.add("hidden");$("chooser").classList.remove("hidden");$("chooserBack").classList.add("hidden");$("newGroupBtn").classList.remove("hidden");$("importSetlistBtn").classList.add("hidden");$("homeBrand").classList.remove("hidden");$("chooserTitle").classList.add("hidden");$("chooserTitle").textContent="Grup musical";$("chooserSubtitle").textContent="Selecciona un grup";const grid=$("chooserGrid");grid.innerHTML="";if(!groups.length){grid.innerHTML=`<div class="emptyState"><div class="emptyIcon">🎵</div><h2>Benvingut a ClickSet</h2><p>Crea el teu primer grup o importa un repertori .clickset.</p><button class="primary" id="emptyCreateGroup">+ CREAR PRIMER GRUP</button></div>`;$("emptyCreateGroup").onclick=()=>requestEdit(()=>openGroupEditor(null));renderRecentSetlists();return}groups.forEach((g,i)=>{const c=document.createElement("div");c.className="card";c.style.setProperty("--card-color",g.color);c.innerHTML=`${g.logo?`<img class="cardLogo" src="${g.logo}" alt="">`:""}<h2>${esc(g.name)}</h2><small>${g.setlists.length} repertoris</small><div class="cardActions"><button class="smallBtn openGroup">OBRIR</button><button class="smallBtn editGroup">EDITAR</button></div>`;c.querySelector(".openGroup").onclick=e=>{e.stopPropagation();showSetlists(i)};c.querySelector(".editGroup").onclick=e=>{e.stopPropagation();requestEdit(()=>openGroupEditor(i))};c.onclick=()=>showSetlists(i);grid.appendChild(c)});renderRecentSetlists()}
 function renderSetlists(gi){groupIndex=gi;setAccent();$("recentSection")?.classList.add("hidden");$("chooserBack").classList.remove("hidden");$("chooserBack").onclick=showGroups;$("newGroupBtn").classList.add("hidden");$("importSetlistBtn").classList.remove("hidden");$("homeBrand").classList.add("hidden");$("chooserTitle").classList.remove("hidden");$("chooserTitle").textContent=groups[gi].name;$("chooserSubtitle").textContent="Selecciona un repertori";const grid=$("chooserGrid");grid.innerHTML="";groups[gi].setlists.forEach((s,i)=>{const c=document.createElement("div");c.className="card";c.style.setProperty("--card-color",groups[gi].color);c.innerHTML=`<h3>${esc(s.name)}</h3><small>${countFlat(s.items)} parts · ${soundName(s.sound)}</small><div class="cardActions"><button class="smallBtn openSetlistBtn">OBRIR</button><button class="smallBtn exportSetlistBtn">📦 EXPORTAR</button><button class="smallBtn editSetlistBtn">EDITAR NOM</button></div>`;c.querySelector(".openSetlistBtn").onclick=e=>{e.stopPropagation();openSetlist(i)};c.querySelector(".exportSetlistBtn").onclick=e=>{e.stopPropagation();exportClickset(gi,i)};c.querySelector(".editSetlistBtn").onclick=e=>{e.stopPropagation();requestEdit(()=>openSetlistNameEditor(i))};c.onclick=()=>openSetlist(i);grid.appendChild(c)})}
 function showSetlists(gi){const g=groups[gi];if(!g.logo){renderSetlists(gi);return}const intro=$("groupIntro"),img=$("groupIntroLogo"),name=$("groupIntroName");img.src=g.logo;name.textContent=g.name;intro.style.setProperty("--intro-color",g.color||"#ffd34d");intro.classList.remove("hidden","closing");requestAnimationFrame(()=>intro.classList.add("visible"));setTimeout(()=>{intro.classList.add("closing");setTimeout(()=>{intro.classList.add("hidden");intro.classList.remove("visible","closing");renderSetlists(gi)},260)},850)}
 function countFlat(items){return items.reduce((n,i)=>n+(i.children?i.children.length:1),0)}
 function openSetlistNameEditor(i){setlistEditIndex=i;$("setlistName").value=groups[groupIndex].setlists[i].name||"Repertori";$("setlistModal").classList.add("open");setTimeout(()=>$("setlistName").focus(),0)}
 function closeSetlistNameEditor(){$("setlistModal").classList.remove("open");setlistEditIndex=null}
-function openSetlist(si){setlistIndex=si;current=0;rememberRecentSetlist(groupIndex,si);$("chooser").classList.add("hidden");$("app").classList.remove("hidden");render()}
+function placeEditBadge(inApp){
+ const badge=$("editModeBadge");
+ if(!badge)return;
+ if(inApp){
+  badge.classList.add("insideApp");
+  document.querySelector(".topBtns")?.prepend(badge);
+ }else{
+  badge.classList.remove("insideApp");
+  document.body.appendChild(badge);
+ }
+}
+function openSetlist(si){setlistIndex=si;current=0;rememberRecentSetlist(groupIndex,si);$("chooser").classList.add("hidden");$("app").classList.remove("hidden");placeEditBadge(true);render()}
 function renderSetlist(){const box=$("setlist");box.innerHTML="";let idx=0;currentItems().forEach((g,gi)=>{if(g.children){const start=idx,end=idx+g.children.length-1,inside=current>=start&&current<=end;if(inside){Object.keys(openMixes).forEach(k=>openMixes[k]=false);openMixes[gi]=true}const p=document.createElement("div");p.className="songItem parent"+(inside?" active":"");p.innerHTML=`<div>${openMixes[gi]?"▼":"▶"}</div><div>${esc(g.name)}</div><div></div>`;p.onclick=()=>{openMixes[gi]=!openMixes[gi];renderSetlist()};box.appendChild(p);if(openMixes[gi])g.children.forEach((s,ci)=>{const i=idx++;const e=document.createElement("div");e.className="songItem child"+(i===current?" active":"")+(i<current?" passed":"");e.innerHTML=`<div>${ci+1}</div><div>${esc(s.name)}</div><div>${s.bpm}</div>`;e.onclick=()=>jump(i);box.appendChild(e)});else idx+=g.children.length}else{const i=idx++;const e=document.createElement("div");e.className="songItem"+(i===current?" active":"")+(i<current?" passed":"");e.innerHTML=`<div>${gi+1}</div><div>${esc(g.name)}</div><div>${g.bpm}</div>`;e.onclick=()=>jump(i);box.appendChild(e)}});$("songCount").textContent=`${flat.length} parts`}
 function renderConcertSetlist(){
  if(!$('concertSetlist')||groupIndex===null||setlistIndex===null)return;
@@ -670,68 +681,250 @@ function allSongsFromGroups(source=groups){
 function nextFrame(){return new Promise(resolve=>setTimeout(resolve,0))}
 function median(values){const a=values.filter(Number.isFinite).sort((x,y)=>x-y);if(!a.length)return 0;const m=Math.floor(a.length/2);return a.length%2?a[m]:(a[m-1]+a[m])/2}
 function foldBpm(bpm){let x=bpm;while(x<70)x*=2;while(x>190)x/=2;return x}
-function analyzeBpmWindow(buffer,startSec,durationSec=22){
- const sr=buffer.sampleRate,start=Math.max(0,Math.floor(startSec*sr)),end=Math.min(buffer.length,start+Math.floor(durationSec*sr));
- if(end-start<sr*8)return null;
- const targetRate=200,step=Math.max(1,Math.floor(sr/targetRate)),n=Math.floor((end-start)/step),energy=new Float32Array(n);
- const channels=[];for(let c=0;c<buffer.numberOfChannels;c++)channels.push(buffer.getChannelData(c));
+function percentile(values,p){
+ const a=Array.from(values).filter(Number.isFinite).sort((x,y)=>x-y);
+ if(!a.length)return 0;
+ const i=Math.max(0,Math.min(a.length-1,Math.round((a.length-1)*p)));
+ return a[i];
+}
+function normalizeTempo(bpm,min=70,max=190){
+ let x=Number(bpm)||0;
+ while(x<min)x*=2;
+ while(x>max)x/=2;
+ return x;
+}
+function tempoDistance(a,b){
+ const direct=Math.abs(a-b);
+ const half=Math.abs(a*2-b);
+ const double=Math.abs(a/2-b);
+ return Math.min(direct,half,double);
+}
+function analyzeBpmWindow(buffer,startSec,durationSec=28){
+ const sr=buffer.sampleRate;
+ const start=Math.max(0,Math.floor(startSec*sr));
+ const end=Math.min(buffer.length,start+Math.floor(durationSec*sr));
+ if(end-start<sr*10)return null;
+
+ // Envolupant de transitoris: combina canvi ràpid, energia i una mica més de pes
+ // a freqüències de caixa/plats. Això és més robust que mirar només el volum.
+ const targetRate=250;
+ const step=Math.max(1,Math.floor(sr/targetRate));
+ const n=Math.floor((end-start)/step);
+ const raw=new Float32Array(n);
+ const channels=[];
+ for(let c=0;c<buffer.numberOfChannels;c++)channels.push(buffer.getChannelData(c));
+
+ let prev=0;
  for(let i=0;i<n;i++){
-  const from=start+i*step,to=Math.min(end,from+step);let sum=0,count=0;
-  for(let p=from;p<to;p+=4){let v=0;for(const ch of channels)v+=ch[p]||0;v/=channels.length;sum+=v*v;count++}
-  energy[i]=Math.sqrt(sum/Math.max(1,count));
- }
- const onset=new Float32Array(n);let mean=0;
- for(let i=1;i<n;i++){const v=Math.max(0,energy[i]-energy[i-1]);onset[i]=v;mean+=v}
- mean/=Math.max(1,n-1);let variance=0;for(let i=0;i<n;i++){onset[i]=Math.max(0,onset[i]-mean*.55);variance+=onset[i]*onset[i]}
- if(variance<1e-8)return null;
- const scores=[];
- for(let bpm=60;bpm<=200;bpm++){
-  const lag=targetRate*60/bpm;let corr=0,normA=0,normB=0;
-  for(let i=Math.ceil(lag)+1;i<n;i++){
-   const j=i-lag,j0=Math.floor(j),f=j-j0,b=onset[j0]*(1-f)+(onset[j0+1]||0)*f,a=onset[i];corr+=a*b;normA+=a*a;normB+=b*b
+  const from=start+i*step;
+  const to=Math.min(end,from+step);
+  let rms=0,flux=0,count=0,last=prev;
+  for(let p=from;p<to;p+=2){
+   let mono=0;
+   for(const ch of channels)mono+=ch[p]||0;
+   mono/=channels.length;
+   const hp=mono-last*.97;
+   flux+=Math.abs(hp);
+   rms+=mono*mono;
+   last=mono;
+   count++;
   }
-  let score=corr/Math.sqrt(Math.max(1e-12,normA*normB));
-  // Reforç si també hi ha estructura a mig/doble període.
-  const halfLag=lag/2;let harmonic=0,hCount=0;
-  for(let i=Math.ceil(halfLag)+1;i<n;i+=2){const j=i-halfLag,j0=Math.floor(j),f=j-j0,b=onset[j0]*(1-f)+(onset[j0+1]||0)*f;harmonic+=onset[i]*b;hCount++}
-  score+=Math.min(.12,harmonic/Math.max(1,hCount)/(variance/n)*.02);
-  scores.push({bpm,score})
+  prev=last;
+  raw[i]=Math.sqrt(rms/Math.max(1,count))*.42+(flux/Math.max(1,count))*.58;
  }
- scores.sort((a,b)=>b.score-a.score);const best=scores[0],second=scores.find(x=>Math.abs(x.bpm-best.bpm)>4)||scores[1];
- return {bpm:best.bpm,score:best.score,margin:best.score-(second?.score||0),top:scores.slice(0,5)}
+
+ // Suavitzat curt i flux positiu.
+ const onset=new Float32Array(n);
+ for(let i=2;i<n-2;i++){
+  const smooth=(raw[i-2]+2*raw[i-1]+3*raw[i]+2*raw[i+1]+raw[i+2])/9;
+  const before=(raw[i-2]+raw[i-1]+raw[i])/3;
+  onset[i]=Math.max(0,smooth-before*.90);
+ }
+ const floor=percentile(onset,.55);
+ for(let i=0;i<n;i++)onset[i]=Math.max(0,onset[i]-floor*.72);
+
+ const high=percentile(onset,.88);
+ const medium=percentile(onset,.72);
+ if(high<=1e-6)return null;
+
+ // Pics de transitori amb distància mínima de 120 ms.
+ const peaks=[];
+ const minGap=Math.round(targetRate*.12);
+ let lastPeak=-minGap;
+ for(let i=2;i<n-2;i++){
+  const v=onset[i];
+  if(v<medium||v<onset[i-1]||v<onset[i+1])continue;
+  if(i-lastPeak<minGap){
+   if(peaks.length&&v>peaks[peaks.length-1].strength){
+    peaks[peaks.length-1]={time:i/targetRate,strength:v};
+    lastPeak=i;
+   }
+   continue;
+  }
+  peaks.push({time:i/targetRate,strength:v});
+  lastPeak=i;
+ }
+ if(peaks.length<14)return null;
+
+ let onsetEnergy=0;
+ for(const v of onset)onsetEnergy+=v*v;
+ onsetEnergy=Math.max(onsetEnergy,1e-12);
+
+ const scores=[];
+ for(let bpm=55;bpm<=210;bpm++){
+  const period=60/bpm;
+  const lag=targetRate*period;
+
+  // Autocorrelació de l'envolupant.
+  let corr=0,normA=0,normB=0;
+  for(let i=Math.ceil(lag)+1;i<n;i++){
+   const j=i-lag,j0=Math.floor(j),f=j-j0;
+   const b=onset[j0]*(1-f)+(onset[j0+1]||0)*f;
+   const a=onset[i];
+   corr+=a*b; normA+=a*a; normB+=b*b;
+  }
+  const ac=corr/Math.sqrt(Math.max(1e-12,normA*normB));
+
+  // Histograma d'intervals entre pics. Premia pulsacions, dobles i subdivisions.
+  let intervalScore=0,weightSum=0;
+  for(let i=0;i<peaks.length;i++){
+   for(let j=i+1;j<Math.min(peaks.length,i+10);j++){
+    const dt=peaks[j].time-peaks[i].time;
+    if(dt>period*4.1)break;
+    const weight=Math.sqrt(peaks[i].strength*peaks[j].strength);
+    const ratios=[1,2,.5,3,4];
+    let best=0;
+    for(const ratio of ratios){
+     const expected=period*ratio;
+     const error=Math.abs(dt-expected)/expected;
+     best=Math.max(best,Math.exp(-error*error/0.0035)*(ratio===1?1:ratio===2?.72:ratio===.5?.55:.35));
+    }
+    intervalScore+=best*weight;
+    weightSum+=weight;
+   }
+  }
+  intervalScore/=Math.max(1e-9,weightSum);
+
+  // Comprovació de graella: cerca la fase que millor encaixa amb els transitoris.
+  const periodSamples=targetRate*period;
+  let gridBest=0;
+  const phaseSteps=24;
+  for(let phase=0;phase<phaseSteps;phase++){
+   const offset=periodSamples*phase/phaseSteps;
+   let grid=0,count=0;
+   for(let p=offset;p<n;p+=periodSamples){
+    const center=Math.round(p);
+    let local=0;
+    for(let d=-3;d<=3;d++)local=Math.max(local,onset[center+d]||0);
+    grid+=local;count++;
+   }
+   gridBest=Math.max(gridBest,grid/Math.max(1,count)/high);
+  }
+
+  // Penalitza tempos que només encaixen per meitat/doble sense suport propi.
+  const score=ac*.50+intervalScore*.32+Math.min(1.4,gridBest)*.18;
+  scores.push({bpm,score,ac,intervalScore,grid:gridBest});
+ }
+ scores.sort((a,b)=>b.score-a.score);
+ const best=scores[0];
+ const second=scores.find(x=>tempoDistance(x.bpm,best.bpm)>4)||scores[1];
+ return {
+  bpm:best.bpm,
+  score:best.score,
+  margin:best.score-(second?.score||0),
+  peakCount:peaks.length,
+  top:scores.slice(0,8)
+ };
 }
 async function detectBpmFromFile(file,onProgress=()=>{}){
- await ensureAudio();onProgress('Descodificant la pista…');
+ await ensureAudio();
+ onProgress('Descodificant la pista…');
  const bytes=await file.arrayBuffer();
  let buffer;
  try{
   buffer=await audioCtx.decodeAudioData(bytes.slice(0));
  }catch(mainError){
-  // Segona via per Safari, que en alguns casos falla amb el context principal.
   const Decoder=window.AudioContext||window.webkitAudioContext;
   if(!Decoder)throw mainError;
   const decoder=new Decoder();
   try{buffer=await decoder.decodeAudioData(bytes.slice(0))}
   finally{try{await decoder.close()}catch(e){}}
  }
- const duration=buffer.duration;if(duration<12)throw new Error('La pista és massa curta per detectar-ne el tempo amb precisió.');
- const windowLength=Math.min(24,Math.max(14,duration*.18));
- const positions=duration<45?[Math.max(0,(duration-windowLength)/2)]:[.08,.30,.52,.74].map(p=>Math.min(Math.max(0,duration-windowLength),duration*p));
+
+ const duration=buffer.duration;
+ if(duration<15)throw new Error('La pista és massa curta per detectar-ne el tempo amb precisió.');
+
+ const windowLength=Math.min(32,Math.max(20,duration*.16));
+ const maxStart=Math.max(0,duration-windowLength);
+ const fractions=duration<55?[.18,.52]:[.08,.27,.46,.65,.82];
+ const positions=[...new Set(fractions.map(p=>Math.round(Math.min(maxStart,duration*p)*10)/10))];
  const results=[];
- for(let i=0;i<positions.length;i++){onProgress(`Analitzant ritme… ${i+1}/${positions.length}`);const r=analyzeBpmWindow(buffer,positions[i],windowLength);if(r)results.push(r);await nextFrame()}
- if(!results.length)throw new Error('No s’ha pogut detectar un pols prou clar.');
- const candidates=[];for(let bpm=60;bpm<=200;bpm++){
-  let total=0;for(const r of results){const distance=Math.abs(r.bpm-bpm);const harmonic=Math.min(Math.abs(r.bpm*2-bpm),Math.abs(r.bpm/2-bpm));total+=r.score*Math.exp(-distance*distance/18)+r.score*.35*Math.exp(-harmonic*harmonic/18)}
-  candidates.push({bpm,total})
+
+ for(let i=0;i<positions.length;i++){
+  onProgress(`Analitzant transitoris… ${i+1}/${positions.length}`);
+  const r=analyzeBpmWindow(buffer,positions[i],windowLength);
+  if(r)results.push(r);
+  await nextFrame();
  }
- candidates.sort((a,b)=>b.total-a.total);let bpm=candidates[0].bpm;
- const folded=results.map(r=>foldBpm(r.bpm)),consistency=folded.filter(x=>Math.abs(x-foldBpm(bpm))<=3).length/results.length;
- const margin=(candidates[0].total-(candidates.find(x=>Math.abs(x.bpm-bpm)>4)?.total||0))/Math.max(.001,candidates[0].total);
+ if(results.length<2)throw new Error('No hi ha prou fragments amb un pols clar.');
+
+ // Votació conjunta de totes les finestres.
+ const candidates=[];
+ for(let bpm=55;bpm<=210;bpm++){
+  let total=0,strongWindows=0;
+  for(const r of results){
+   let local=0;
+   for(const c of r.top){
+    const d=tempoDistance(c.bpm,bpm);
+    const harmonicPenalty=Math.abs(c.bpm-bpm)<=4?1:.56;
+    local=Math.max(local,c.score*Math.exp(-(d*d)/10)*harmonicPenalty);
+   }
+   if(tempoDistance(r.bpm,bpm)<=3)strongWindows++;
+   total+=local*Math.max(.35,r.score);
+  }
+  // Preferència moderada pel tempo real més sostingut, no sempre la meitat.
+  const centerBias=bpm>=75&&bpm<=185?1.035:1;
+  candidates.push({bpm,total:total*centerBias,strongWindows});
+ }
+ candidates.sort((a,b)=>b.total-a.total);
+
+ let best=candidates[0];
+ // En cas de quasi empat entre mig/doble tempo, tria el que té més finestres directes.
+ const harmonicAlternatives=candidates.filter(c=>
+  c.bpm!==best.bpm &&
+  (Math.abs(c.bpm-best.bpm*2)<=3||Math.abs(c.bpm*2-best.bpm)<=3)
+ ).slice(0,4);
+ for(const alt of harmonicAlternatives){
+  if(alt.total>=best.total*.91 && alt.strongWindows>best.strongWindows)best=alt;
+ }
+
+ const runner=candidates.find(c=>tempoDistance(c.bpm,best.bpm)>4)||candidates[1];
+ const directVotes=results.filter(r=>Math.abs(r.bpm-best.bpm)<=3).length;
+ const harmonicVotes=results.filter(r=>tempoDistance(r.bpm,best.bpm)<=3).length;
+ const consistency=harmonicVotes/results.length;
+ const directConsistency=directVotes/results.length;
+ const margin=(best.total-(runner?.total||0))/Math.max(.001,best.total);
  const avgScore=results.reduce((s,r)=>s+r.score,0)/results.length;
- let confidence=Math.round(Math.max(0,Math.min(99,45+consistency*35+margin*35+(avgScore-.12)*45)));
- // Evita la falsa precisió quan les finestres discrepen o el pols és dèbil.
- if(consistency<.75)confidence=Math.min(confidence,84);if(avgScore<.16)confidence=Math.min(confidence,78);
- return {bpm:Math.round(bpm),confidence,duration,windows:results.map(r=>r.bpm)}
+
+ let confidence=Math.round(
+  28+
+  consistency*30+
+  directConsistency*20+
+  Math.max(0,margin)*45+
+  Math.max(0,Math.min(.22,avgScore-.10))*80
+ );
+ confidence=Math.max(1,Math.min(99,confidence));
+ if(consistency<.72)confidence=Math.min(confidence,79);
+ if(directConsistency<.45)confidence=Math.min(confidence,86);
+ if(margin<.08)confidence=Math.min(confidence,84);
+
+ return {
+  bpm:Math.round(best.bpm),
+  confidence,
+  duration,
+  windows:results.map(r=>r.bpm),
+  candidates:candidates.slice(0,5).map(c=>({bpm:c.bpm,score:Number(c.total.toFixed(3))}))
+ };
 }
 async function applyDetectedBpm(file,song,ui={}){
  const setStatus=text=>{
@@ -749,7 +942,8 @@ async function applyDetectedBpm(file,song,ui={}){
   if(result.confidence>=90){
    apply=true;
   }else{
-   apply=confirm(`BPM detectat: ${result.bpm}\nConfiança: ${result.confidence}%\nTempo actual: ${current}\n\nVols aplicar el BPM detectat?`);
+   const fragments=(result.windows||[]).join(", ");
+   apply=confirm(`BPM detectat: ${result.bpm}\nConfiança: ${result.confidence}%\nFragments analitzats: ${fragments}\nTempo actual: ${current}\n\nVols aplicar el BPM detectat?`);
   }
   if(apply){
    song.bpm=result.bpm;

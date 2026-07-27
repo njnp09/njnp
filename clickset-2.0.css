@@ -375,3 +375,25 @@ body.audioSettingsOpen:after{content:"";position:fixed;inset:0;z-index:170;backg
  .trackControlStack{gap:2px}
  .trackControlStack .removeTrackLiveBtn{font-size:10px;padding:3px 7px}
 }
+
+
+/* ClickSet 2.2.4 · Mode lectura integrat i detector BPM reforçat */
+.editModeBadge.insideApp{
+ position:static!important;
+ inset:auto!important;
+ z-index:auto!important;
+ order:-1;
+ min-height:48px;
+ padding:10px 14px;
+ border-radius:14px;
+ box-shadow:none;
+ white-space:nowrap;
+ font-size:14px;
+}
+@media(max-width:900px){
+ .editModeBadge.insideApp{
+  min-height:42px;
+  padding:8px 10px;
+  font-size:11px;
+ }
+}

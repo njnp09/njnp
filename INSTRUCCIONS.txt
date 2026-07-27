@@ -1,22 +1,25 @@
-CLICKSET 2.2.3 — BPM VISIBLE + PISTA COMPACTA
+CLICKSET 2.2.4 — DETECCIÓ BPM REFORÇADA
 
 CANVIS:
-- La detecció de BPM s'executa també quan carregues la pista des de la pantalla principal o mode concert.
-- Mostra “ANALITZANT BPM…” mentre treballa.
-- Mostra sempre el resultat o l'error; ja no falla silenciosament.
-- Amb confiança >=90%, aplica automàticament el BPM.
-- Amb confiança inferior, demana confirmació.
-- Segona via de descodificació per a Safari.
-- “Eliminar pista” és ara petit i queda davall del nom de la pista.
-- Manté la confirmació abans d'eliminar.
-- La zona inferior s'ha compactat perquè PLAY, ANTERIOR i SEGÜENT no quedin tapats.
+- Algoritme nou centrat en transitoris de bateria, caixa i plats.
+- Analitza fins a cinc fragments de la pista.
+- Compara autocorrelació, intervals entre cops i graella rítmica.
+- Comprova explícitament errors de tempo doble o meitat.
+- Quan demana confirmació, mostra també els BPM trobats a cada fragment.
+- Mode lectura integrat a la barra superior: ja no tapa “Eliminar pista”.
+- Es mantenen totes les funcions de la 2.2.3.
+
+IMPORTANT:
+La detecció automàtica de BPM pot fallar en pistes amb tempo variable, ritmes molt sincopats,
+silencis llargs o mescles amb transitoris poc definits. Per això només aplica automàticament
+quan la confiança és alta.
 
 PUBLICACIÓ:
 1. Guarda la versió actual.
 2. Esborra els fitxers de l'arrel del repositori.
-3. Puja els fitxers d'aquest ZIP directament a l'arrel.
+3. Puja tots els fitxers d'aquest ZIP directament a l'arrel.
 4. Fes Commit changes.
-5. Obre https://njnp.njnp09.workers.dev/?v=223
+5. Obre https://njnp.njnp09.workers.dev/?v=224
 
 COMPROVACIÓ:
-La pestanya i l'etiqueta inferior han d'indicar 2.2.3.
+La pestanya i l'etiqueta inferior han d'indicar 2.2.4.
