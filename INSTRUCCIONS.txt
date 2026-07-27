@@ -1,11 +1,23 @@
-CLICKSET 2.5.1 — CORRECCIÓ D’ARRENCADA
+CLICKSET 2.5.2 — CANVIS DE TEMPO MÉS VISUALS
 
-- Corregeix l’error “undefined is not an object (evaluating groups[groupIndex].setlists)”.
-- No elimina ni modifica els grups, repertoris o pistes guardades.
-- Protegeix l’app quan encara no hi ha cap grup/repertori seleccionat.
-- Manté totes les funcions de la 2.5.0.
+NOVETATS:
+- BPM actual a l'esquerra, il·luminat.
+- BPM següent a la dreta, en gris.
+- Quan arriba el canvi, el tempo nou es desplaça visualment al lloc principal.
+- Comptador de compàs global i tram actual.
+- Text “Canvi en X compassos”.
+- Barra de progrés del tram.
+- Els darrers 2 compassos canvien a color d'avís.
+- El darrer compàs fa pulsar discretament el tempo següent.
+- +1 / +2 / +4 actualitzen immediatament el comptador i la barra.
+- Darrer tram identificat clarament com “fins a STOP”.
 
 PUBLICACIÓ:
-1. No premis RESTABLIR DADES LOCALS.
-2. Substitueix els fitxers del repositori pels d’aquest ZIP.
-3. Obre https://njnp.njnp09.workers.dev/?v=251
+1. Conserva el ZIP de la 2.5.1.
+2. Esborra els fitxers actuals de l'arrel del repositori.
+3. Puja tots els fitxers d'aquest ZIP directament a l'arrel.
+4. Fes Commit changes.
+5. Obre https://njnp.njnp09.workers.dev/?v=252
+
+COMPROVACIÓ:
+La pestanya i l'etiqueta inferior han d'indicar 2.5.2.

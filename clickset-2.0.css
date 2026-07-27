@@ -1176,3 +1176,196 @@ body{
 @media(min-width:751px){
  .editorRow{grid-template-columns:34px minmax(160px,1fr) 88px 112px 145px minmax(145px,auto) auto}
 }
+
+
+/* CLICKSET 2.5.2 · VISUALITZACIÓ DELS CANVIS DE TEMPO */
+.tempoTransitionPanel{
+ display:grid;
+ grid-template-columns:minmax(0,1fr) auto;
+ grid-template-areas:
+  "flow extend"
+  "bar extend";
+ gap:7px 12px;
+ padding:9px 12px;
+ border-radius:17px;
+ overflow:hidden;
+}
+.tempoFlow{
+ grid-area:flow;
+ display:grid;
+ grid-template-columns:minmax(94px,1fr) minmax(160px,1.25fr) minmax(94px,1fr);
+ align-items:center;
+ gap:10px;
+}
+.tempoBlock{
+ min-width:0;
+ display:grid;
+ grid-template-columns:1fr auto;
+ grid-template-rows:auto auto;
+ align-items:end;
+ column-gap:5px;
+ padding:7px 10px;
+ border-radius:13px;
+}
+.tempoBlock small{
+ grid-column:1/-1;
+ font-size:9px;
+ font-weight:950;
+ letter-spacing:.13em;
+}
+.tempoBlock strong{
+ font-size:27px;
+ line-height:.9;
+ font-weight:950;
+ font-variant-numeric:tabular-nums;
+}
+.tempoBlock span{
+ color:var(--muted);
+ font-size:10px;
+ font-weight:900;
+}
+.tempoCurrentBlock{
+ background:rgba(255,207,63,.11);
+ border:1px solid rgba(255,207,63,.34);
+ color:var(--accent);
+ box-shadow:0 0 20px rgba(255,207,63,.07);
+}
+.tempoNextBlock{
+ background:rgba(255,255,255,.035);
+ border:1px solid rgba(255,255,255,.09);
+ color:#77848f;
+}
+.tempoNextBlock span,.tempoNextBlock small{color:#77848f}
+.tempoFlowCenter{
+ min-width:0;
+ display:grid;
+ grid-template-columns:auto 1fr;
+ align-items:center;
+ gap:9px;
+}
+.tempoArrow{
+ color:var(--muted);
+ font-size:22px;
+ font-weight:900;
+}
+.tempoCountdown{
+ min-width:0;
+ display:grid;
+ gap:2px;
+}
+.tempoCountdown strong{
+ color:#fff;
+ font-size:12px;
+ white-space:nowrap;
+ overflow:hidden;
+ text-overflow:ellipsis;
+}
+.tempoCountdown small{
+ color:var(--accent);
+ font-size:12px;
+ font-weight:900;
+ white-space:nowrap;
+ overflow:hidden;
+ text-overflow:ellipsis;
+}
+.tempoBarWrap{
+ grid-area:bar;
+ display:grid;
+ gap:3px;
+}
+.tempoBar{
+ height:7px;
+ border-radius:999px;
+ overflow:hidden;
+ background:rgba(255,255,255,.08);
+ border:1px solid rgba(255,255,255,.06);
+}
+.tempoBar i{
+ display:block;
+ height:100%;
+ width:0;
+ border-radius:inherit;
+ background:linear-gradient(90deg,#ffd34d,#ffdf7b);
+ transition:width .18s linear;
+}
+.tempoBarMeta{
+ display:flex;
+ justify-content:space-between;
+ gap:8px;
+ color:var(--muted);
+ font-size:9px;
+ font-weight:800;
+}
+.tempoBarMeta span:last-child{color:var(--accent)}
+.tempoTransitionPanel>.tempoOverrideButtons{
+ grid-area:extend;
+ align-self:center;
+ flex-direction:column;
+}
+.tempoTransitionPanel>.tempoOverrideButtons span{display:block}
+.tempoTransitionPanel>.tempoOverrideButtons button{
+ min-width:44px;
+ width:100%;
+}
+.tempoWarning{
+ border-color:rgba(255,155,66,.46)!important;
+ background:rgba(255,155,66,.07)!important;
+}
+.tempoWarning .tempoCountdown small{color:var(--orange)}
+.tempoWarning .tempoBar i{background:linear-gradient(90deg,#ffb152,#ff843e)}
+.tempoLastBar .tempoNextBlock{
+ animation:tempoNextPulse .72s ease-in-out infinite alternate;
+ border-color:rgba(255,155,66,.58);
+ color:#d2d8dc;
+}
+@keyframes tempoNextPulse{
+ from{transform:scale(1);box-shadow:none}
+ to{transform:scale(1.025);box-shadow:0 0 19px rgba(255,155,66,.15)}
+}
+.tempoFinalSection .tempoNextBlock{opacity:.42}
+.tempoFinalSection .tempoArrow{opacity:.28}
+.tempoShift .tempoCurrentBlock{
+ animation:tempoCurrentArrive .42s cubic-bezier(.2,.85,.25,1);
+}
+.tempoShift .tempoNextBlock{
+ animation:tempoNextEnter .42s cubic-bezier(.2,.85,.25,1);
+}
+@keyframes tempoCurrentArrive{
+ 0%{transform:translateX(45%);opacity:.45;color:#77848f;background:rgba(255,255,255,.035)}
+ 100%{transform:translateX(0);opacity:1}
+}
+@keyframes tempoNextEnter{
+ 0%{transform:translateX(28%);opacity:0}
+ 100%{transform:translateX(0);opacity:1}
+}
+.concertTempoTools{
+ width:min(760px,97%)!important;
+}
+.concertTempoTools .tempoBlock strong{font-size:31px}
+.concertTempoTools .tempoCountdown strong,
+.concertTempoTools .tempoCountdown small{font-size:13px}
+@media(max-width:900px){
+ .tempoTransitionPanel{
+  grid-template-columns:1fr;
+  grid-template-areas:"flow" "bar" "extend";
+ }
+ .tempoTransitionPanel>.tempoOverrideButtons{
+  flex-direction:row;
+  justify-content:center;
+ }
+ .tempoTransitionPanel>.tempoOverrideButtons button{
+  width:auto;
+ }
+}
+@media(max-width:620px){
+ .tempoFlow{
+  grid-template-columns:76px minmax(100px,1fr) 76px;
+  gap:5px;
+ }
+ .tempoBlock{padding:6px}
+ .tempoBlock strong{font-size:20px}
+ .tempoFlowCenter{gap:4px}
+ .tempoArrow{font-size:15px}
+ .tempoCountdown strong,.tempoCountdown small{font-size:9px}
+ .tempoBarMeta{font-size:8px}
+}

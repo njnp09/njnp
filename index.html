@@ -8,11 +8,11 @@
 <meta name="theme-color" content="#0d1318">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="cover.png">
-<title>ClickSet 2.5.1</title>
-<link rel="stylesheet" href="clickset-2.0.css?v=251">
+<title>ClickSet 2.5.2</title>
+<link rel="stylesheet" href="clickset-2.0.css?v=252">
 </head>
 <body>
-<div class="buildBadge">2.5.1</div>
+<div class="buildBadge">2.5.2</div>
 <button id="themeToggle" class="themeToggle" type="button" aria-label="Activar mode clar" title="Activar mode clar">☀️</button>
 <button id="editModeBadge" class="editModeBadge locked" type="button" aria-label="Estat del mode edició">🔒 Mode lectura</button>
 <div id="splash" class="splash"><img src="cover.png" alt="ClickSet"></div>
@@ -25,8 +25,30 @@
 </div>
 <div id="beatDots" class="beatDots" aria-label="Indicador de compàs"></div><div id="pulse" class="pulse"></div></section>
 <section class="infoStrip">
-  <div id="liveTempoTools" class="liveTempoTools hidden">
-    <div class="tempoProgress"><strong id="tempoProgressLabel">Compàs 1</strong><small id="tempoNextChange"></small></div>
+  <div id="liveTempoTools" class="liveTempoTools tempoTransitionPanel hidden">
+    <div class="tempoFlow">
+      <div class="tempoBlock tempoCurrentBlock">
+        <small>ACTUAL</small>
+        <strong id="tempoCurrentBpm">120</strong>
+        <span>BPM</span>
+      </div>
+      <div class="tempoFlowCenter">
+        <div class="tempoArrow">→</div>
+        <div class="tempoCountdown">
+          <strong id="tempoProgressLabel">Compàs 1</strong>
+          <small id="tempoNextChange"></small>
+        </div>
+      </div>
+      <div class="tempoBlock tempoNextBlock">
+        <small>SEGÜENT</small>
+        <strong id="tempoNextBpm">—</strong>
+        <span>BPM</span>
+      </div>
+    </div>
+    <div class="tempoBarWrap">
+      <div class="tempoBar"><i id="tempoBarFill"></i></div>
+      <div class="tempoBarMeta"><span id="tempoBarCount">0 / 0 compassos</span><span id="tempoExtraLabel"></span></div>
+    </div>
     <div class="tempoOverrideButtons">
       <span>Allargar tram:</span>
       <button type="button" data-extend-bars="1">+1</button>
@@ -61,8 +83,30 @@
         <button id="concertSound" class="concertMetaBtn" type="button">❤️ ClickSet Original</button><div class="trackControlStack concertTrackControlStack"><button id="concertTrack" class="trackStatus trackStatusBtn" type="button">🎵 Carregar pista</button><button id="concertRemoveTrack" class="removeTrackLiveBtn hidden" type="button">🗑️ Eliminar pista</button></div>
       </div>
       <div id="concertBeatDots" class="beatDots concertBeatDots" aria-label="Indicador de compàs"></div><div id="concertPulse" class="concertPulse"></div>
-      <div id="concertTempoTools" class="liveTempoTools concertTempoTools hidden">
-        <div class="tempoProgress"><strong id="concertTempoProgressLabel">Compàs 1</strong><small id="concertTempoNextChange"></small></div>
+      <div id="concertTempoTools" class="liveTempoTools concertTempoTools tempoTransitionPanel hidden">
+        <div class="tempoFlow">
+          <div class="tempoBlock tempoCurrentBlock">
+            <small>ACTUAL</small>
+            <strong id="concertTempoCurrentBpm">120</strong>
+            <span>BPM</span>
+          </div>
+          <div class="tempoFlowCenter">
+            <div class="tempoArrow">→</div>
+            <div class="tempoCountdown">
+              <strong id="concertTempoProgressLabel">Compàs 1</strong>
+              <small id="concertTempoNextChange"></small>
+            </div>
+          </div>
+          <div class="tempoBlock tempoNextBlock">
+            <small>SEGÜENT</small>
+            <strong id="concertTempoNextBpm">—</strong>
+            <span>BPM</span>
+          </div>
+        </div>
+        <div class="tempoBarWrap">
+          <div class="tempoBar"><i id="concertTempoBarFill"></i></div>
+          <div class="tempoBarMeta"><span id="concertTempoBarCount">0 / 0 compassos</span><span id="concertTempoExtraLabel"></span></div>
+        </div>
         <div class="tempoOverrideButtons">
           <span>Allargar:</span>
           <button type="button" data-extend-bars="1">+1</button>
@@ -173,5 +217,5 @@
 window.addEventListener("error",function(){setTimeout(function(){document.getElementById("splash")?.classList.add("hidden")},50)});
 setTimeout(function(){document.getElementById("splash")?.classList.add("hidden")},2500);
 </script>
-<script src="clickset-2.0.js?v=251" defer></script>
+<script src="clickset-2.0.js?v=252" defer></script>
 </body></html>

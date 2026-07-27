@@ -336,6 +336,15 @@ function currentTempoSection(song){
  const sections=tempoSectionsFor(song);
  return sections.length?sections[Math.min(liveTempoStep,sections.length-1)]:null;
 }
+function animateTempoTransition(){
+ for(const id of ["liveTempoTools","concertTempoTools"]){
+  const panel=$(id);
+  if(!panel)continue;
+  panel.classList.remove("tempoShift");
+  void panel.offsetWidth;
+  panel.classList.add("tempoShift");
+ }
+}
 function advanceTempoBar(song){
  const sections=tempoSectionsFor(song);
  liveSongBar++;
@@ -352,6 +361,7 @@ function advanceTempoBar(song){
   liveTempoStep++;
   liveBarsInStep=0;
   currentLiveBpm=sections[liveTempoStep].bpm;
+  animateTempoTransition();
   showAudioToast(`Tempo: ${previous} → ${currentLiveBpm} BPM`);
  }
 }
@@ -367,23 +377,67 @@ function extendCurrentTempo(bars){
  render();
  showAudioToast(`Tram actual allargat ${bars} ${Number(bars)===1?"compàs":"compassos"}`);
 }
+function setTempoUiValue(id,value){
+ const el=$(id);if(el)el.textContent=value;
+}
+function setTempoUiWidth(id,percent){
+ const el=$(id);if(el)el.style.width=`${Math.max(0,Math.min(100,percent))}%`;
+}
 function updateTempoLiveUi(song){
  const sections=tempoSectionsFor(song);
  const visible=sections.length>0;
  const section=visible?sections[Math.min(liveTempoStep,sections.length-1)]:null;
  const hasNext=visible&&liveTempoStep<sections.length-1;
- const extra=liveExtraBars>0?` · +${liveExtraBars} extra`:"";
- const progress=`Compàs ${liveSongBar} · Tram ${visible?liveTempoStep+1:1}${visible?`/${sections.length}`:""}`;
+ const nextSection=hasNext?sections[liveTempoStep+1]:null;
+
+ for(const id of ["liveTempoTools","concertTempoTools"])$(id)?.classList.toggle("hidden",!visible);
+ if(!visible)return;
+
+ const currentBpm=Math.round(Number(currentLiveBpm||section?.bpm||song.bpm)||120);
+ const nextBpm=hasNext?Math.round(Number(nextSection.bpm)||120):"—";
+ const baseBars=section?.bars==null?null:Math.max(1,Number(section.bars)||1);
+ const totalBars=baseBars==null?null:baseBars+Math.max(0,liveExtraBars);
+ const completed=Math.max(0,liveBarsInStep);
+ const remaining=totalBars==null?null:Math.max(0,totalBars-completed);
+ const progress=totalBars==null?100:Math.max(0,Math.min(100,(completed/Math.max(1,totalBars))*100));
+ const currentBarInSection=baseBars==null?liveBarsInStep+1:Math.min(totalBars,completed+1);
+
+ const progressLabel=`Compàs ${liveSongBar} · Tram ${liveTempoStep+1}/${sections.length}`;
  let nextText="";
  if(hasNext){
-  const remaining=Math.max(1,(section.bars||1)-liveBarsInStep+liveExtraBars);
-  nextText=`Canvi a ${sections[liveTempoStep+1].bpm} BPM en ${remaining} ${remaining===1?"compàs":"compassos"}${extra}`;
- }else if(visible)nextText=`Darrer tram · ${currentLiveBpm||section.bpm} BPM`;
- for(const id of ["liveTempoTools","concertTempoTools"])$(id)?.classList.toggle("hidden",!visible);
- if($("tempoProgressLabel"))$("tempoProgressLabel").textContent=progress;
- if($("concertTempoProgressLabel"))$("concertTempoProgressLabel").textContent=progress;
- if($("tempoNextChange"))$("tempoNextChange").textContent=nextText;
- if($("concertTempoNextChange"))$("concertTempoNextChange").textContent=nextText;
+  nextText=remaining===1?`Canvi en 1 compàs`:`Canvi en ${remaining} compassos`;
+ }else{
+  nextText="Darrer tram · fins a STOP";
+ }
+
+ const barText=totalBars==null?`${currentBarInSection} compassos en aquest tram`:`${Math.min(completed,totalBars)} / ${totalBars} compassos`;
+ const extraText=liveExtraBars>0?`+${liveExtraBars} extra`:"";
+
+ for(const prefix of ["","concert"]){
+  const p=prefix?`${prefix}T`:"t";
+ }
+ setTempoUiValue("tempoCurrentBpm",currentBpm);
+ setTempoUiValue("concertTempoCurrentBpm",currentBpm);
+ setTempoUiValue("tempoNextBpm",nextBpm);
+ setTempoUiValue("concertTempoNextBpm",nextBpm);
+ setTempoUiValue("tempoProgressLabel",progressLabel);
+ setTempoUiValue("concertTempoProgressLabel",progressLabel);
+ setTempoUiValue("tempoNextChange",nextText);
+ setTempoUiValue("concertTempoNextChange",nextText);
+ setTempoUiValue("tempoBarCount",barText);
+ setTempoUiValue("concertTempoBarCount",barText);
+ setTempoUiValue("tempoExtraLabel",extraText);
+ setTempoUiValue("concertTempoExtraLabel",extraText);
+ setTempoUiWidth("tempoBarFill",progress);
+ setTempoUiWidth("concertTempoBarFill",progress);
+
+ for(const id of ["liveTempoTools","concertTempoTools"]){
+  const panel=$(id);
+  if(!panel)continue;
+  panel.classList.toggle("tempoWarning",hasNext&&remaining<=2);
+  panel.classList.toggle("tempoLastBar",hasNext&&remaining===1);
+  panel.classList.toggle("tempoFinalSection",!hasNext);
+ }
  document.querySelectorAll("[data-extend-bars]").forEach(button=>button.disabled=!hasNext||(!playing&&!paused));
 }
 function updateTransportButtons(){
