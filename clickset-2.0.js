@@ -470,6 +470,12 @@ function updateTempoStageDisplay(song){
   ?Math.round(Number(sections[liveTempoStep+1].bpm)||120)
   :"—";
 
+ // Sincronitza també el BPM principal superior a cada canvi de tram.
+ setTempoUiValue("bpm",current);
+ setTempoUiValue("concertBpm",current);
+ if($("bpm"))$("bpm").className="bpm "+bpmClass(current);
+ if($("concertBpm"))$("concertBpm").className="concertBpm "+bpmClass(current);
+
  setTempoUiValue("stageNextBpm",next);
  setTempoUiValue("concertStageNextBpm",next);
 

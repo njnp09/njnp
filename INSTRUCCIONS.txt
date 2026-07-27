@@ -1,21 +1,26 @@
-CLICKSET 2.5.4 — BPM DOBLE I COMPTE ENRERE REAL
+CLICKSET 2.5.5 — BPM SUPERIOR I EDITOR LLEGIBLE
 
 CORRECCIONS:
-- El compte enrere s'actualitza realment a cada compàs.
-- Mostra 4 → 3 → 2 → 1 abans del canvi.
-- El BPM actual queda a l'esquerra.
-- El BPM següent queda a la dreta, en gris.
-- Una fletxa central indica clarament el canvi.
-- Quan arriba el nou tempo, passa a ocupar la zona esquerra.
-- Al darrer tram, el BPM següent queda desactivat.
-- Funciona en pantalla normal i mode concert.
+- El BPM gran superior s'actualitza quan canvia el tram.
+- El BPM superior i la franja inferior queden sempre sincronitzats.
+- Funciona també en mode concert.
+
+EDITOR DE TEMPOS:
+- Fons més suau i diferenciat.
+- Targetes de cada tram més clares.
+- Camps numèrics amb fons clar i text fosc.
+- Números més grans i visibles.
+- Etiquetes i textos secundaris amb més contrast.
+- Més espai entre trams.
+- Botons finals més clars i fàcils de distingir.
+- Manté l'estil general fosc de CLICKSET.
 
 PUBLICACIÓ:
-1. Conserva el ZIP de la 2.5.3.
+1. Conserva el ZIP de la 2.5.4.
 2. Esborra els fitxers actuals de l'arrel del repositori.
 3. Puja tots els fitxers d'aquest ZIP directament a l'arrel.
 4. Fes Commit changes.
-5. Obre https://njnp.njnp09.workers.dev/?v=254
+5. Obre https://njnp.njnp09.workers.dev/?v=255
 
 COMPROVACIÓ:
-La pestanya i l'etiqueta inferior han d'indicar 2.5.4.
+La pestanya i l'etiqueta inferior han d'indicar 2.5.5.
