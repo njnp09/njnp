@@ -456,14 +456,38 @@ function advanceTempoBar(song){
  const sections=tempoSectionsFor(song);
  liveSongBar++;
  pulseTempoCountdown();
- if(!sections.length)return;
- const section=sections[Math.min(liveTempoStep,sections.length-1)];
- if(liveExtraBars>0){
-  liveExtraBars--;
+
+ // El comptador general i el canvi automàtic de cançó funcionen
+ // SEMPRE, encara que la cançó no tengui cap mapa de tempos.
+ updateBarCounter();
+ updateAutoNextUi(song);
+
+ const autoBars=autoNextBarsFor(song)+Math.max(0,liveExtraSongBars);
+ if(autoBars>0&&liveSongBar>autoBars&&!autoNextTransitioning){
+  performAutomaticSongChange();
   return;
  }
- if(section.bars==null)return;
+
+ // A partir d'aquí només gestionam els canvis interns de tempo.
+ if(!sections.length)return;
+
+ const section=sections[Math.min(liveTempoStep,sections.length-1)];
+
+ if(liveExtraBars>0){
+  liveExtraBars--;
+  updateTempoLiveUi(song);
+  updateTempoStageDisplay(song);
+  return;
+ }
+
+ if(section.bars==null){
+  updateTempoLiveUi(song);
+  updateTempoStageDisplay(song);
+  return;
+ }
+
  liveBarsInStep++;
+
  if(liveBarsInStep>=section.bars&&liveTempoStep<sections.length-1){
   const previous=currentLiveBpm;
   liveTempoStep++;
@@ -472,16 +496,9 @@ function advanceTempoBar(song){
   animateTempoTransition();
   showAudioToast(`Tempo: ${previous} → ${currentLiveBpm} BPM`);
  }
- // El compte enrere i els BPM visuals s'han d'actualitzar a cada compàs,
- // no només quan hi ha una interacció manual.
+
  updateTempoLiveUi(song);
  updateTempoStageDisplay(song);
- updateAutoNextUi(song);
- updateBarCounter();
- const autoBars=autoNextBarsFor(song)+Math.max(0,liveExtraSongBars);
- if(autoBars>0&&liveSongBar>autoBars&&!autoNextTransitioning){
-  performAutomaticSongChange();
- }
 }
 function extendCurrentTempo(bars){
  if(!playing&&!paused)return;
@@ -601,6 +618,11 @@ function updateBarCounter(){
   if(!box)continue;
   box.classList.toggle("counting",playing);
   box.classList.toggle("paused",paused);
+  if(playing){
+   box.classList.remove("barTick");
+   void box.offsetWidth;
+   box.classList.add("barTick");
+  }
  }
 }
 

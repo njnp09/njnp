@@ -2048,3 +2048,14 @@ body.light-theme .tempoMapAutoNextSummary strong{
 @media(max-width:520px){
   #barCounterBox{display:none}
 }
+
+
+/* ClickSet 2.6.3 · confirmació visual de cada nou compàs */
+.barCounterBox.barTick strong{
+  animation:barCounterTick .26s cubic-bezier(.2,.85,.3,1);
+}
+@keyframes barCounterTick{
+  0%{transform:scale(.72);opacity:.35}
+  60%{transform:scale(1.16);opacity:1}
+  100%{transform:scale(1);opacity:1}
+}
