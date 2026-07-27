@@ -1909,3 +1909,65 @@ body.light-theme .tempoMapRow input{
   .autoNextHead>div:first-child span{font-size:11px}
   .editorRow .autoNextBtn{grid-column:2/4}
 }
+
+
+/* CLICKSET 2.6.1 · CANVI DE CANÇÓ VINCULAT ALS TRAMS */
+.tempoMapAutoNextToggle{
+ display:flex;
+ align-items:center;
+ gap:13px;
+ margin-top:16px;
+ padding:16px;
+ border:1px solid rgba(111,188,255,.28);
+ border-radius:16px;
+ background:rgba(87,161,224,.08);
+ cursor:pointer;
+}
+.tempoMapAutoNextToggle input{
+ width:23px;
+ height:23px;
+ flex:0 0 auto;
+ accent-color:#69baff;
+}
+.tempoMapAutoNextToggle span{
+ display:grid;
+ gap:4px;
+}
+.tempoMapAutoNextToggle strong{
+ color:#fff;
+ font-size:16px;
+}
+.tempoMapAutoNextToggle small{
+ color:#b8c6d0;
+ font-size:13px;
+}
+.tempoMapAutoNextSummary{
+ margin-top:9px;
+ padding:11px 14px;
+ border-radius:13px;
+ background:rgba(111,188,255,.11);
+ color:#bce1ff;
+ text-align:center;
+ font-size:14px;
+}
+.tempoMapAutoNextSummary strong{
+ color:#fff;
+ font-size:19px;
+}
+body.light-theme .tempoMapAutoNextToggle{
+ background:#d8e8f3;
+ border-color:#9fc2da;
+}
+body.light-theme .tempoMapAutoNextToggle strong{
+ color:#24333d;
+}
+body.light-theme .tempoMapAutoNextToggle small{
+ color:#576b78;
+}
+body.light-theme .tempoMapAutoNextSummary{
+ background:#cde5f4;
+ color:#315e79;
+}
+body.light-theme .tempoMapAutoNextSummary strong{
+ color:#18394d;
+}

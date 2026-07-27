@@ -1,29 +1,22 @@
-CLICKSET 2.6.0 — CANVI AUTOMÀTIC DE CANÇÓ
+CLICKSET 2.6.1 — CANVI DE CANÇÓ DES DE L'EDITOR DE TEMPOS
 
 NOVETATS:
-- Qualsevol cançó pot canviar automàticament a la següent després de X compassos.
-- Funciona tant amb medleys com amb cançons normals.
-- Compte enrere de compassos fins al canvi.
-- Barra de progrés de la cançó.
-- Avisos visuals als darrers compassos.
-- Botons +1 / +2 / +4 per allargar només la cançó actual.
-- L'allargament de cançó és independent de l'allargament del tram de tempo.
-- En arribar a zero, CLICKSET passa a la següent cançó sense aturar el metrònom.
-- Si la següent cançó té pista, intenta iniciar-la amb la seva configuració.
-
-CONFIGURACIÓ:
-1. Entra a EDITAR.
-2. A la cançó, prem “⏭ SEGÜENT”.
-3. Activa el canvi automàtic.
-4. Indica quants compassos ha de durar la cançó.
-5. Guarda.
+- Al final de l'editor TEMPOS hi ha:
+  “En acabar el darrer tram, passar a la següent cançó”.
+- En activar-ho, el camp de compassos del darrer tram queda editable.
+- CLICKSET suma automàticament tots els compassos dels trams.
+- No cal calcular manualment la durada total de la cançó.
+- El canvi automàtic passa exactament en acabar el darrer tram.
+- Si no està activat, el darrer tram continua fins a STOP.
+- La configuració separada “SEGÜENT” continua disponible per cançons sense mapa de tempos.
+- A la configuració separada s'aclareix que el recompte comença al primer compàs.
 
 PUBLICACIÓ:
-1. Conserva el ZIP de la 2.5.5.
+1. Conserva el ZIP de la 2.6.0.
 2. Esborra els fitxers actuals de l'arrel del repositori.
 3. Puja tots els fitxers d'aquest ZIP directament a l'arrel.
 4. Fes Commit changes.
-5. Obre https://njnp.njnp09.workers.dev/?v=260
+5. Obre https://njnp.njnp09.workers.dev/?v=261
 
 COMPROVACIÓ:
-La pestanya i l'etiqueta inferior han d'indicar 2.6.0.
+La pestanya i l'etiqueta inferior han d'indicar 2.6.1.

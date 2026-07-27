@@ -1511,62 +1511,114 @@ $("saveAutoNext").onclick=()=>{
  if($("autoNextEnabled").checked){
   const bars=Math.max(1,Math.min(999,Math.round(Number($("autoNextBarsInput").value)||16)));
   autoNextTarget.autoNextBars=bars;
+  delete autoNextTarget.autoNextFromTempoMap;
+  delete autoNextTarget.autoNextLastSectionBars;
   if(autoNextButton)autoNextButton.textContent=`⏭ ${bars} comp.`;
  }else{
   delete autoNextTarget.autoNextBars;
+  delete autoNextTarget.autoNextFromTempoMap;
+  delete autoNextTarget.autoNextLastSectionBars;
   if(autoNextButton)autoNextButton.textContent="⏭ SEGÜENT";
  }
  closeAutoNextEditor();
 };
 
-let tempoMapTarget=null,tempoMapButton=null,tempoMapDraft=[];
+let tempoMapTarget=null,tempoMapButton=null,tempoMapDraft=[],tempoMapAutoNextEnabled=false;
 function openTempoMapEditor(song,button){
  tempoMapTarget=song;tempoMapButton=button;
  const existing=tempoSectionsFor(song);
- tempoMapDraft=existing.length?existing.map((section,index)=>({bpm:section.bpm,bars:index===existing.length-1?8:section.bars||8})):[
+ tempoMapAutoNextEnabled=Boolean(song.autoNextFromTempoMap);
+ const savedLastBars=Math.max(1,Number(song.autoNextLastSectionBars)||8);
+ tempoMapDraft=existing.length?existing.map((section,index)=>({
+  bpm:section.bpm,
+  bars:index===existing.length-1?savedLastBars:section.bars||8
+ })):[
   {bpm:Number(song.bpm)||120,bars:8},
   {bpm:Number(song.bpm)||120,bars:8}
  ];
  $("tempoMapSubtitle").textContent=song.name||"Cançó";
+ $("tempoMapAutoNext").checked=tempoMapAutoNextEnabled;
  renderTempoMapRows();
  $("tempoMapModal").classList.add("open");
+}
+function tempoMapDraftTotalBars(){
+ return tempoMapDraft.reduce((sum,section)=>sum+Math.max(1,Math.round(Number(section.bars)||1)),0);
+}
+function updateTempoMapAutoNextSummary(){
+ const box=$("tempoMapAutoNextSummary");
+ if(!box)return;
+ box.classList.toggle("hidden",!tempoMapAutoNextEnabled);
+ if(tempoMapAutoNextEnabled){
+  const total=tempoMapDraftTotalBars();
+  box.innerHTML=`⏭ Canvi automàtic després de <strong>${total}</strong> compassos totals`;
+ }
 }
 function renderTempoMapRows(){
  const box=$("tempoMapRows");box.innerHTML="";
  tempoMapDraft.forEach((section,index)=>{
   const row=document.createElement("div");row.className="tempoMapRow";
   const last=index===tempoMapDraft.length-1;
+  const lastLocked=last&&!tempoMapAutoNextEnabled;
   row.innerHTML=`<span class="tempoStepNumber">${index+1}</span>
    <label>BPM<input class="tempoSectionBpm" type="number" min="20" max="400" inputmode="numeric" value="${section.bpm}"></label>
-   <label>Compassos<input class="tempoSectionBars" type="number" min="1" max="999" inputmode="numeric" value="${section.bars||8}" ${last?'disabled':''}></label>
-   <small>${last?"Continua fins a STOP":"Després canvia automàticament"}</small>
+   <label>Compassos<input class="tempoSectionBars" type="number" min="1" max="999" inputmode="numeric" value="${section.bars||8}" ${lastLocked?'disabled':''}></label>
+   <small>${last?(tempoMapAutoNextEnabled?"Després passa a la següent cançó":"Continua fins a STOP"):"Després canvia automàticament"}</small>
    <button type="button" class="removeTempoSection" ${tempoMapDraft.length<=2?'disabled':''}>🗑️</button>`;
-  row.querySelector(".tempoSectionBpm").oninput=e=>section.bpm=Math.max(20,Math.min(400,Number(e.target.value)||120));
-  if(!last)row.querySelector(".tempoSectionBars").oninput=e=>section.bars=Math.max(1,Math.min(999,Number(e.target.value)||1));
-  row.querySelector(".removeTempoSection").onclick=()=>{tempoMapDraft.splice(index,1);renderTempoMapRows()};
+  row.querySelector(".tempoSectionBpm").oninput=e=>{
+   section.bpm=Math.max(20,Math.min(400,Number(e.target.value)||120));
+  };
+  row.querySelector(".tempoSectionBars").oninput=e=>{
+   section.bars=Math.max(1,Math.min(999,Number(e.target.value)||1));
+   updateTempoMapAutoNextSummary();
+  };
+  row.querySelector(".removeTempoSection").onclick=()=>{
+   tempoMapDraft.splice(index,1);
+   renderTempoMapRows();
+  };
   box.appendChild(row);
  });
+ updateTempoMapAutoNextSummary();
 }
-function closeTempoMapEditor(){$("tempoMapModal").classList.remove("open");tempoMapTarget=null;tempoMapButton=null;tempoMapDraft=[]}
+function closeTempoMapEditor(){$("tempoMapModal").classList.remove("open");tempoMapTarget=null;tempoMapButton=null;tempoMapDraft=[];tempoMapAutoNextEnabled=false}
 $("addTempoSection").onclick=()=>{const previous=tempoMapDraft[tempoMapDraft.length-1]||{bpm:120,bars:8};tempoMapDraft.push({bpm:previous.bpm,bars:8});renderTempoMapRows()};
+$("tempoMapAutoNext").onchange=e=>{
+ tempoMapAutoNextEnabled=e.target.checked;
+ renderTempoMapRows();
+};
 $("closeTempoMap").onclick=closeTempoMapEditor;
 $("cancelTempoMap").onclick=closeTempoMapEditor;
 $("removeTempoMap").onclick=()=>{
  if(!tempoMapTarget||!confirm("Eliminar tots els canvis de tempo d’aquesta cançó?"))return;
  delete tempoMapTarget.tempoSections;
+ if(tempoMapTarget.autoNextFromTempoMap){
+  delete tempoMapTarget.autoNextBars;
+  delete tempoMapTarget.autoNextFromTempoMap;
+  delete tempoMapTarget.autoNextLastSectionBars;
+ }
  if(tempoMapButton)tempoMapButton.textContent="⏱ TEMPOS";
  closeTempoMapEditor();
 };
 $("saveTempoMap").onclick=()=>{
  if(!tempoMapTarget)return;
+ const lastBars=Math.max(1,Math.min(999,Math.round(Number(tempoMapDraft[tempoMapDraft.length-1]?.bars)||1)));
  const clean=tempoMapDraft.map((section,index)=>({
   bpm:Math.max(20,Math.min(400,Math.round(Number(section.bpm)||120))),
   bars:index===tempoMapDraft.length-1?null:Math.max(1,Math.min(999,Math.round(Number(section.bars)||1)))
  }));
- if(clean.length<2){delete tempoMapTarget.tempoSections}
- else{
+ if(clean.length<2){
+  delete tempoMapTarget.tempoSections;
+ }else{
   tempoMapTarget.tempoSections=clean;
   tempoMapTarget.bpm=clean[0].bpm;
+ }
+ if(tempoMapAutoNextEnabled&&clean.length>=2){
+  tempoMapTarget.autoNextFromTempoMap=true;
+  tempoMapTarget.autoNextLastSectionBars=lastBars;
+  tempoMapTarget.autoNextBars=tempoMapDraftTotalBars();
+ }else if(tempoMapTarget.autoNextFromTempoMap){
+  delete tempoMapTarget.autoNextBars;
+  delete tempoMapTarget.autoNextFromTempoMap;
+  delete tempoMapTarget.autoNextLastSectionBars;
  }
  if(tempoMapButton)tempoMapButton.textContent=clean.length>=2?`⏱ ${clean.length} trams`:"⏱ TEMPOS";
  closeTempoMapEditor();
