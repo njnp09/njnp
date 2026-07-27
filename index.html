@@ -8,11 +8,11 @@
 <meta name="theme-color" content="#0d1318">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="cover.png">
-<title>ClickSet 2.4.1</title>
-<link rel="stylesheet" href="clickset-2.0.css?v=241?v=213">
+<title>ClickSet 2.5.0</title>
+<link rel="stylesheet" href="clickset-2.0.css?v=250">
 </head>
 <body>
-<div class="buildBadge">2.4.1</div>
+<div class="buildBadge">2.5.0</div>
 <button id="themeToggle" class="themeToggle" type="button" aria-label="Activar mode clar" title="Activar mode clar">☀️</button>
 <button id="editModeBadge" class="editModeBadge locked" type="button" aria-label="Estat del mode edició">🔒 Mode lectura</button>
 <div id="splash" class="splash"><img src="cover.png" alt="ClickSet"></div>
@@ -23,7 +23,22 @@
   <div class="bpmMinus"><button type="button" data-live-bpm="-10">−10</button><button type="button" data-live-bpm="-5">−5</button><button type="button" data-live-bpm="-1">−1</button></div>
   <div class="bpmPlus"><button type="button" data-live-bpm="1">+1</button><button type="button" data-live-bpm="5">+5</button><button type="button" data-live-bpm="10">+10</button></div>
 </div>
-<div id="beatDots" class="beatDots" aria-label="Indicador de compàs"></div><div id="pulse" class="pulse"></div></section><section class="infoStrip"><div id="nextup" class="nextup"></div><div class="liveMeta"><button id="normalAccent" class="liveMetaBtn" type="button">Accent: OFF</button><button id="normalSound" class="liveMetaBtn" type="button">❤️ ClickSet Original</button><div class="trackControlStack"><button id="normalTrack" class="trackStatus trackStatusBtn" type="button">🎵 Carregar pista</button><button id="normalRemoveTrack" class="removeTrackLiveBtn hidden" type="button">🗑️ Eliminar pista</button></div></div></section><section class="controls"><button id="prev" class="big">◀ ANTERIOR</button><button id="play" class="big play">▶ PLAY</button><button id="next" class="big">SEGÜENT ▶</button></section></main></div>
+<div id="beatDots" class="beatDots" aria-label="Indicador de compàs"></div><div id="pulse" class="pulse"></div></section>
+<section class="infoStrip">
+  <div id="liveTempoTools" class="liveTempoTools hidden">
+    <div class="tempoProgress"><strong id="tempoProgressLabel">Compàs 1</strong><small id="tempoNextChange"></small></div>
+    <div class="tempoOverrideButtons">
+      <span>Allargar tram:</span>
+      <button type="button" data-extend-bars="1">+1</button>
+      <button type="button" data-extend-bars="2">+2</button>
+      <button type="button" data-extend-bars="4">+4</button>
+    </div>
+  </div><div id="nextup" class="nextup"></div><div class="liveMeta"><button id="normalAccent" class="liveMetaBtn" type="button">Accent: OFF</button><button id="normalSound" class="liveMetaBtn" type="button">❤️ ClickSet Original</button><div class="trackControlStack"><button id="normalTrack" class="trackStatus trackStatusBtn" type="button">🎵 Carregar pista</button><button id="normalRemoveTrack" class="removeTrackLiveBtn hidden" type="button">🗑️ Eliminar pista</button></div></div></section><section class="controls controlsWithPause">
+      <button id="prev" class="big">◀ ANTERIOR</button>
+      <button id="pauseResume" class="big pauseResume hidden">⏸ PAUSA</button>
+      <button id="play" class="big play">▶ PLAY</button>
+      <button id="next" class="big">SEGÜENT ▶</button>
+    </section></main></div>
 <section id="concertMode" class="concertMode hidden" aria-label="Mode concert">
   <aside class="concertSidebar">
     <div class="concertSetlistHead"><div><strong id="concertSetlistName">SETLIST</strong><small id="concertGroupName"></small></div><span id="concertPosition"></span></div>
@@ -46,10 +61,20 @@
         <button id="concertSound" class="concertMetaBtn" type="button">❤️ ClickSet Original</button><div class="trackControlStack concertTrackControlStack"><button id="concertTrack" class="trackStatus trackStatusBtn" type="button">🎵 Carregar pista</button><button id="concertRemoveTrack" class="removeTrackLiveBtn hidden" type="button">🗑️ Eliminar pista</button></div>
       </div>
       <div id="concertBeatDots" class="beatDots concertBeatDots" aria-label="Indicador de compàs"></div><div id="concertPulse" class="concertPulse"></div>
+      <div id="concertTempoTools" class="liveTempoTools concertTempoTools hidden">
+        <div class="tempoProgress"><strong id="concertTempoProgressLabel">Compàs 1</strong><small id="concertTempoNextChange"></small></div>
+        <div class="tempoOverrideButtons">
+          <span>Allargar:</span>
+          <button type="button" data-extend-bars="1">+1</button>
+          <button type="button" data-extend-bars="2">+2</button>
+          <button type="button" data-extend-bars="4">+4</button>
+        </div>
+      </div>
       <div id="concertNext" class="concertNext"></div>
     </div>
     <div class="concertControls">
       <button id="concertPrev" class="concertBtn">◀ ANTERIOR</button>
+      <button id="concertPauseResume" class="concertBtn concertPauseResume hidden">⏸ PAUSA</button>
       <button id="concertPlay" class="concertBtn concertPlay">▶ PLAY</button>
       <button id="concertNextBtn" class="concertBtn concertDirectNext">✓ FETA I SEGÜENT ▶</button>
     </div>
@@ -92,6 +117,24 @@
   <div class="panelHead"><div><h2 style="margin:0">Modificar setlist</h2><small id="reorderSubtitle" class="note">Arrossega les cançons o usa les fletxes.</small></div><div class="reorderHeadActions"><button id="cancelSetlistReorder" type="button" class="secondary">CANCEL·LAR</button><button id="saveSetlistReorder" type="button" class="primary">GUARDAR ORDRE</button></div></div>
   <div id="setlistReorderContent" class="reorderContent"></div>
 </section>
+
+<div id="tempoMapModal" class="modal">
+  <div class="modalCard tempoMapCard">
+    <div class="tempoMapHead">
+      <div><h2>Canvis de tempo</h2><p id="tempoMapSubtitle" class="note"></p></div>
+      <button id="closeTempoMap" class="secondary" type="button">✕</button>
+    </div>
+    <p class="note">Cada tram indica el BPM i quants compassos dura. El darrer tram continua fins que aturis la cançó.</p>
+    <div id="tempoMapRows" class="tempoMapRows"></div>
+    <button id="addTempoSection" class="secondary addTempoSection" type="button">＋ AFEGIR TRAM</button>
+    <div class="modalActions">
+      <button id="removeTempoMap" class="secondary danger" type="button">ELIMINAR CANVIS</button>
+      <button id="cancelTempoMap" class="secondary" type="button">CANCEL·LAR</button>
+      <button id="saveTempoMap" class="primary" type="button">GUARDAR</button>
+    </div>
+  </div>
+</div>
+
 <div id="bpmModal" class="modal"><div class="modalCard"><h2 id="bpmModalTitle">Editar BPM</h2><div id="keyDisplay" class="keyDisplay">120</div><div class="stepGrid"><button data-step="-10">−10</button><button data-step="-5">−5</button><button data-step="-1">−1</button><button data-step="1">+1</button><button data-step="5">+5</button><button data-step="10">+10</button></div><div class="keypad"><button data-num="1">1</button><button data-num="2">2</button><button data-num="3">3</button><button data-num="4">4</button><button data-num="5">5</button><button data-num="6">6</button><button data-num="7">7</button><button data-num="8">8</button><button data-num="9">9</button><button data-num="clear">C</button><button data-num="0">0</button><button data-num="back">⌫</button></div><button id="tapTempo" class="tap">TAP TEMPO</button><div class="modalActions"><button id="cancelBpm" class="secondary">CANCEL·LAR</button><button id="saveBpm" class="primary">APLICAR</button></div></div></div>
 <div id="setlistModal" class="modal"><div class="modalCard"><h2>Editar nom del repertori</h2><div class="formRow"><label>Nom</label><input id="setlistName" maxlength="60" autocomplete="off"></div><div class="modalActions"><button id="cancelSetlistName" class="secondary">CANCEL·LAR</button><button id="saveSetlistName" class="primary">GUARDAR</button></div></div></div>
 <div id="groupModal" class="modal"><div class="modalCard"><h2 id="groupModalTitle">Editar grup</h2><div class="formRow"><label>Nom</label><input id="groupName" maxlength="40"></div><div class="formRow"><label>Color</label><input id="groupColor" type="color"></div><div class="formRow"><label>Logo</label><div><img id="logoPreview" class="logoPreview" alt="Logo"><input id="groupLogo" type="file" accept="image/*" style="margin-top:8px"></div></div><div class="modalActions"><button id="deleteGroup" class="secondary danger">ELIMINAR</button><button id="cancelGroup" class="secondary">CANCEL·LAR</button><button id="saveGroup" class="primary">GUARDAR</button></div></div></div>
@@ -130,5 +173,5 @@
 window.addEventListener("error",function(){setTimeout(function(){document.getElementById("splash")?.classList.add("hidden")},50)});
 setTimeout(function(){document.getElementById("splash")?.classList.add("hidden")},2500);
 </script>
-<script src="clickset-2.0.js?v=241" defer></script>
+<script src="clickset-2.0.js?v=250" defer></script>
 </body></html>

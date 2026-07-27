@@ -1,30 +1,40 @@
-CLICKSET 2.4.1 — ACCENTS I SEGON PLA
+CLICKSET 2.5.0 — CANVIS DE TEMPO I CONTROL EN DIRECTE
 
-ACCENTS:
-- ClickSet Original: accent molt més agut i clar.
-- Cowbell: accent més agut.
-- Claves: accent molt més agut i amb menys sensació de distorsió.
-- Studio Click: es manté com estava.
-- Clap: s'han intercanviat les mostres normal i accent.
-- Rimshot: es manté amb una petita capa aguda de reforç.
+NOVETATS:
+- Canvis de tempo il·limitats dins una mateixa cançó.
+- Cada tram defineix BPM i nombre de compassos.
+- El darrer tram continua fins que prems STOP.
+- Botons +1 / +2 / +4 per allargar només el tram actual durant aquella interpretació.
+- PAUSA temporal i CONTINUAR:
+  * conserva el compàs, el tram i el punt de la pista
+  * STOP continua tornant-ho tot a l'inici
+- Tecla P = Pausa / Continuar.
+- Els canvis de tempo només apareixen a l'editor quan prems “TEMPOS”.
+- Les cançons normals continuen funcionant exactament com abans.
 
-SEGON PLA:
-- CLICKSET ja no s'atura expressament en canviar de pestanya.
-- Programa fins a 8 segons de clics per avançat quan la pàgina queda oculta.
-- En tornar a CLICKSET intenta reprendre el context d'àudio sense reiniciar la pista.
-- No reinicia la cançó quan tornes a la pestanya.
+CORRECCIONS:
+- Claves: accent més net, menys volum i sense capes que saturin.
+- Clap: so normal restaurat i accent nou més curt i brillant.
+- Mode concert: “Després” queda sempre visible encara que hi hagi pista.
+- Eliminar pista queda més discret.
+- Nova jerarquia visual: fons general més suau, setlist intermedi i metrònom més fosc.
 
-LIMITACIÓ DEL SISTEMA:
-Safari/iOS pot suspendre una web si bloqueges la pantalla, canvies d'app durant molta estona
-o el sistema necessita memòria. Entre pestanyes i per consultes breus hauria de continuar
-molt millor, però una web no pot garantir el mateix comportament que una app nativa.
+COM FUNCIONA:
+1. EDITAR.
+2. A la cançó, prem “⏱ TEMPOS”.
+3. Defineix BPM i compassos de cada tram.
+4. Afegeix tants trams com necessitis.
+5. Durant la interpretació, CLICKSET canvia automàticament.
+6. +1 / +2 / +4 allarga el tram actual sense modificar la configuració guardada.
+7. PAUSA atura temporalment; CONTINUAR segueix des del mateix punt.
+8. STOP acaba i torna a l'inici.
 
 PUBLICACIÓ:
-1. Conserva la versió 2.4.0.
+1. Conserva el ZIP de la 2.4.1.
 2. Esborra els fitxers actuals de l'arrel del repositori.
 3. Puja tots els fitxers d'aquest ZIP directament a l'arrel.
 4. Fes Commit changes.
-5. Obre https://njnp.njnp09.workers.dev/?v=241
+5. Obre https://njnp.njnp09.workers.dev/?v=250
 
 COMPROVACIÓ:
-La pestanya i l'etiqueta inferior han d'indicar 2.4.1.
+La pestanya i l'etiqueta inferior han d'indicar 2.5.0.
