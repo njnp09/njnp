@@ -14,7 +14,7 @@ const SAMPLE_FILES={
  cowbell:{normal:"cowbell-normal.wav",accent:"cowbell-accent.wav"},
  clave:{normal:"claves-normal.wav",accent:"claves-accent.wav"},
  rim:{normal:"rimshot-normal.wav",accent:"rimshot-accent.wav"},
- clap:{normal:"clap-normal.wav",accent:"clap-accent.wav"}
+ clap:{normal:"clap-accent.wav",accent:"clap-normal.wav"}
 };
 
 const COUNTDOWN_KEY="clickset_countdown_enabled";
@@ -597,37 +597,46 @@ function playBuffer(buffer,time,level=1){
  gain.gain.setValueAtTime(Math.max(.0001,Math.min(1.15,level*appVolume)),time);
  src.connect(gain).connect(clickDestination());src.start(time);return true
 }
-function accentMarker(time,level=1){
- // Capa curta i brillant que garanteix que el primer temps sigui distingible
- // fins i tot quan la mostra accentuada és molt semblant a la normal.
- tone(3150,"sine",time,.026,Math.min(1.15,level*.42));
- tone(1575,"triangle",time,.038,Math.min(1.15,level*.22));
+function accentMarker(time,level=1,type="studio"){
+ // Capa tonal específica per cada so. L'objectiu és canviar clarament
+ // la tonalitat del primer temps, no només augmentar-ne el volum.
+ const profiles={
+  classic:{high:4200,low:2100,highLevel:.58,lowLevel:.28,duration:.033},
+  cowbell:{high:3600,low:1800,highLevel:.36,lowLevel:.18,duration:.030},
+  clave:{high:4900,low:2450,highLevel:.48,lowLevel:.20,duration:.026},
+  rim:{high:3900,low:1950,highLevel:.34,lowLevel:.16,duration:.026},
+  clap:{high:3300,low:1650,highLevel:.22,lowLevel:.11,duration:.024},
+  studio:{high:3150,low:1575,highLevel:.42,lowLevel:.22,duration:.026}
+ };
+ const p=profiles[type]||profiles.studio;
+ tone(p.high,"sine",time,p.duration,Math.min(1.15,level*p.highLevel));
+ tone(p.low,"triangle",time,p.duration*1.45,Math.min(1.15,level*p.lowLevel));
 }
 function scheduleSound(type,time,volume=1,accented=false){
  const level=Math.max(0,Math.min(1.15,volume));
  const accentLevel=accented?Math.min(1.15,level*1.12):level;
  const sampled=sampleBuffers[`${type}:${accented?"accent":"normal"}`]||sampleBuffers[`${type}:normal`];
  if(sampled&&playBuffer(sampled,time,accentLevel)){
-  if(accented)accentMarker(time,level);
+  if(accented)accentMarker(time,level,type);
   return;
  }
  if(type==="classic"&&classicBuffer){
   playBuffer(classicBuffer,time,accentLevel);
-  if(accented)accentMarker(time,level);
+  if(accented)accentMarker(time,level,type);
   return;
  }
  // Fallbacks immediats mentre els WAV es carreguen.
  if(type==="classic")type="studio";
  if(type==="cowbell"){
-  tone(accented?1380:980,"square",time,accented?.068:.055,accentLevel*.72);
-  tone(accented?910:650,"triangle",time,accented?.095:.08,accentLevel*.38);
-  if(accented)accentMarker(time,level);
+  tone(accented?1720:980,"square",time,accented?.068:.055,accentLevel*.72);
+  tone(accented?1120:650,"triangle",time,accented?.095:.08,accentLevel*.38);
+  if(accented)accentMarker(time,level,type);
   return;
  }
  if(type==="clave"){
-  tone(accented?3100:2350,"sine",time,accented?.045:.035,accentLevel*.9);
-  tone(accented?4100:3100,"sine",time,accented?.032:.024,accentLevel*.35);
-  if(accented)accentMarker(time,level);
+  tone(accented?3900:2350,"sine",time,accented?.042:.035,accentLevel*.86);
+  tone(accented?5200:3100,"sine",time,accented?.028:.024,accentLevel*.28);
+  if(accented)accentMarker(time,level,type);
   return;
  }
  if(type==="rim"){
@@ -639,7 +648,7 @@ function scheduleSound(type,time,volume=1,accented=false){
   gain.gain.exponentialRampToValueAtTime(.001,time+(accented?.048:.035));
   src.connect(hp).connect(gain).connect(clickDestination());
   src.start(time);
-  if(accented)accentMarker(time,level);
+  if(accented)accentMarker(time,level,type);
   return;
  }
  if(type==="clap"){
@@ -652,7 +661,7 @@ function scheduleSound(type,time,volume=1,accented=false){
   gain.gain.exponentialRampToValueAtTime(.001,time+(accented?.095:.08));
   src.connect(bp).connect(gain).connect(clickDestination());
   src.start(time);
-  if(accented)accentMarker(time,level);
+  if(accented)accentMarker(time,level,type);
   return;
  }
  if(type==="wood"){
@@ -665,12 +674,12 @@ function scheduleSound(type,time,volume=1,accented=false){
   gain.gain.exponentialRampToValueAtTime(.001,time+(accented?.075:.055));
   src.connect(filter).connect(gain).connect(clickDestination());
   src.start(time);
-  if(accented)accentMarker(time,level);
+  if(accented)accentMarker(time,level,type);
   return;
  }
  tone(accented?2700:1850,"triangle",time,accented?.058:.045,accentLevel*.9);
  tone(accented?1350:950,"sine",time,accented?.068:.055,accentLevel*.35);
- if(accented)accentMarker(time,level);
+ if(accented)accentMarker(time,level,type);
 }
 function effectiveSound(){const s=flat[current]?.song;return s?.sound||currentSetlist()?.sound||"classic"}
 function effectiveAccentSound(){const s=flat[current]?.song,sl=currentSetlist();return s?.accentSound||sl?.accentSound||effectiveSound()}
@@ -680,17 +689,26 @@ function scheduleBeatSound(time,accented=false){
 function pulseAt(time,myRun,beatIndex=0,accented=false){const delay=Math.max(0,(time-audioCtx.currentTime)*1000);visualBeatTimers.push(setTimeout(()=>{if(!playing||myRun!==runId)return;lightBeat(beatIndex,accented);$("pulse").classList.add("on");if($("concertPulse"))$("concertPulse").classList.add("on");visualBeatTimers.push(setTimeout(()=>{$("pulse").classList.remove("on");if($("concertPulse"))$("concertPulse").classList.remove("on")},70))},delay))}
 function scheduler(myRun){
  if(!playing||myRun!==runId)return;
- const song=flat[current].song,sec=60/Math.max(20,Math.min(400,Number(song.bpm)||120));
- while(nextBeatTime<audioCtx.currentTime+.045){
+ const song=flat[current].song;
+ const sec=60/Math.max(20,Math.min(400,Number(song.bpm)||120));
+
+ // En segon pla els navegadors redueixen molt els temporitzadors JavaScript.
+ // Programam diversos segons d'àudio per avançat perquè Web Audio continuï.
+ const hidden=document.hidden;
+ const horizon=hidden?8.0:.075;
+ const timerDelay=hidden?750:12;
+
+ while(nextBeatTime<audioCtx.currentTime+horizon){
   const accented=Boolean(song.accentFirst)&&beatInBar===0;
   const beatIndex=beatInBar;
   scheduleBeatSound(nextBeatTime,accented);
-  pulseAt(nextBeatTime,myRun,beatIndex,accented);
+  // Les animacions no són necessàries quan la pestanya no és visible.
+  if(!hidden)pulseAt(nextBeatTime,myRun,beatIndex,accented);
   const beatsPerBar=Math.max(1,parseInt(String(song.meter||"4/4").split("/")[0],10)||4);
   beatInBar=(beatInBar+1)%beatsPerBar;
-  nextBeatTime+=sec
+  nextBeatTime+=sec;
  }
- schedulerTimer=setTimeout(()=>scheduler(myRun),10)
+ schedulerTimer=setTimeout(()=>scheduler(myRun),timerDelay);
 }
 function setLiveState(state){
  const playingState=state==="live";
@@ -1429,6 +1447,32 @@ document.addEventListener("keydown",e=>{
   restart();
  }
 },true);
-document.addEventListener("visibilitychange",()=>{if(document.hidden&&playing)stop()});
+document.addEventListener("visibilitychange",async()=>{
+ if(!playing)return;
+ clearTimeout(schedulerTimer);
+ schedulerTimer=null;
+
+ if(document.hidden){
+  // Omplim immediatament la cua d'àudio abans que Safari redueixi els timers.
+  scheduler(runId);
+ }else{
+  // En tornar, recuperam el context si el navegador l'ha deixat suspès.
+  try{
+   if(audioCtx?.state==="suspended")await audioCtx.resume();
+  }catch(error){console.warn("No s'ha pogut reprendre l'àudio",error)}
+  // Si la cua ha quedat enrere, reprenem des d'ara sense reiniciar la pista.
+  if(audioCtx&&nextBeatTime<audioCtx.currentTime+.01)nextBeatTime=audioCtx.currentTime+.012;
+  scheduler(runId);
+  render();
+ }
+});
+window.addEventListener("pagehide",()=>{
+ if(playing){
+  clearTimeout(schedulerTimer);
+  schedulerTimer=null;
+  scheduler(runId);
+ }
+});
+
 setLiveState("ready");updateAudioGate();
 if("serviceWorker" in navigator)window.addEventListener("load",async()=>{try{const registration=await navigator.serviceWorker.register("./sw.js",{updateViaCache:"none"});await registration.update()}catch(error){console.warn("Service worker",error)}});

@@ -8,17 +8,17 @@
 <meta name="theme-color" content="#0d1318">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="cover.png">
-<title>ClickSet 2.4.0</title>
-<link rel="stylesheet" href="clickset-2.0.css?v=240?v=213">
+<title>ClickSet 2.4.1</title>
+<link rel="stylesheet" href="clickset-2.0.css?v=241?v=213">
 </head>
 <body>
-<div class="buildBadge">2.4.0</div>
+<div class="buildBadge">2.4.1</div>
 <button id="themeToggle" class="themeToggle" type="button" aria-label="Activar mode clar" title="Activar mode clar">☀️</button>
 <button id="editModeBadge" class="editModeBadge locked" type="button" aria-label="Estat del mode edició">🔒 Mode lectura</button>
 <div id="splash" class="splash"><img src="cover.png" alt="ClickSet"></div>
 <div id="groupIntro" class="groupIntro hidden"><img id="groupIntroLogo" alt=""><div id="groupIntroName"></div></div>
 <div id="chooser" class="chooser hidden"><div class="chooserCard"><div class="chooserTop"><div><div id="homeBrand" class="homeBrand"><img src="logo-clickset.png" alt="Bateria ClickSet"><div><h1>CLICKSET</h1><div class="byNwi">by nwi</div></div></div><h1 id="chooserTitle" class="hidden">Grup musical</h1><p id="chooserSubtitle" class="chooserSubtitle">Selecciona un grup</p></div><div class="chooserTools"><button id="importClicksetBtn" class="smallBtn">📦 IMPORTAR .CLICKSET</button><button id="exportBackupBtn" class="smallBtn">💾 CÒPIA COMPLETA</button><button id="restoreBackupBtn" class="smallBtn">♻️ RESTAURAR CÒPIA</button><button id="importSetlistBtn" class="smallBtn hidden">📥 IMPORTAR LLISTA</button><button id="newGroupBtn" class="smallBtn">+ GRUP</button></div></div><button id="chooserBack" class="back hidden">← Enrere</button><div id="chooserGrid" class="grid"></div><section id="recentSection" class="recentSection"><div class="recentHead"><h2>Últims repertoris</h2><small>Accés ràpid</small></div><div id="recentSetlists" class="recentSetlists"></div></section></div></div>
-<div id="app" class="app hidden"><aside class="sidebar"><div class="sideHead"><h2>Setlist</h2><span id="songCount"></span></div><div id="setlist" class="setlist"></div></aside><main class="main"><div class="top"><div class="topIdentity"><span id="liveState" class="liveState ready">● PREPARAT</span><div id="position"></div></div><div id="keyboardHelp" class="keyboardHelp" title="Dreceres: ← → cançó · ↑ ↓ BPM · Espai Play/Stop · A Accent · R Reiniciar">⌨️</div><div class="topBtns"><button id="concertModeBtn" class="smallBtn">🎤 MODE CONCERT</button><button id="homeBtn" class="smallBtn">GRUPS</button><button id="editBtn" class="smallBtn">EDITAR</button></div></div><section class="stage"><div id="stageStatusLine" class="stageStatusLine" aria-hidden="true">CLICKSET · READY. CLICK. PLAY.</div><div id="parentLabel" class="parentLabel"></div><div id="song" class="song"></div><div id="bpm" class="bpm"></div><div class="label">BPM</div>
+<div id="app" class="app hidden"><aside class="sidebar"><div class="sideHead"><h2>Setlist</h2><span id="songCount"></span></div><div id="setlist" class="setlist"></div></aside><main class="main"><div class="top"><div class="topIdentity"><span id="liveState" class="liveState ready">● PREPARAT</span><div id="position"></div></div><div id="backgroundAudioStatus" class="backgroundAudioStatus" title="CLICKSET intentarà continuar sonant quan canvies de pestanya">BG</div><div id="keyboardHelp" class="keyboardHelp" title="Dreceres: ← → cançó · ↑ ↓ BPM · Espai Play/Stop · A Accent · R Reiniciar">⌨️</div><div class="topBtns"><button id="concertModeBtn" class="smallBtn">🎤 MODE CONCERT</button><button id="homeBtn" class="smallBtn">GRUPS</button><button id="editBtn" class="smallBtn">EDITAR</button></div></div><section class="stage"><div id="stageStatusLine" class="stageStatusLine" aria-hidden="true">CLICKSET · READY. CLICK. PLAY.</div><div id="parentLabel" class="parentLabel"></div><div id="song" class="song"></div><div id="bpm" class="bpm"></div><div class="label">BPM</div>
 <div class="liveBpmAdjust" aria-label="Ajust ràpid de BPM">
   <div class="bpmMinus"><button type="button" data-live-bpm="-10">−10</button><button type="button" data-live-bpm="-5">−5</button><button type="button" data-live-bpm="-1">−1</button></div>
   <div class="bpmPlus"><button type="button" data-live-bpm="1">+1</button><button type="button" data-live-bpm="5">+5</button><button type="button" data-live-bpm="10">+10</button></div>
@@ -130,5 +130,5 @@
 window.addEventListener("error",function(){setTimeout(function(){document.getElementById("splash")?.classList.add("hidden")},50)});
 setTimeout(function(){document.getElementById("splash")?.classList.add("hidden")},2500);
 </script>
-<script src="clickset-2.0.js?v=240" defer></script>
+<script src="clickset-2.0.js?v=241" defer></script>
 </body></html>

@@ -981,3 +981,25 @@ body.light-theme .editorRow{
 @media(max-width:750px){
  .keyboardHelp{display:none}
 }
+
+
+/* ClickSet 2.4.1 · continuïtat en segon pla */
+.backgroundAudioStatus{
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ min-width:34px;
+ height:34px;
+ padding:0 7px;
+ border:1px solid rgba(99,211,140,.28);
+ border-radius:999px;
+ background:rgba(99,211,140,.08);
+ color:var(--green);
+ font-size:10px;
+ font-weight:950;
+ letter-spacing:.08em;
+ cursor:help;
+}
+@media(max-width:750px){
+ .backgroundAudioStatus{display:none}
+}

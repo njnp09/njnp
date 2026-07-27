@@ -1,28 +1,30 @@
-CLICKSET 2.4.0 — CONTROLS DE DIRECTE
+CLICKSET 2.4.1 — ACCENTS I SEGON PLA
 
-Base: ClickSet 2.3.0.
+ACCENTS:
+- ClickSet Original: accent molt més agut i clar.
+- Cowbell: accent més agut.
+- Claves: accent molt més agut i amb menys sensació de distorsió.
+- Studio Click: es manté com estava.
+- Clap: s'han intercanviat les mostres normal i accent.
+- Rimshot: es manté amb una petita capa aguda de reforç.
 
-CANVIS:
-- Accent del primer temps clar i audible amb tots els sons.
-- L'accent té més diferència de volum, durada i brillantor.
-- Activar o llevar l'accent NO reinicia la pista.
-- Activar o llevar l'accent NO reinicia el metrònom.
-- El canvi s'aplica al següent primer temps disponible.
-- Fletxa ↑ = +1 BPM.
-- Fletxa ↓ = -1 BPM.
-- Fletxa ← = cançó anterior.
-- Fletxa → = cançó següent.
-- Espai = Play / Stop.
-- A = Accent ON / OFF.
-- R = Reiniciar.
-- El BPM continua canviant en temps real mentre sona.
+SEGON PLA:
+- CLICKSET ja no s'atura expressament en canviar de pestanya.
+- Programa fins a 8 segons de clics per avançat quan la pàgina queda oculta.
+- En tornar a CLICKSET intenta reprendre el context d'àudio sense reiniciar la pista.
+- No reinicia la cançó quan tornes a la pestanya.
+
+LIMITACIÓ DEL SISTEMA:
+Safari/iOS pot suspendre una web si bloqueges la pantalla, canvies d'app durant molta estona
+o el sistema necessita memòria. Entre pestanyes i per consultes breus hauria de continuar
+molt millor, però una web no pot garantir el mateix comportament que una app nativa.
 
 PUBLICACIÓ:
-1. Conserva el ZIP de la versió 2.3.0.
+1. Conserva la versió 2.4.0.
 2. Esborra els fitxers actuals de l'arrel del repositori.
 3. Puja tots els fitxers d'aquest ZIP directament a l'arrel.
 4. Fes Commit changes.
-5. Obre https://njnp.njnp09.workers.dev/?v=240
+5. Obre https://njnp.njnp09.workers.dev/?v=241
 
 COMPROVACIÓ:
-La pestanya i l'etiqueta inferior han d'indicar 2.4.0.
+La pestanya i l'etiqueta inferior han d'indicar 2.4.1.
