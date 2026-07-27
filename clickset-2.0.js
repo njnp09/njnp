@@ -230,8 +230,12 @@ function save(){localStorage.setItem(STORAGE_KEY,JSON.stringify(groups))}
  save();
 })();
 
-function currentSetlist(){return groups[groupIndex].setlists[setlistIndex]}
-function currentItems(){return currentSetlist().items}
+function currentSetlist(){
+ const group=Number.isInteger(groupIndex)?groups[groupIndex]:null;
+ if(!group||!Array.isArray(group.setlists)||!Number.isInteger(setlistIndex))return null;
+ return group.setlists[setlistIndex]||null;
+}
+function currentItems(){return currentSetlist()?.items||[]}
 function flatten(){flat=[];currentItems().forEach((g,gi)=>g.children?g.children.forEach((s,ci)=>flat.push({song:s,parent:g.name,gi,ci})):flat.push({song:g,parent:"",gi,ci:null}));if(current>=flat.length)current=0}
 function bpmClass(v){return v<=120?"green":v<=145?"yellow":v<=165?"orange":"red"}
 function setAccent(){const c=(groupIndex!==null&&groups[groupIndex])?groups[groupIndex].color:"#ffd34d";document.documentElement.style.setProperty("--accent",c)}
@@ -261,7 +265,7 @@ setTimeout(()=>{try{$("splash")?.classList.add("hidden");showGroups()}catch(erro
 setTimeout(()=>$("splash")?.classList.add("hidden"),2200);
 
 updateEditModeBadge();
-function showGroups(){stop();dismissAudioGate();groupIndex=null;setlistIndex=null;setAccent();placeEditBadge(false);$("app").classList.add("hidden");$("chooser").classList.remove("hidden");$("chooserBack").classList.add("hidden");$("newGroupBtn").classList.remove("hidden");$("importSetlistBtn").classList.add("hidden");$("homeBrand").classList.remove("hidden");$("chooserTitle").classList.add("hidden");$("chooserTitle").textContent="Grup musical";$("chooserSubtitle").textContent="Selecciona un grup";const grid=$("chooserGrid");grid.innerHTML="";if(!groups.length){grid.innerHTML=`<div class="emptyState"><div class="emptyIcon">🎵</div><h2>Benvingut a ClickSet</h2><p>Crea el teu primer grup o importa un repertori .clickset.</p><button class="primary" id="emptyCreateGroup">+ CREAR PRIMER GRUP</button></div>`;$("emptyCreateGroup").onclick=()=>requestEdit(()=>openGroupEditor(null));renderRecentSetlists();return}groups.forEach((g,i)=>{const c=document.createElement("div");c.className="card";c.style.setProperty("--card-color",g.color);c.innerHTML=`${g.logo?`<img class="cardLogo" src="${g.logo}" alt="">`:""}<h2>${esc(g.name)}</h2><small>${g.setlists.length} repertoris</small><div class="cardActions"><button class="smallBtn openGroup">OBRIR</button><button class="smallBtn editGroup">EDITAR</button></div>`;c.querySelector(".openGroup").onclick=e=>{e.stopPropagation();showSetlists(i)};c.querySelector(".editGroup").onclick=e=>{e.stopPropagation();requestEdit(()=>openGroupEditor(i))};c.onclick=()=>showSetlists(i);grid.appendChild(c)});renderRecentSetlists()}
+function showGroups(){groupIndex=null;setlistIndex=null;stop();dismissAudioGate();setAccent();placeEditBadge(false);$("app").classList.add("hidden");$("chooser").classList.remove("hidden");$("chooserBack").classList.add("hidden");$("newGroupBtn").classList.remove("hidden");$("importSetlistBtn").classList.add("hidden");$("homeBrand").classList.remove("hidden");$("chooserTitle").classList.add("hidden");$("chooserTitle").textContent="Grup musical";$("chooserSubtitle").textContent="Selecciona un grup";const grid=$("chooserGrid");grid.innerHTML="";if(!groups.length){grid.innerHTML=`<div class="emptyState"><div class="emptyIcon">🎵</div><h2>Benvingut a ClickSet</h2><p>Crea el teu primer grup o importa un repertori .clickset.</p><button class="primary" id="emptyCreateGroup">+ CREAR PRIMER GRUP</button></div>`;$("emptyCreateGroup").onclick=()=>requestEdit(()=>openGroupEditor(null));renderRecentSetlists();return}groups.forEach((g,i)=>{const c=document.createElement("div");c.className="card";c.style.setProperty("--card-color",g.color);c.innerHTML=`${g.logo?`<img class="cardLogo" src="${g.logo}" alt="">`:""}<h2>${esc(g.name)}</h2><small>${g.setlists.length} repertoris</small><div class="cardActions"><button class="smallBtn openGroup">OBRIR</button><button class="smallBtn editGroup">EDITAR</button></div>`;c.querySelector(".openGroup").onclick=e=>{e.stopPropagation();showSetlists(i)};c.querySelector(".editGroup").onclick=e=>{e.stopPropagation();requestEdit(()=>openGroupEditor(i))};c.onclick=()=>showSetlists(i);grid.appendChild(c)});renderRecentSetlists()}
 function renderSetlists(gi){groupIndex=gi;setAccent();$("recentSection")?.classList.add("hidden");$("chooserBack").classList.remove("hidden");$("chooserBack").onclick=showGroups;$("newGroupBtn").classList.add("hidden");$("importSetlistBtn").classList.remove("hidden");$("homeBrand").classList.add("hidden");$("chooserTitle").classList.remove("hidden");$("chooserTitle").textContent=groups[gi].name;$("chooserSubtitle").textContent="Selecciona un repertori";const grid=$("chooserGrid");grid.innerHTML="";groups[gi].setlists.forEach((s,i)=>{const c=document.createElement("div");c.className="card";c.style.setProperty("--card-color",groups[gi].color);c.innerHTML=`<h3>${esc(s.name)}</h3><small>${countFlat(s.items)} parts · ${soundName(s.sound)}</small><div class="cardActions"><button class="smallBtn openSetlistBtn">OBRIR</button><button class="smallBtn exportSetlistBtn">📦 EXPORTAR</button><button class="smallBtn editSetlistBtn">EDITAR NOM</button></div>`;c.querySelector(".openSetlistBtn").onclick=e=>{e.stopPropagation();openSetlist(i)};c.querySelector(".exportSetlistBtn").onclick=e=>{e.stopPropagation();exportClickset(gi,i)};c.querySelector(".editSetlistBtn").onclick=e=>{e.stopPropagation();requestEdit(()=>openSetlistNameEditor(i))};c.onclick=()=>openSetlist(i);grid.appendChild(c)})}
 function showSetlists(gi){const g=groups[gi];if(!g.logo){renderSetlists(gi);return}const intro=$("groupIntro"),img=$("groupIntroLogo"),name=$("groupIntroName");img.src=g.logo;name.textContent=g.name;intro.style.setProperty("--intro-color",g.color||"#ffd34d");intro.classList.remove("hidden","closing");requestAnimationFrame(()=>intro.classList.add("visible"));setTimeout(()=>{intro.classList.add("closing");setTimeout(()=>{intro.classList.add("hidden");intro.classList.remove("visible","closing");renderSetlists(gi)},260)},850)}
 function countFlat(items){return items.reduce((n,i)=>n+(i.children?i.children.length:1),0)}
@@ -908,7 +912,8 @@ function stop(){
  updateTransportButtons();
  $("pulse").classList.remove("on");
  if($("concertPulse"))$("concertPulse").classList.remove("on");
- lightBeat(-1);render();
+ lightBeat(-1);
+ if(currentSetlist())render();
 }
 async function restart(){stop();await start(true)}
 async function playPreviewSample(type){

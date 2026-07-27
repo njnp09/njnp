@@ -1,40 +1,11 @@
-CLICKSET 2.5.0 — CANVIS DE TEMPO I CONTROL EN DIRECTE
+CLICKSET 2.5.1 — CORRECCIÓ D’ARRENCADA
 
-NOVETATS:
-- Canvis de tempo il·limitats dins una mateixa cançó.
-- Cada tram defineix BPM i nombre de compassos.
-- El darrer tram continua fins que prems STOP.
-- Botons +1 / +2 / +4 per allargar només el tram actual durant aquella interpretació.
-- PAUSA temporal i CONTINUAR:
-  * conserva el compàs, el tram i el punt de la pista
-  * STOP continua tornant-ho tot a l'inici
-- Tecla P = Pausa / Continuar.
-- Els canvis de tempo només apareixen a l'editor quan prems “TEMPOS”.
-- Les cançons normals continuen funcionant exactament com abans.
-
-CORRECCIONS:
-- Claves: accent més net, menys volum i sense capes que saturin.
-- Clap: so normal restaurat i accent nou més curt i brillant.
-- Mode concert: “Després” queda sempre visible encara que hi hagi pista.
-- Eliminar pista queda més discret.
-- Nova jerarquia visual: fons general més suau, setlist intermedi i metrònom més fosc.
-
-COM FUNCIONA:
-1. EDITAR.
-2. A la cançó, prem “⏱ TEMPOS”.
-3. Defineix BPM i compassos de cada tram.
-4. Afegeix tants trams com necessitis.
-5. Durant la interpretació, CLICKSET canvia automàticament.
-6. +1 / +2 / +4 allarga el tram actual sense modificar la configuració guardada.
-7. PAUSA atura temporalment; CONTINUAR segueix des del mateix punt.
-8. STOP acaba i torna a l'inici.
+- Corregeix l’error “undefined is not an object (evaluating groups[groupIndex].setlists)”.
+- No elimina ni modifica els grups, repertoris o pistes guardades.
+- Protegeix l’app quan encara no hi ha cap grup/repertori seleccionat.
+- Manté totes les funcions de la 2.5.0.
 
 PUBLICACIÓ:
-1. Conserva el ZIP de la 2.4.1.
-2. Esborra els fitxers actuals de l'arrel del repositori.
-3. Puja tots els fitxers d'aquest ZIP directament a l'arrel.
-4. Fes Commit changes.
-5. Obre https://njnp.njnp09.workers.dev/?v=250
-
-COMPROVACIÓ:
-La pestanya i l'etiqueta inferior han d'indicar 2.5.0.
+1. No premis RESTABLIR DADES LOCALS.
+2. Substitueix els fitxers del repositori pels d’aquest ZIP.
+3. Obre https://njnp.njnp09.workers.dev/?v=251
