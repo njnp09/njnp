@@ -483,18 +483,39 @@ async function removeCurrentTrack(){
  await removeSongTrack(flat[current].song,{ask:true});
 }
 
-function openQuickTrackPicker(){
+function chooseAudioFile(){
+ return new Promise(resolve=>{
+  const input=document.createElement("input");
+  input.type="file";
+  input.accept=".mp3,.wav,.m4a,.aac,audio/mpeg,audio/wav,audio/x-wav,audio/mp4,audio/aac";
+  input.setAttribute("aria-hidden","true");
+  input.style.position="fixed";
+  input.style.left="-9999px";
+  input.style.top="-9999px";
+  input.style.width="1px";
+  input.style.height="1px";
+  input.style.opacity="0";
+  document.body.appendChild(input);
+  let finished=false;
+  const finish=file=>{
+   if(finished)return;
+   finished=true;
+   window.removeEventListener("focus",onFocus,true);
+   setTimeout(()=>input.remove(),0);
+   resolve(file||null);
+  };
+  const onFocus=()=>setTimeout(()=>{if(!finished&&!input.files?.length)finish(null)},350);
+  input.addEventListener("change",()=>finish(input.files?.[0]||null),{once:true});
+  window.addEventListener("focus",onFocus,true);
+  try{input.click()}catch(error){console.warn("Selector d'àudio",error);finish(null)}
+ });
+}
+async function openQuickTrackPicker(event){
+ if(event){event.preventDefault();event.stopPropagation()}
  if(!flat.length)return;
- const input=$("quickTrackInput");
- if(!input)return;
- input.value="";
- // Safari/iPhone/iPad: showPicker dins el mateix gest físic és més fiable.
- try{
-  if(typeof input.showPicker==="function") input.showPicker();
-  else input.click();
- }catch(e){
-  try{input.click()}catch(err){console.warn("No s'ha pogut obrir el selector d'àudio",err)}
- }
+ const file=await chooseAudioFile();
+ if(!file)return;
+ await handleQuickTrackFile(file);
 }
 async function handleQuickTrackFile(file){
  if(!file||!flat.length)return;
@@ -1014,15 +1035,27 @@ $("normalTrack").onclick=openQuickTrackPicker;
 $("concertTrack").onclick=openQuickTrackPicker;
 $("normalRemoveTrack").onclick=removeCurrentTrack;
 $("concertRemoveTrack").onclick=removeCurrentTrack;
-$("quickTrackInput").addEventListener("click",e=>{e.currentTarget.value=""});
-$("quickTrackInput").onchange=async e=>{
- const file=e.target.files?.[0];
- if(!file)return;
- try{await handleQuickTrackFile(file)}
- finally{e.target.value=""}
-};
 $("closeQuickSound").onclick=closeQuickSoundMenu;
 $("quickSoundMenu").onclick=e=>{if(e.target===$("quickSoundMenu"))closeQuickSoundMenu()};
+
+// Evita que Safari substitueixi CLICKSET per un reproductor d'àudio quan es deixa anar un fitxer damunt la finestra.
+["dragenter","dragover","drop"].forEach(type=>{
+ document.addEventListener(type,event=>{
+  const hasFiles=Array.from(event.dataTransfer?.types||[]).includes("Files");
+  if(!hasFiles)return;
+  event.preventDefault();
+  event.stopPropagation();
+  if(type==="drop")showAudioToast("Per carregar una pista, toca el botó 🎵 de CLICKSET");
+ },{capture:true});
+});
+
+window.addEventListener("pageshow",()=>{
+ if(audioCtx?.state==="running"){
+  audioUnlocked=true;
+  updateAudioGate();
+ }
+});
+
 // Safari mòbil exigeix inicialitzar l'àudio exactament durant un gest físic.
 ["pointerdown","touchend"].forEach(eventName=>document.addEventListener(eventName,()=>{if(!audioUnlocked)unlockAudioNow(false)},{capture:true,passive:true}));
 $("activateAudioBtn").addEventListener("click",async e=>{e.preventDefault();await unlockAudioNow(true)});

@@ -1,23 +1,17 @@
-CLICKSET 2.2.1 — GESTIÓ DE PISTES CORREGIDA
+CLICKSET 2.2.2 — CORRECCIÓ SAFARI EN CARREGAR PISTES
 
-Base: ClickSet 2.2.0
-
-CANVIS:
-- Es pot carregar una pista nova directament damunt una pista existent.
-- També funciona quan el nou arxiu té exactament el mateix nom.
-- La pista antiga només s'elimina després d'haver guardat correctament la nova.
-- Botó visible “ELIMINAR PISTA” a la pantalla normal.
-- Botó visible “ELIMINAR PISTA” al mode concert.
-- Botó “Eliminar pista” corregit dins l'editor.
-- En eliminar-la, es netegen les dades associades i ja es pot carregar una pista nova.
-- Es manté la detecció automàtica de BPM de la versió 2.2.0.
+CORRECCIONS:
+- Safari ja no hauria d'obrir l'MP3 com una pàgina/reproductor independent.
+- Nou selector temporal d'arxius, més estable en Safari.
+- Arrossegar un MP3 damunt la finestra ja no substitueix l'app.
+- Es mantenen detecció BPM, substituir/eliminar pista, modificar setlist i còpia completa.
 
 PUBLICACIÓ:
-1. Guarda una còpia de la versió actual.
+1. Guarda la versió actual.
 2. Esborra els fitxers de l'arrel del repositori.
 3. Puja tots els fitxers d'aquest ZIP directament a l'arrel.
 4. Fes Commit changes.
-5. Obre https://njnp.njnp09.workers.dev/?v=221
+5. Obre https://njnp.njnp09.workers.dev/?v=222
 
 COMPROVACIÓ:
-A baix a l'esquerra ha d'aparèixer 2.2.1.
+La pestanya i l'etiqueta inferior han d'indicar 2.2.2.
