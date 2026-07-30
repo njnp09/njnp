@@ -63,24 +63,39 @@ function renderRecentSetlists(){
  })
 }
 
+const THEMES={
+ midnight:{label:"Midnight Gold",icon:"◐",meta:"#07111b"},
+ electric:{label:"Electric Blue",icon:"◉",meta:"#041525"},
+ studio:{label:"Studio Teal",icon:"◌",meta:"#f3f7f7"},
+ classic:{label:"Classic Dark",icon:"◑",meta:"#0d1318"}
+};
+function normalizeTheme(theme){
+ if(theme==="dark")return "classic";
+ if(theme==="light")return "studio";
+ return THEMES[theme]?theme:"midnight";
+}
 function applyTheme(theme){
- const light=theme==="light";
- document.body.classList.toggle("light-theme",light);
+ theme=normalizeTheme(theme);
+ document.body.dataset.theme=theme;
+ document.body.classList.toggle("light-theme",theme==="studio");
  const btn=$("themeToggle");
  if(btn){
-  btn.textContent=light?"🌙":"☀️";
-  btn.setAttribute("aria-label",light?"Activar mode fosc":"Activar mode clar");
-  btn.title=light?"Activar mode fosc":"Activar mode clar";
+  btn.textContent=THEMES[theme].icon;
+  btn.setAttribute("aria-label",`Estil visual: ${THEMES[theme].label}`);
+  btn.title=`Estil visual: ${THEMES[theme].label}`;
  }
+ document.querySelectorAll(".themeChoice").forEach(choice=>choice.classList.toggle("active",choice.dataset.theme===theme));
  const meta=document.querySelector('meta[name="theme-color"]');
- if(meta)meta.content=light?"#f4f6f8":"#0d1318";
+ if(meta)meta.content=THEMES[theme].meta;
+ localStorage.setItem(THEME_KEY,theme);
 }
-function toggleTheme(){
- const next=document.body.classList.contains("light-theme")?"dark":"light";
- localStorage.setItem(THEME_KEY,next);
- applyTheme(next);
+function setTheme(theme){applyTheme(theme);$("themeMenu")?.classList.add("hidden")}
+function toggleThemeMenu(event){
+ event?.stopPropagation();
+ const menu=$("themeMenu");if(!menu)return;
+ menu.classList.toggle("hidden");
 }
-applyTheme(localStorage.getItem(THEME_KEY)||"dark");
+applyTheme(localStorage.getItem(THEME_KEY)||"midnight");
 
 function normalize(data){return data.map(g=>({name:g.name||"Grup",color:g.color||"#ffd34d",logo:g.logo||"",setlists:(g.setlists||[]).map(s=>({name:s.name||"Repertori",sound:({digital:"studio",beep:"studio"}[s.sound]||s.sound||"classic"),items:(s.items||[]).map(i=>i.children?{...i,children:i.children.map(c=>({...c,sound:({digital:"studio",beep:"studio"}[c.sound]||c.sound||"")}))}:{...i,sound:({digital:"studio",beep:"studio"}[i.sound]||i.sound||"")})}))}))}
 let stored=null;try{stored=JSON.parse(localStorage.getItem(STORAGE_KEY)||localStorage.getItem("clickset_014_groups")||localStorage.getItem("clickset_010_groups")||"null")}catch(e){}
@@ -1916,7 +1931,9 @@ $("backupImportInput").onchange=e=>{const file=e.target.files?.[0];if(file)resto
 $("importSetlistBtn").onclick=()=>requestEdit(openImportModal);$("cancelImport").onclick=closeImportModal;$("cameraInput").onchange=e=>handleImportFile(e.target.files[0]);$("imageInput").onchange=e=>handleImportFile(e.target.files[0]);$("fileInput").onchange=e=>handleImportFile(e.target.files[0]);$("importText").addEventListener("input",refreshImportPreview);$("createImportedSetlist").onclick=()=>{refreshImportPreview();if(!importSongs.length){alert("No s'ha detectat cap cançó. Revisa el text.");return}const name=$("importSetlistName").value.trim()||"Repertori importat";groups[groupIndex].setlists.push({name,sound:"classic",items:importSongs.map(s=>({name:s.name,bpm:s.bpm}))});save();closeImportModal();renderSetlists(groupIndex)};
 $("newGroupBtn").onclick=()=>requestEdit(()=>openGroupEditor(null));$("homeBtn").onclick=()=>{closeConcertMode();stopRepeatingPreview();showGroups()};$("prev").onclick=()=>change(-1);$("next").onclick=()=>change(1);$("play").onclick=async()=>{try{playing||paused?stop():await start(true)}catch(error){console.error(error);updateAudioGate();showAudioToast("Toca ACTIVAR SO i torna-ho a provar")}};$("editBtn").onclick=()=>requestEdit(()=>{stop();renderEditor();$("editor").classList.add("open")});$("closeEditor").onclick=()=>{stopRepeatingPreview();groups=editingGroups;save();$("editor").classList.remove("open");render()};
 $("submitPassword").onclick=unlockEditing;$("cancelPassword").onclick=closePasswordModal;$("editModeBadge").onclick=()=>{if(editUnlocked){editUnlocked=false;updateEditModeBadge()}else requestEdit(()=>{})};$("editPassword").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();unlockEditing()}else if(e.key==="Escape")closePasswordModal()});
-$("themeToggle").onclick=toggleTheme;
+$("themeToggle").onclick=toggleThemeMenu;
+document.querySelectorAll(".themeChoice").forEach(button=>button.onclick=event=>{event.stopPropagation();setTheme(button.dataset.theme)});
+document.addEventListener("click",event=>{const wrap=document.querySelector(".themePickerWrap");if(wrap&&!wrap.contains(event.target))$("themeMenu")?.classList.add("hidden")});
 $("normalAccent").onclick=toggleCurrentAccent;
 $("concertAccent").onclick=toggleCurrentAccent;
 $("normalSound").onclick=openQuickSoundMenu;

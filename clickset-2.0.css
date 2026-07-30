@@ -2059,3 +2059,94 @@ body.light-theme .tempoMapAutoNextSummary strong{
   60%{transform:scale(1.16);opacity:1}
   100%{transform:scale(1);opacity:1}
 }
+
+/* =========================================================
+   CLICKSET 2.7.0 · REDISSENY VISUAL + 4 TEMES
+   Només presentació: cap canvi de lògica ni funcionalitat.
+   ========================================================= */
+:root{
+  --ui-accent:#ffc43d;--ui-accent-rgb:255,196,61;--ui-bg:#07111b;--ui-bg2:#0a1622;
+  --ui-panel:#101d2a;--ui-panel-2:#152433;--ui-border:rgba(180,205,225,.14);
+  --ui-text:#f7f9fb;--ui-muted:#91a1b2;--ui-danger:#ff7168;--ui-success:#35d38a;
+  --ui-shadow:0 18px 50px rgba(0,0,0,.25);--ui-soft-shadow:0 8px 24px rgba(0,0,0,.18);
+  --ui-radius:24px;--ui-radius-sm:15px;
+  --bg:var(--ui-bg);--panel:var(--ui-panel);--panel2:var(--ui-panel-2);--border:var(--ui-border);
+  --text:var(--ui-text);--muted:var(--ui-muted);--yellow:var(--ui-accent);--accent:var(--ui-accent);
+}
+body[data-theme="midnight"]{color-scheme:dark}
+body[data-theme="electric"]{
+  color-scheme:dark;--ui-accent:#19b8ff;--ui-accent-rgb:25,184,255;--ui-bg:#03101c;--ui-bg2:#061a2b;
+  --ui-panel:#092033;--ui-panel-2:#0c2940;--ui-border:rgba(83,190,255,.17);--ui-text:#f5fbff;--ui-muted:#87a9be;
+}
+body[data-theme="studio"]{
+  color-scheme:light;--ui-accent:#12b8aa;--ui-accent-rgb:18,184,170;--ui-bg:#eef4f4;--ui-bg2:#f8fbfb;
+  --ui-panel:#ffffff;--ui-panel-2:#f3f7f7;--ui-border:rgba(30,65,75,.11);--ui-text:#17232d;--ui-muted:#70808b;
+  --ui-shadow:0 18px 55px rgba(40,70,78,.10);--ui-soft-shadow:0 8px 26px rgba(40,70,78,.09);
+}
+body[data-theme="classic"]{
+  color-scheme:dark;--ui-accent:#ffd34d;--ui-accent-rgb:255,211,77;--ui-bg:#0d1318;--ui-bg2:#111a21;
+  --ui-panel:#172028;--ui-panel-2:#202b34;--ui-border:rgba(155,180,195,.18);--ui-text:#f4f6f7;--ui-muted:#98a5ad;
+}
+body{
+  background:
+   radial-gradient(circle at 70% -10%,rgba(var(--ui-accent-rgb),.09),transparent 34%),
+   linear-gradient(145deg,var(--ui-bg2),var(--ui-bg));
+  color:var(--ui-text);letter-spacing:.005em;
+}
+.app{gap:16px;padding:12px;background:transparent}
+.sidebar,.main,.stage,.infoStrip,.chooserCard,.panel,.concertSidebar,.concertMain,.concertStage{
+  border-color:var(--ui-border)!important;box-shadow:var(--ui-shadow);background:color-mix(in srgb,var(--ui-panel) 96%,transparent)!important;
+}
+.sidebar,.main,.chooserCard{border-radius:30px!important;overflow:hidden}
+.stage,.infoStrip,.concertStage{border-radius:var(--ui-radius)!important}
+.top{padding:12px 16px;gap:12px;border-bottom:0!important;background:transparent!important}
+.sideHead{padding:22px 22px 16px;border-bottom:1px solid var(--ui-border)!important}
+.sideHead h2{font-size:27px;letter-spacing:-.04em}
+.sideHead span{border:1px solid var(--ui-border);background:var(--ui-panel-2);border-radius:999px;padding:9px 14px}
+.setlist{padding:10px 12px 24px}
+.setItem,.mixHeader{border-radius:14px!important;margin:3px 0;border:1px solid transparent;transition:.18s ease}
+.setItem:hover,.mixHeader:hover{background:rgba(var(--ui-accent-rgb),.06)}
+.setItem.active{background:linear-gradient(90deg,rgba(var(--ui-accent-rgb),.18),rgba(var(--ui-accent-rgb),.07))!important;border-color:rgba(var(--ui-accent-rgb),.68)!important;box-shadow:inset 3px 0 var(--ui-accent),0 8px 20px rgba(var(--ui-accent-rgb),.08)}
+.setItem.active,.setItem.active *{color:var(--ui-text)!important}
+.setItem.active .setBpm{color:var(--ui-accent)!important;font-weight:800}
+.stage{position:relative;overflow:hidden;background:
+ radial-gradient(circle at 50% 55%,rgba(var(--ui-accent-rgb),.065),transparent 38%),
+ color-mix(in srgb,var(--ui-panel) 97%,transparent)!important}
+.stage:before,.concertStage:before{content:"";position:absolute;width:min(50vw,720px);aspect-ratio:1;border:1px solid rgba(var(--ui-accent-rgb),.08);border-radius:50%;left:50%;top:55%;transform:translate(-50%,-50%);pointer-events:none;box-shadow:0 0 0 28px rgba(var(--ui-accent-rgb),.018),0 0 0 58px rgba(var(--ui-accent-rgb),.012)}
+.song,.concertSong{color:var(--ui-text)!important;letter-spacing:-.045em;text-shadow:none!important}
+.bpm,.concertBpm{color:var(--ui-text)!important;letter-spacing:-.065em;text-shadow:0 12px 40px rgba(0,0,0,.18)!important}
+.standardBpmLabel,.tempoStageCurrent span{letter-spacing:.3em;color:var(--ui-muted)!important}
+.liveBpmAdjust,.concertBpmAdjust{background:color-mix(in srgb,var(--ui-panel-2) 88%,transparent);border:1px solid var(--ui-border);border-radius:18px;padding:7px;box-shadow:var(--ui-soft-shadow)}
+.liveBpmAdjust button,.concertBpmAdjust button{border:0!important;border-radius:12px!important;background:transparent!important;color:var(--ui-text)!important;min-width:64px;transition:.16s ease}
+.liveBpmAdjust button:hover,.concertBpmAdjust button:hover{background:rgba(var(--ui-accent-rgb),.13)!important;color:var(--ui-accent)!important}
+.beatDot{background:color-mix(in srgb,var(--ui-muted) 55%,transparent)!important;border:0!important}
+.beatDot.active,.beatDot.downbeat.active{background:var(--ui-accent)!important;box-shadow:0 0 18px rgba(var(--ui-accent-rgb),.65)}
+.infoStrip{padding:10px 18px!important;background:color-mix(in srgb,var(--ui-panel) 98%,transparent)!important}
+.liveMeta{gap:0}.liveMeta>*{border-left:1px solid var(--ui-border)}.liveMeta>*:first-child{border-left:0}
+.liveMetaBtn,.trackStatusBtn{background:transparent!important;border:0!important;border-radius:12px!important;color:var(--ui-text)!important}
+.nextup{color:var(--ui-text)}.nextup strong,.nextup b{color:var(--ui-accent)!important}
+.controls{gap:12px;padding:0!important;background:transparent!important}
+.big,.concertBtn,.smallBtn,.editModeBadge,.barCounterBox,.backgroundAudioStatus,.keyboardHelp{
+  border:1px solid var(--ui-border)!important;background:linear-gradient(180deg,color-mix(in srgb,var(--ui-panel-2) 95%,white 2%),var(--ui-panel-2))!important;
+  color:var(--ui-text)!important;box-shadow:var(--ui-soft-shadow);border-radius:16px!important;transition:transform .14s ease,filter .14s ease,border-color .14s ease
+}
+.big:hover,.concertBtn:hover,.smallBtn:hover{transform:translateY(-1px);border-color:rgba(var(--ui-accent-rgb),.35)!important}
+.big:active,.concertBtn:active,.smallBtn:active{transform:translateY(1px)}
+.play,.concertPlay{background:linear-gradient(135deg,color-mix(in srgb,var(--ui-accent) 88%,white),var(--ui-accent))!important;color:#071018!important;border-color:rgba(var(--ui-accent-rgb),.9)!important;box-shadow:0 14px 30px rgba(var(--ui-accent-rgb),.20)!important}
+.liveState{border-radius:999px!important}.liveState.playing{background:rgba(var(--ui-accent-rgb),.14)!important;color:var(--ui-accent)!important;border-color:rgba(var(--ui-accent-rgb),.4)!important}
+.barCounterBox{min-width:94px!important}.barCounterBox strong{color:var(--ui-text)!important}.barCounterBox small{color:var(--ui-muted)!important}
+.backgroundAudioStatus{border-radius:50%!important}.backgroundAudioStatus.active{color:var(--ui-success)!important;border-color:rgba(53,211,138,.35)!important;background:rgba(53,211,138,.08)!important}
+.themePickerWrap{position:fixed;right:13px;top:96px;z-index:1200}
+.themeToggle{position:static!important;width:52px!important;height:52px!important;border-radius:50%!important;border:1px solid var(--ui-border)!important;background:var(--ui-panel)!important;color:var(--ui-accent)!important;box-shadow:var(--ui-soft-shadow)!important;font-size:25px!important}
+.themeMenu{position:absolute;right:0;top:62px;width:270px;padding:9px;background:color-mix(in srgb,var(--ui-panel) 98%,transparent);border:1px solid var(--ui-border);border-radius:20px;box-shadow:0 24px 70px rgba(0,0,0,.34);backdrop-filter:blur(20px)}
+.themeMenu.hidden{display:none!important}.themeChoice{width:100%;display:grid;grid-template-columns:42px 1fr 20px;align-items:center;gap:11px;padding:10px;border:0;border-radius:13px;background:transparent;color:var(--ui-text);text-align:left}.themeChoice:hover{background:rgba(var(--ui-accent-rgb),.08)}.themeChoice small{display:block;color:var(--ui-muted);margin-top:2px}.themeChoice b{opacity:0;color:var(--ui-accent)}.themeChoice.active{background:rgba(var(--ui-accent-rgb),.11)}.themeChoice.active b{opacity:1}
+.themePreview{width:36px;height:36px;border-radius:11px;border:1px solid rgba(255,255,255,.16);box-shadow:inset 0 0 0 8px rgba(255,255,255,.025)}.midnightPreview{background:linear-gradient(135deg,#07111b 58%,#ffc43d 59%)}.electricPreview{background:linear-gradient(135deg,#03101c 58%,#19b8ff 59%)}.studioPreview{background:linear-gradient(135deg,#f5f9f9 58%,#12b8aa 59%)}.classicPreview{background:linear-gradient(135deg,#172028 58%,#ffd34d 59%)}
+.buildBadge{background:var(--ui-accent)!important;color:#071018!important;border:0!important;box-shadow:var(--ui-soft-shadow)}
+.editorPanel,.modalCard,.soundPicker,.bpmModalCard{background:var(--ui-panel)!important;color:var(--ui-text)!important;border-color:var(--ui-border)!important;border-radius:24px!important}
+input,select,textarea{background:var(--ui-panel-2)!important;color:var(--ui-text)!important;border-color:var(--ui-border)!important;border-radius:12px!important}
+.primary{background:var(--ui-accent)!important;color:#071018!important;border-color:var(--ui-accent)!important}.secondary{background:var(--ui-panel-2)!important;color:var(--ui-text)!important;border-color:var(--ui-border)!important}
+body[data-theme="studio"] .sidebar,body[data-theme="studio"] .main,body[data-theme="studio"] .stage,body[data-theme="studio"] .infoStrip,body[data-theme="studio"] .chooserCard,body[data-theme="studio"] .panel{box-shadow:var(--ui-shadow)}
+body[data-theme="studio"] .stage:before,body[data-theme="studio"] .concertStage:before{border-color:rgba(var(--ui-accent-rgb),.12)}
+body[data-theme="studio"] .play,body[data-theme="studio"] .concertPlay,body[data-theme="studio"] .buildBadge,body[data-theme="studio"] .primary{color:white!important}
+body[data-theme="studio"] .themeMenu{box-shadow:0 24px 65px rgba(38,65,70,.18)}
+@media(max-width:760px){.app{padding:6px;gap:7px}.sidebar,.main{border-radius:20px!important}.themePickerWrap{right:8px;top:82px}.themeToggle{width:44px!important;height:44px!important}.themeMenu{top:51px;width:250px}.liveBpmAdjust button,.concertBpmAdjust button{min-width:45px}}

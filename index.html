@@ -8,12 +8,20 @@
 <meta name="theme-color" content="#0d1318">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="cover.png">
-<title>ClickSet 2.6.3</title>
-<link rel="stylesheet" href="clickset-2.0.css?v=263">
+<title>ClickSet 2.7.0</title>
+<link rel="stylesheet" href="clickset-2.0.css?v=270">
 </head>
 <body>
-<div class="buildBadge">2.6.3</div>
-<button id="themeToggle" class="themeToggle" type="button" aria-label="Activar mode clar" title="Activar mode clar">☀️</button>
+<div class="buildBadge">2.7.0</div>
+<div class="themePickerWrap">
+<button id="themeToggle" class="themeToggle" type="button" aria-label="Canviar estil visual" title="Canviar estil visual">◐</button>
+<div id="themeMenu" class="themeMenu hidden" role="menu" aria-label="Estils visuals de ClickSet">
+  <button type="button" class="themeChoice" data-theme="midnight" role="menuitem"><span class="themePreview midnightPreview"></span><span><strong>Midnight Gold</strong><small>Fosc · daurat</small></span><b>✓</b></button>
+  <button type="button" class="themeChoice" data-theme="electric" role="menuitem"><span class="themePreview electricPreview"></span><span><strong>Electric Blue</strong><small>Fosc · blau</small></span><b>✓</b></button>
+  <button type="button" class="themeChoice" data-theme="studio" role="menuitem"><span class="themePreview studioPreview"></span><span><strong>Studio Teal</strong><small>Clar · turquesa</small></span><b>✓</b></button>
+  <button type="button" class="themeChoice" data-theme="classic" role="menuitem"><span class="themePreview classicPreview"></span><span><strong>Classic Dark</strong><small>Fosc · original</small></span><b>✓</b></button>
+</div>
+</div>
 <button id="editModeBadge" class="editModeBadge locked" type="button" aria-label="Estat del mode edició">🔒 Mode lectura</button>
 <div id="splash" class="splash"><img src="cover.png" alt="ClickSet"></div>
 <div id="groupIntro" class="groupIntro hidden"><img id="groupIntroLogo" alt=""><div id="groupIntroName"></div></div>
