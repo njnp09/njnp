@@ -1,0 +1,7 @@
+CLICKSET v2.7.1
+
+Correcció visual del quadre superior:
+- Títol, BPM actual, BPM següent i controls ja no se superposen.
+- Distribució adaptativa segons l'altura de pantalla.
+- Es mantenen totes les funcions, els quatre temes i la barra visual del clic.
+- Memòria cau actualitzada a 2.7.1.

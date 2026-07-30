@@ -8,19 +8,18 @@
 <meta name="theme-color" content="#0d1318">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="cover.png">
-<title>ClickSet 2.7.0</title>
+<title>ClickSet 2.7.1</title>
 <link rel="stylesheet" href="clickset-2.0.css?v=270">
 </head>
 <body>
-<div class="buildBadge">2.7.0</div>
-<div class="themePickerWrap">
-<button id="themeToggle" class="themeToggle" type="button" aria-label="Canviar estil visual" title="Canviar estil visual">◐</button>
-<div id="themeMenu" class="themeMenu hidden" role="menu" aria-label="Estils visuals de ClickSet">
-  <button type="button" class="themeChoice" data-theme="midnight" role="menuitem"><span class="themePreview midnightPreview"></span><span><strong>Midnight Gold</strong><small>Fosc · daurat</small></span><b>✓</b></button>
-  <button type="button" class="themeChoice" data-theme="electric" role="menuitem"><span class="themePreview electricPreview"></span><span><strong>Electric Blue</strong><small>Fosc · blau</small></span><b>✓</b></button>
-  <button type="button" class="themeChoice" data-theme="studio" role="menuitem"><span class="themePreview studioPreview"></span><span><strong>Studio Teal</strong><small>Clar · turquesa</small></span><b>✓</b></button>
-  <button type="button" class="themeChoice" data-theme="classic" role="menuitem"><span class="themePreview classicPreview"></span><span><strong>Classic Dark</strong><small>Fosc · original</small></span><b>✓</b></button>
-</div>
+<div class="buildBadge">v2.7.1</div>
+<button id="themeToggle" class="themeToggle" type="button" aria-label="Triar tema visual" title="Triar tema visual">◐</button>
+<div id="themePanel" class="themePanel hidden" role="dialog" aria-label="Temes visuals">
+  <strong>Aspecte de ClickSet</strong>
+  <button type="button" data-theme-choice="midnight"><i></i><span>Midnight Gold</span></button>
+  <button type="button" data-theme-choice="electric"><i></i><span>Electric Blue</span></button>
+  <button type="button" data-theme-choice="stage"><i></i><span>Stage Orange</span></button>
+  <button type="button" data-theme-choice="classic"><i></i><span>Classic Dark</span></button>
 </div>
 <button id="editModeBadge" class="editModeBadge locked" type="button" aria-label="Estat del mode edició">🔒 Mode lectura</button>
 <div id="splash" class="splash"><img src="cover.png" alt="ClickSet"></div>
@@ -30,7 +29,7 @@
           <small>COMPASSOS</small>
           <strong id="barCounterValue">1</strong>
         </div>
-        <div id="backgroundAudioStatus" class="backgroundAudioStatus" title="CLICKSET intentarà continuar sonant quan canvies de pestanya">BG</div><div id="keyboardHelp" class="keyboardHelp" title="Dreceres: ← → cançó · ↑ ↓ BPM · Espai Play/Stop · A Accent · R Reiniciar">⌨️</div><div class="topBtns"><button id="concertModeBtn" class="smallBtn">🎤 MODE CONCERT</button><button id="homeBtn" class="smallBtn">GRUPS</button><button id="editBtn" class="smallBtn">EDITAR</button></div></div><section class="stage"><div id="stageStatusLine" class="stageStatusLine" aria-hidden="true">CLICKSET · READY. CLICK. PLAY.</div><div id="parentLabel" class="parentLabel"></div><div id="song" class="song"></div><div id="tempoStagePair" class="tempoStagePair">
+        <div id="backgroundAudioStatus" class="backgroundAudioStatus" title="CLICKSET intentarà continuar sonant quan canvies de pestanya">BG</div><div id="keyboardHelp" class="keyboardHelp" title="Dreceres: ← → cançó · ↑ ↓ BPM · Espai Play/Stop · A Accent · R Reiniciar">⌨️</div><div class="topBtns"><button id="concertModeBtn" class="smallBtn">🎤 MODE CONCERT</button><button id="homeBtn" class="smallBtn">GRUPS</button><button id="editBtn" class="smallBtn">EDITAR</button></div></div><section class="stage"><div id="beatRail" class="beatRail" aria-hidden="true"><div class="beatRailTrack"><i id="beatRailFill"></i><b id="beatRailOrb"></b></div><div class="beatRailMarks"><span>1</span><span>2</span><span>3</span><span>4</span></div></div><div id="stageStatusLine" class="stageStatusLine" aria-hidden="true">CLICKSET · READY. CLICK. PLAY.</div><div id="parentLabel" class="parentLabel"></div><div id="song" class="song"></div><div id="tempoStagePair" class="tempoStagePair">
       <div class="tempoStageCurrent">
         <small>ACTUAL</small>
         <div id="bpm" class="bpm"></div>
@@ -331,5 +330,5 @@
 window.addEventListener("error",function(){setTimeout(function(){document.getElementById("splash")?.classList.add("hidden")},50)});
 setTimeout(function(){document.getElementById("splash")?.classList.add("hidden")},2500);
 </script>
-<script src="clickset-2.0.js?v=263" defer></script>
+<script src="clickset-2.0.js?v=270" defer></script>
 </body></html>

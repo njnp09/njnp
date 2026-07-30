@@ -1,5 +1,5 @@
 "use strict";
-const VERSION="2.2.0", STORAGE_KEY="clickset_017_groups";
+const VERSION="2.7.1", STORAGE_KEY="clickset_017_groups";
 const EDIT_PASSWORD="45";
 let editUnlocked=false,pendingEditAction=null;
 const SOUNDS=[
@@ -28,6 +28,14 @@ function renderBeatDots(){
 }
 function lightBeat(index,accented=false){
  [$("beatDots"),$("concertBeatDots")].forEach(box=>{if(!box)return;const dots=[...box.children];dots.forEach((d,i)=>d.classList.toggle("active",i===index));if(dots[index])dots[index].classList.toggle("accented",accented)});
+}
+function moveBeatRail(index,accented=false){
+ const rail=$("beatRail"),fill=$("beatRailFill"),orb=$("beatRailOrb");if(!rail||!fill||!orb)return;
+ const song=flat[current]?.song,n=beatsForSong(song),bpm=Math.max(20,Math.min(400,Number(currentLiveBpm||song?.bpm)||120));
+ const from=(index/n)*100,to=((index+1)/n)*100,duration=Math.max(.12,60/bpm);
+ rail.classList.toggle("accented",accented);rail.style.setProperty("--rail-duration",`${duration}s`);
+ fill.style.transition="none";orb.style.transition="none";fill.style.width=`${from}%`;orb.style.left=`${from}%`;
+ requestAnimationFrame(()=>requestAnimationFrame(()=>{fill.style.transition=`width ${duration}s linear`;orb.style.transition=`left ${duration}s linear`;fill.style.width=`${to}%`;orb.style.left=`${to}%`}));
 }
 function showCountdownLabel(text,time,myRun){const delay=Math.max(0,(time-audioCtx.currentTime)*1000);visualBeatTimers.push(setTimeout(()=>{if(!playing||myRun!==runId)return;const overlay=$("countdownOverlay"),value=$("countdownValue");value.textContent=text;overlay.classList.remove("hidden");overlay.classList.remove("pop");void overlay.offsetWidth;overlay.classList.add("pop");if(text==="GO")visualBeatTimers.push(setTimeout(()=>overlay.classList.add("hidden"),Math.max(180,60000/(Number(flat[current]?.song?.bpm)||120)*.55)),)},delay))}
 const defaults=[{name:"4L",color:"#ffd34d",logo:"logo-4l.jpg",setlists:[{name:"Setlist principal",sound:"classic",items:[{name:"XUXA",bpm:148},{name:"EVA MARÍA",bpm:136},{name:"CUÉNTAME",bpm:132},{name:"LIBRE",bpm:118},{name:"MIX MAMMA MIA",children:[{name:"Mamma Mia",bpm:142},{name:"Gloria",bpm:142},{name:"Tengo el corazón contento",bpm:148},{name:"DRUM SOLO",bpm:132},{name:"Lambada",bpm:122}]},{name:"ABANIBÍ ABOEBÉ",bpm:143},{name:"MIX RAINING",children:[{name:"It's Raining Men",bpm:142},{name:"Midnight",bpm:132},{name:"Yo no soy esa",bpm:138}]},{name:"MIX VIVO CANTANDO",children:[{name:"Vivo cantando",bpm:132},{name:"La felicidad",bpm:132},{name:"Camisa negra",bpm:93},{name:"Porque te vas",bpm:196},{name:"Could You Be Loved",bpm:100},{name:"Me gustas tú",bpm:101},{name:"Everybody",bpm:103},{name:"Spice Girls",bpm:116},{name:"Dragostea Din Tei",bpm:141}]},{name:"VIVIR ASÍ ES MORIR DE AMOR",bpm:230},{name:"HELP",bpm:148},{name:"LA PUERTA DE ALCALÁ",bpm:150},{name:"MIX LATINO",children:[{name:"Solamente bésame",bpm:134},{name:"La mordidita",bpm:148},{name:"Felices los 4",bpm:102},{name:"Que levante la mano",bpm:126},{name:"La morocha",bpm:161}]},{name:"MIX OREJA",children:[{name:"20 de enero",bpm:143},{name:"El 28",bpm:126},{name:"Puedes contar conmigo",bpm:152}]},{name:"MIX MECANO",children:[{name:"Chica Yeyé",bpm:165},{name:"Me colé en una fiesta",bpm:155},{name:"Maquillaje",bpm:128},{name:"Bailando",bpm:135}]},{name:"EL SOL NO REGRESA",bpm:138},{name:"BOIG PER TU",bpm:98}]}]},{name:"El Hombre 80",color:"#f4f6f7",logo:"logo-h80.jpeg",setlists:[{name:"Setlist principal",sound:"classic",items:[{name:"HACE CALOR",bpm:146},{name:"LA CHICA DE AYER",bpm:137},{name:"INSURRECCIÓN",bpm:146},{name:"MIL CALLES",bpm:150},{name:"DÉJAME",bpm:111},{name:"LA BAMBA",bpm:160},{name:"BIENVENIDOS",bpm:104},{name:"NO PUEDO VIVIR SIN TI",bpm:140},{name:"SIN DOCUMENTOS",bpm:202},{name:"CUANDO BRILLE EL SOL",bpm:180},{name:"EN ALGÚN LUGAR",bpm:148},{name:"VIAJE CON NOSOTROS",bpm:133},{name:"CAROLINA",bpm:134},{name:"NO DUDARÍA",bpm:150},{name:"7 VIDAS",bpm:146},{name:"CUERPO DE MUJER",bpm:112},{name:"RAYANDO EL SOL",bpm:123},{name:"TENGO UNA BANDA",bpm:140},{name:"PRINCESA",bpm:130},{name:"EL LÍMITE",bpm:130},{name:"MESCALINA",bpm:105},{name:"QUÉ HACE UNA CHICA COMO TÚ",bpm:124},{name:"HORMIGÓN, MUJERES Y ALCOHOL",bpm:130},{name:"LA FLACA",bpm:119},{name:"NADA FUE UN ERROR",bpm:149},{name:"LA PLAZA DEL PUEBLO",bpm:157},{name:"L.A.",bpm:132},{name:"ROCK’N’ROLL STAR",bpm:153},{name:"SOLDADITO MARINERO",bpm:150},{name:"MI GRAN NOCHE",bpm:148},{name:"UN BESO Y UNA FLOR",bpm:179},{name:"LADY MADRID",bpm:125},{name:"EL BIEN",bpm:138}]}]},{name:"Toc i Pam",color:"#32c9ff",logo:"logo-tocipam.jpg",setlists:[{name:"Toc i Pam 2026",sound:"classic",items:[{name:"HOLA AMICS, QUÈ TAL I COM ESTAU?",bpm:120},{name:"ONOMATOPEYA",bpm:120},{name:"PALMERA + BAJO DEL MAR + LA TAZA",bpm:120},{name:"EL TEU BALL",bpm:120},{name:"SOM ANIMETES",bpm:120},{name:"PIRATES",bpm:120},{name:"ESTÀTUES",bpm:120},{name:"LA LLUNA LA PRUNA",bpm:120},{name:"CHOCOLATE",bpm:120},{name:"JOC MEDLEY ESCOLAR",bpm:120},{name:"PIÉ ZI ZA ZU",bpm:120},{name:"JO VOLIA KETXUP + PEDRA, PAPER, TISORES",bpm:120},{name:"TENC ALEGRIA",bpm:120},{name:"TARINGA",bpm:120}]}]},{name:"100 Gaviotas",color:"#ef5c5c",logo:"",setlists:[{name:"100 gavines",sound:"classic",items:[{name:"A TIENTAS (COPS, TOTS JUNTS)",bpm:135},{name:"NO PUEDO EVITAR PENSAR EN TI (GASPAR)",bpm:120},{name:"ESOS OJOS NEGROS",bpm:135},{name:"PALABRAS SIN NOMBRE (JUNTS, PUJADA)",bpm:150},{name:"ROSAS EN AGUA (JUNTS, VALS)",bpm:178},{name:"ENTRE SALITRE Y SUDOR (BATERIA)",bpm:124},{name:"SENTIDO DE TU CANCIÓN (GASPAR)",bpm:120},{name:"JARDÍN DE ROSAS (COMENÇA GASPAR)",bpm:170},{name:"CAPRICORNIO (TOTS JUNTS, SHUFFLE)",bpm:140},{name:"ROSA GRIS (TOTS JUNTS, A CAIXA TOT)",bpm:145},{name:"NADA (4 NEGRES CAIXA)",bpm:140},{name:"PIENSO EN TI (LA FA GASPAR SOL)",bpm:140},{name:"EN ALGÚN LUGAR",bpm:148},{name:"ROZANDO LA ETERNIDAD",bpm:125},{name:"UNA CALLE DE PARÍS (GUITARRA)",bpm:145},{name:"HERIDA (GUITARRA, TOC A DOS TEMPS)",bpm:136},{name:"CASA AZUL (TOTS JUNTS)",bpm:159},{name:"MUNDO DE CRISTAL (GUITARRA)",bpm:125},{name:"CARTAS DE AMOR (GUITARRA)",bpm:128},{name:"A UN MINUTO (GUITARRA)",bpm:151},{name:"100 GAVIOTAS (GUITARRA)",bpm:140},{name:"CASABLANCA BONA (BAIX)",bpm:120}]}]},{name:"PGS",color:"#d4af37",logo:"logo-pgs.png",setlists:[{name:"Setlist 2026",sound:"classic",items:[{name:"I BELIEVE",bpm:100},{name:"JUST A LITTLE MORE JESUS",bpm:100},{name:"BREATH OF HEAVEN",bpm:100},{name:"READY FOR A MIRACLE",bpm:100},{name:"HEAL",bpm:100},{name:"EASY ON ME",bpm:100},{name:"JESUS PROMISED",bpm:100},{name:"DEVIL'S WHISPER",bpm:100},{name:"HIT THE ROAD JACK",bpm:100},{name:"LET IT BE",bpm:100},{name:"JOHN THE REVELATOR",bpm:100},{name:"MORE ABUNDANTLY",bpm:100}]}]}]
@@ -63,38 +71,19 @@ function renderRecentSetlists(){
  })
 }
 
-const THEMES={
- midnight:{label:"Midnight Gold",icon:"◐",meta:"#07111b"},
- electric:{label:"Electric Blue",icon:"◉",meta:"#041525"},
- studio:{label:"Studio Teal",icon:"◌",meta:"#f3f7f7"},
- classic:{label:"Classic Dark",icon:"◑",meta:"#0d1318"}
-};
-function normalizeTheme(theme){
- if(theme==="dark")return "classic";
- if(theme==="light")return "studio";
- return THEMES[theme]?theme:"midnight";
-}
+const CLICKSET_THEMES=["midnight","electric","stage","classic"];
 function applyTheme(theme){
- theme=normalizeTheme(theme);
+ if(!CLICKSET_THEMES.includes(theme))theme="midnight";
  document.body.dataset.theme=theme;
- document.body.classList.toggle("light-theme",theme==="studio");
+ document.body.classList.remove("light-theme");
+ const labels={midnight:"Midnight Gold",electric:"Electric Blue",stage:"Stage Orange",classic:"Classic Dark"};
  const btn=$("themeToggle");
- if(btn){
-  btn.textContent=THEMES[theme].icon;
-  btn.setAttribute("aria-label",`Estil visual: ${THEMES[theme].label}`);
-  btn.title=`Estil visual: ${THEMES[theme].label}`;
- }
- document.querySelectorAll(".themeChoice").forEach(choice=>choice.classList.toggle("active",choice.dataset.theme===theme));
+ if(btn){btn.textContent="◐";btn.title=`Tema: ${labels[theme]}`;btn.setAttribute("aria-label",`Tema visual: ${labels[theme]}`)}
+ document.querySelectorAll("[data-theme-choice]").forEach(b=>b.classList.toggle("selected",b.dataset.themeChoice===theme));
  const meta=document.querySelector('meta[name="theme-color"]');
- if(meta)meta.content=THEMES[theme].meta;
- localStorage.setItem(THEME_KEY,theme);
+ if(meta)meta.content=theme==="electric"?"#061522":theme==="stage"?"#17100b":"#071017";
 }
-function setTheme(theme){applyTheme(theme);$("themeMenu")?.classList.add("hidden")}
-function toggleThemeMenu(event){
- event?.stopPropagation();
- const menu=$("themeMenu");if(!menu)return;
- menu.classList.toggle("hidden");
-}
+function toggleTheme(){const panel=$("themePanel");if(panel)panel.classList.toggle("hidden")}
 applyTheme(localStorage.getItem(THEME_KEY)||"midnight");
 
 function normalize(data){return data.map(g=>({name:g.name||"Grup",color:g.color||"#ffd34d",logo:g.logo||"",setlists:(g.setlists||[]).map(s=>({name:s.name||"Repertori",sound:({digital:"studio",beep:"studio"}[s.sound]||s.sound||"classic"),items:(s.items||[]).map(i=>i.children?{...i,children:i.children.map(c=>({...c,sound:({digital:"studio",beep:"studio"}[c.sound]||c.sound||"")}))}:{...i,sound:({digital:"studio",beep:"studio"}[i.sound]||i.sound||"")})}))}))}
@@ -1044,7 +1033,7 @@ function effectiveAccentSound(){const s=flat[current]?.song,sl=currentSetlist();
 function scheduleBeatSound(time,accented=false){
  scheduleSound(accented?effectiveAccentSound():effectiveSound(),time,1,accented);
 }
-function pulseAt(time,myRun,beatIndex=0,accented=false){const delay=Math.max(0,(time-audioCtx.currentTime)*1000);visualBeatTimers.push(setTimeout(()=>{if(!playing||myRun!==runId)return;lightBeat(beatIndex,accented);$("pulse").classList.add("on");if($("concertPulse"))$("concertPulse").classList.add("on");visualBeatTimers.push(setTimeout(()=>{$("pulse").classList.remove("on");if($("concertPulse"))$("concertPulse").classList.remove("on")},70))},delay))}
+function pulseAt(time,myRun,beatIndex=0,accented=false){const delay=Math.max(0,(time-audioCtx.currentTime)*1000);visualBeatTimers.push(setTimeout(()=>{if(!playing||myRun!==runId)return;lightBeat(beatIndex,accented);moveBeatRail(beatIndex,accented);$("pulse").classList.add("on");if($("concertPulse"))$("concertPulse").classList.add("on");visualBeatTimers.push(setTimeout(()=>{$("pulse").classList.remove("on");if($("concertPulse"))$("concertPulse").classList.remove("on")},70))},delay))}
 function scheduler(myRun){
  if(!playing||myRun!==runId)return;
  const song=flat[current].song;
@@ -1931,9 +1920,9 @@ $("backupImportInput").onchange=e=>{const file=e.target.files?.[0];if(file)resto
 $("importSetlistBtn").onclick=()=>requestEdit(openImportModal);$("cancelImport").onclick=closeImportModal;$("cameraInput").onchange=e=>handleImportFile(e.target.files[0]);$("imageInput").onchange=e=>handleImportFile(e.target.files[0]);$("fileInput").onchange=e=>handleImportFile(e.target.files[0]);$("importText").addEventListener("input",refreshImportPreview);$("createImportedSetlist").onclick=()=>{refreshImportPreview();if(!importSongs.length){alert("No s'ha detectat cap cançó. Revisa el text.");return}const name=$("importSetlistName").value.trim()||"Repertori importat";groups[groupIndex].setlists.push({name,sound:"classic",items:importSongs.map(s=>({name:s.name,bpm:s.bpm}))});save();closeImportModal();renderSetlists(groupIndex)};
 $("newGroupBtn").onclick=()=>requestEdit(()=>openGroupEditor(null));$("homeBtn").onclick=()=>{closeConcertMode();stopRepeatingPreview();showGroups()};$("prev").onclick=()=>change(-1);$("next").onclick=()=>change(1);$("play").onclick=async()=>{try{playing||paused?stop():await start(true)}catch(error){console.error(error);updateAudioGate();showAudioToast("Toca ACTIVAR SO i torna-ho a provar")}};$("editBtn").onclick=()=>requestEdit(()=>{stop();renderEditor();$("editor").classList.add("open")});$("closeEditor").onclick=()=>{stopRepeatingPreview();groups=editingGroups;save();$("editor").classList.remove("open");render()};
 $("submitPassword").onclick=unlockEditing;$("cancelPassword").onclick=closePasswordModal;$("editModeBadge").onclick=()=>{if(editUnlocked){editUnlocked=false;updateEditModeBadge()}else requestEdit(()=>{})};$("editPassword").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();unlockEditing()}else if(e.key==="Escape")closePasswordModal()});
-$("themeToggle").onclick=toggleThemeMenu;
-document.querySelectorAll(".themeChoice").forEach(button=>button.onclick=event=>{event.stopPropagation();setTheme(button.dataset.theme)});
-document.addEventListener("click",event=>{const wrap=document.querySelector(".themePickerWrap");if(wrap&&!wrap.contains(event.target))$("themeMenu")?.classList.add("hidden")});
+$("themeToggle").onclick=toggleTheme;
+document.querySelectorAll("[data-theme-choice]").forEach(button=>button.onclick=()=>{const theme=button.dataset.themeChoice;localStorage.setItem(THEME_KEY,theme);applyTheme(theme);$("themePanel")?.classList.add("hidden")});
+document.addEventListener("pointerdown",event=>{const panel=$("themePanel"),toggle=$("themeToggle");if(panel&&!panel.classList.contains("hidden")&&!panel.contains(event.target)&&event.target!==toggle)panel.classList.add("hidden")});
 $("normalAccent").onclick=toggleCurrentAccent;
 $("concertAccent").onclick=toggleCurrentAccent;
 $("normalSound").onclick=openQuickSoundMenu;
